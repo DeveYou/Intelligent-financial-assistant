@@ -50,25 +50,25 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "RadouaneAitSaid123"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;RadouaneAitSaid123&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/DeveYou/Intelligent-financial-assistant.git",
-    "accountId": "4cdd76e3-d628-4489-80c6-34d218a1de35"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/DeveYou/Intelligent-financial-assistant.git&quot;,
+    &quot;accountId&quot;: &quot;4cdd76e3-d628-4489-80c6-34d218a1de35&quot;
   }
-}]]></component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="35cGTCHcJVUjLDSKGUYTaCpShXQ" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -95,7 +95,7 @@
     "git-widget-placeholder": "radouane",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Emsi/JEE/Projet/Intelligent-financial-assistant/intelligent_financial_assistant_backend/api-gateway/src/main/resources",
+    "last_opened_file_path": "C:/Emsi/JEE/Projet/Intelligent-financial-assistant/intelligent_financial_assistant_backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -114,6 +114,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend" />
       <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend\api-gateway\src\main\resources" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -183,6 +184,7 @@
       <option name="presentableId" value="Default" />
       <updated>1763401952409</updated>
       <workItem from="1763401953796" duration="39503000" />
+      <workItem from="1763537644716" duration="543000" />
     </task>
     <servers />
   </component>
