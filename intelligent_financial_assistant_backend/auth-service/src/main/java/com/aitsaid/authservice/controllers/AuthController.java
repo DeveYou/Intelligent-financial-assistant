@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @author radouane
  **/
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "Authentication API")
 @SecurityRequirement(name = "bearerAuth")
