@@ -14,9 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 /**
@@ -29,24 +30,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
 
     public AuthService(UserRepository userRepository,
                        TokenBlockListRepository tokenBlockListRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.tokenBlockListRepository = tokenBlockListRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     public RegisterResponse register(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(request.getEmail()))) {
             throw new RuntimeException("Email already exists");
         }
 
@@ -73,21 +72,27 @@ public class AuthService {
 
     public void logout(String token) {
 
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+        try {
+
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            if (token != null && !token.isEmpty() && jwtUtil.isTokenValid(token)) {
+                String username = jwtUtil.extractUsername(token);
+                User user = userRepository.findByEmail(username)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                TokenBlockList blockedToken = new TokenBlockList();
+                blockedToken.setToken(token);
+                blockedToken.setUser(user);
+
+                tokenBlockListRepository.save(blockedToken);
+            }
+            SecurityContextHolder.clearContext();
+        } catch (Exception e) {
+            throw new RuntimeException("Logout failed " + e.getMessage());
         }
 
-        TokenBlockList blockedToken = new TokenBlockList();
-        blockedToken.setToken(token);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof User principal) {
-            blockedToken.setUser(principal);
-        }
-
-        tokenBlockListRepository.save(blockedToken);
-
-        SecurityContextHolder.clearContext();
     }
 
     public User getCurrentUser() {

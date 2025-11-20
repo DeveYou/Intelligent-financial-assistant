@@ -5,12 +5,12 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true  # Auto-discover services from Eureka
+          enabled: true
       routes:
         - id: auth-service-public
           uri: lb://auth-service
           predicates:
-            - Path=/api/auth/register,/api/auth/login
+            - Path=/api/auth/register,/api/auth/login,/api/auth/logout
           filters:
             - StripPrefix=1
 
@@ -22,29 +22,6 @@ spring:
             - name: JwtAuthenticationFilter
             - StripPrefix=1
 
-        - id: openapi-routes
-          uri: lb://auth-service
-          predicates:
-            - Path=/v3/api-docs/**,/swagger-ui/**,/webjars/**,/swagger-resources/**
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origin-patterns: "*"
-            allowed-methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - PATCH
-            allowed-headers: "*"
-            exposed-headers:
-              - Authorization
-              - X-User-Id
-              - X-User-Roles
-            allow-credentials: true
-            max-age: 3600
-
 server:
   port: 8080
 
@@ -53,7 +30,9 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: ${eureka.instance.hostname}:${server.port}
 
 jwt:
   secret: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
