@@ -8,6 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.io.DecodingException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -94,7 +95,7 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         // Liste complète des rôles
         claims.put("roles", userDetails.getAuthorities().stream()
-                .map(a -> a.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .toList());
         // Rôle principal (dernier) pour compatibilité
         userDetails.getAuthorities().forEach(authority -> claims.put("role", authority.getAuthority()));

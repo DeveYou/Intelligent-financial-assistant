@@ -8,8 +8,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+
 @Component
 public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAuthenticationFilter.Config> {
+
+    private boolean isTokenBlocked(String token) {
+        // We will call auth-service to check if token is blocked
+        // For now, we'll assume it's not blocked
+        return false;
+    }
 
     private final JwtUtil jwtUtil;
 
@@ -35,16 +42,13 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             // Check for Authorization header
             String authHeader = request.getHeaders().getFirst("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                System.out.println("Missing or invalid Authorization header");
                 return this.onError(exchange, "Missing or invalid Authorization header", HttpStatus.UNAUTHORIZED);
             }
 
             String token = authHeader.substring(7);
-            System.out.println("Validating JWT token...");
 
             // Validate token
             if (!jwtUtil.isTokenValid(token)) {
-                System.out.println("Invalid JWT token");
                 return this.onError(exchange, "Invalid JWT token", HttpStatus.UNAUTHORIZED);
             }
 
@@ -66,12 +70,7 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     private boolean isPublicEndpoint(String path) {
         return path.startsWith("/api/auth/login") ||
                 path.startsWith("/api/auth/register") ||
-                path.startsWith("/api/auth/logout") ||
-                path.contains("/api-docs") ||
-                path.contains("/swagger-ui") ||
-                path.contains("/v3/api-docs") ||
-                path.contains("/webjars/") ||
-                path.contains("/swagger-resources/");
+                path.startsWith("/api/auth/logout");
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
