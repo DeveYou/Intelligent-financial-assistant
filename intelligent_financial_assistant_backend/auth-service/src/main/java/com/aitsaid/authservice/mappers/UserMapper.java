@@ -7,7 +7,11 @@ import com.aitsaid.authservice.entities.User;
 /**
  * @author radouane
  **/
-public class UserMapper {
+public final class UserMapper {
+
+    private UserMapper() {
+        throw new AssertionError("Cannot instantiate utility class");
+    }
 
     public static User registerRequestToUser(RegisterRequest registerRequest) {
         User user = new User();

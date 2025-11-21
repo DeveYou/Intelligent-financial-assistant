@@ -5,22 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c94116b-b76f-463a-8966-f480e0f30610" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application-secrets.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/sonar-infos" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/exceptions/EmailAlreadyExistsException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/exceptions/LogoutFailedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/exceptions/UserNotAuthenticatedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/exceptions/UserNotFoundException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/resources/application-secrets.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/java/com/aitsaid/apigateway/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/java/com/aitsaid/apigateway/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/mvnw.cmd" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/config/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/controllers/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/LoginResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/LoginResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/RegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/dtos/RegisterRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/entities/TokenBlockList.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/entities/TokenBlockList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/entities/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/entities/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/handlers/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/handlers/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/mappers/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/mappers/UserMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/UserDetailsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/UserDetailsServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/test/java/com/aitsaid/authservice/AuthServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/test/java/com/aitsaid/authservice/AuthServiceApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/mvnw.cmd" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,8 +43,8 @@
       <list>
         <option value="Enum" />
         <option value="Interface" />
-        <option value="Exception" />
         <option value="Class" />
+        <option value="Exception" />
       </list>
     </option>
   </component>
@@ -70,48 +78,54 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.ApiGatewayApplication.executor": "Run",
-    "Spring Boot.AuthServiceApplication.executor": "Run",
-    "Spring Boot.DiscoveryServiceApplication.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "auth-service",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Emsi/JEE/Projet/Intelligent-financial-assistant",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.configurations.included.in.services": "true",
-    "show.migrate.to.gradle.popup": "false",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.intelligent_financial_assistant_backend: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;C:\\Users\\PC\\AppData\\Roaming\\JetBrains\\IntelliJIdea2025.2\\plugins\\Shell Script\\shellcheck.exe&quot;,
+    &quot;Spring Boot.ApiGatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.AuthServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.DiscoveryServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;auth-service&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Emsi/JEE/Projet/Intelligent-financial-assistant/intelligent_financial_assistant_backend/api-gateway/src/main/resources&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.aitsaid.apigateway.security" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend" />
       <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend\api-gateway\src\main\resources" />
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend\auth-service" />
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend\auth-service" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.aitsaid.authservice.dtos" />
@@ -133,7 +147,7 @@
           <value>
             <map>
               <entry key="ApiGatewayApplication" value="STOPPED" />
-              <entry key="AuthServiceApplication" value="STOPPED" />
+              <entry key="AuthServiceApplication" value="FAILED" />
               <entry key="DiscoveryServiceApplication" value="STOPPED" />
             </map>
           </value>
@@ -163,6 +177,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="intelligent_financial_assistant_backend: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="intelligent_financial_assistant_backend/docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Docker.intelligent_financial_assistant_backend: Compose Deployment" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -183,7 +216,10 @@
       <workItem from="1763537644716" duration="633000" />
       <workItem from="1763550963544" duration="25000" />
       <workItem from="1763552547702" duration="6968000" />
-      <workItem from="1763582530183" duration="16285000" />
+      <workItem from="1763582530183" duration="16661000" />
+      <workItem from="1763715275105" duration="5303000" />
+      <workItem from="1763731840697" duration="6458000" />
+      <workItem from="1763753647654" duration="3625000" />
     </task>
     <servers />
   </component>

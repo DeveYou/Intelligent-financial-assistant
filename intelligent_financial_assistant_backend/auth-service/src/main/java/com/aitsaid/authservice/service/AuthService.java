@@ -6,6 +6,10 @@ import com.aitsaid.authservice.dtos.LoginRequest;
 import com.aitsaid.authservice.dtos.RegisterRequest;
 import com.aitsaid.authservice.entities.TokenBlockList;
 import com.aitsaid.authservice.entities.User;
+import com.aitsaid.authservice.exceptions.EmailAlreadyExistsException;
+import com.aitsaid.authservice.exceptions.LogoutFailedException;
+import com.aitsaid.authservice.exceptions.UserNotAuthenticatedException;
+import com.aitsaid.authservice.exceptions.UserNotFoundException;
 import com.aitsaid.authservice.mappers.UserMapper;
 import com.aitsaid.authservice.repositories.TokenBlockListRepository;
 import com.aitsaid.authservice.repositories.UserRepository;
@@ -16,8 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 
 /**
@@ -46,7 +48,7 @@ public class AuthService {
     public RegisterResponse register(RegisterRequest request) {
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(request.getEmail()))) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
         User user = UserMapper.registerRequestToUser(request);
@@ -81,7 +83,7 @@ public class AuthService {
             if (token != null && !token.isEmpty() && jwtUtil.isTokenValid(token)) {
                 String username = jwtUtil.extractUsername(token);
                 User user = userRepository.findByEmail(username)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new UserNotFoundException("User not found"));
                 TokenBlockList blockedToken = new TokenBlockList();
                 blockedToken.setToken(token);
                 blockedToken.setUser(user);
@@ -90,7 +92,7 @@ public class AuthService {
             }
             SecurityContextHolder.clearContext();
         } catch (Exception e) {
-            throw new RuntimeException("Logout failed " + e.getMessage());
+            throw new LogoutFailedException(e);
         }
 
     }
@@ -100,9 +102,9 @@ public class AuthService {
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
         }
-        throw new RuntimeException("User not authenticated");
+        throw new UserNotAuthenticatedException();
     }
 
     public boolean isTokenBlocked(String token) {

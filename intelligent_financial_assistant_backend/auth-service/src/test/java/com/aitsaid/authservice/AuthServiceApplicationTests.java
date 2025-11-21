@@ -8,6 +8,10 @@ class AuthServiceApplicationTests {
 
     @Test
     void contextLoads() {
-    }
+            // Test de fumée du contexte Spring:
+            // L'annotation @SpringBootTest démarre l'application.
+            // Si le contexte ne se charge pas correctement, le test échouera.
+            // Aucune assertion explicite nécessaire ici.
+        }
 
-}
+    }

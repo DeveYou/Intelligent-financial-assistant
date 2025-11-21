@@ -1,6 +1,9 @@
 spring:
   application:
     name: api-gateway
+  config:
+    import:
+      - application-secrets.yml
   cloud:
     gateway:
       discovery:
@@ -33,9 +36,6 @@ eureka:
     prefer-ip-address: false
     hostname: localhost
     instance-id: ${eureka.instance.hostname}:${server.port}
-
-jwt:
-  secret: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
 
 management:
   endpoints:
