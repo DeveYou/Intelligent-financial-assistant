@@ -1,0 +1,1 @@
+COMMANDE = sonar-scanner -Dsonar.token=sqp_8cce4311b5e299e34a403c42f2704d4f6758e2b0

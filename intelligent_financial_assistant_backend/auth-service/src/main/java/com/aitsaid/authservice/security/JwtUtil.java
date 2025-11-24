@@ -30,7 +30,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}") // durée en ms
+    @Value("${jwt.expiration}")
     private long expiration;
 
     private final AtomicReference<SecretKey> cachedKey = new AtomicReference<>();
@@ -38,7 +38,6 @@ public class JwtUtil {
     private boolean looksLikeBase64(String value) {
         if (value == null) return false;
         String v = value.trim();
-        // Doit correspondre uniquement à l’alphabet Base64 et longueur multiple de 4 pour être fiable
         return v.length() % 4 == 0 && v.matches("[A-Za-z0-9+/=]+");
     }
 
@@ -55,7 +54,6 @@ public class JwtUtil {
                 keyBytes = trimmed.getBytes(StandardCharsets.UTF_8);
             }
         } catch (DecodingException | IllegalArgumentException e) {
-            // Fallback texte brut
             keyBytes = trimmed.getBytes(StandardCharsets.UTF_8);
         }
         if (keyBytes.length < 32) {
@@ -93,11 +91,9 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Liste complète des rôles
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
-        // Rôle principal (dernier) pour compatibilité
         userDetails.getAuthorities().forEach(authority -> claims.put("role", authority.getAuthority()));
         return createToken(claims, userDetails.getUsername());
     }
