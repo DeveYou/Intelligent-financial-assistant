@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-252.27397.103">
+  <component name="dataSourceStorageLocal" created-in="IU-252.28238.7">
     <data-source name="finance_db@localhost" uuid="e72525a1-c290-4403-83d6-bb4870cd6260">
       <database-info product="PostgreSQL" version="14.19 (Debian 14.19-1.pgdg13+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="14.19" exact-driver-version="42.7">
         <identifier-quote-string>&quot;</identifier-quote-string>
