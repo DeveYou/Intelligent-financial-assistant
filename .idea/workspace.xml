@@ -5,26 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c94116b-b76f-463a-8966-f480e0f30610" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/java/com/aitsaid/apigateway/config/CorsConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/java/com/aitsaid/apigateway/security/JwtAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/java/com/aitsaid/apigateway/security/JwtUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application-secrets.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/AuthServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/AuthServiceApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/exceptions/UserAlreadyExistsException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/handlers/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/handlers/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtAuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/security/JwtUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/java/com/aitsaid/authservice/service/AuthService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +197,7 @@
       <workItem from="1763715275105" duration="5303000" />
       <workItem from="1763731840697" duration="6458000" />
       <workItem from="1763753647654" duration="3888000" />
-      <workItem from="1764013842291" duration="5015000" />
+      <workItem from="1764013842291" duration="5248000" />
     </task>
     <servers />
   </component>
