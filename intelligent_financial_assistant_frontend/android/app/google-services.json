@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "154831190584",
+    "project_id": "financial-assistant-7481a",
+    "storage_bucket": "financial-assistant-7481a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154831190584:android:243ff4f32151c1a5c2c4cd",
+        "android_client_info": {
+          "package_name": "com.example.intelligent_financial_assistant_frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBz5K5l0OUocYQsZNwkxEwsBP1tl59JdxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

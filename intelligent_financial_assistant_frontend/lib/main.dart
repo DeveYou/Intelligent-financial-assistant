@@ -1,42 +1,108 @@
-import 'package:flutter/material.dart';
-import 'package:intelligent_financial_assistant_frontend/features/splash/screens/splash_screen.dart';
 
-void main() async {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intelligent_financial_assistant_frontend/common/basewidgets/error_boundary.dart';
+import 'package:intelligent_financial_assistant_frontend/di/dependency_injection.dart' as di;
+import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/splash/screens/splash_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intelligent_financial_assistant_frontend/firebase_options.dart';
+import 'package:intelligent_financial_assistant_frontend/helpers/fallback_localization_delegate.dart';
+import 'package:intelligent_financial_assistant_frontend/localization/app_localization.dart';
+import 'package:intelligent_financial_assistant_frontend/localization/controllers/localization_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/push_notification/helpers/notification_helper.dart';
+import 'package:intelligent_financial_assistant_frontend/push_notification/models/notification_body.dart';
+import 'package:intelligent_financial_assistant_frontend/theme/controllers/theme_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/theme/dark_mode.dart';
+import 'package:intelligent_financial_assistant_frontend/theme/light_mode.dart';
+import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
+import 'package:provider/provider.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterLocalization.instance.ensureInitialized();
-  runApp(const MyApp());
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await di.init();
+  dynamic providers = [
+    ChangeNotifierProvider(create: (context) => di.sl<LocalizationController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<ThemeController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<AuthenticationController>()),
+  ];
+
+  flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+  NotificationBody? notificationBody;
+
+  try {
+    final RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      notificationBody = NotificationHelper.convertNotification(initialMessage.data);
+    }
+    await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
+    FirebaseMessaging.onBackgroundMessage(NotificationHelper.backgroundMessageHandler);
+  } catch (e) {
+    debugPrint('Error during initialize notifications : $e');
+  }
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((value) => {
+    runApp(
+        ErrorBoundary(
+          child: MultiProvider(
+              providers: providers,
+              child: MyApp(notificationBody : notificationBody,)
+          ),
+        )
+    )
+  });
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final NotificationBody? notificationBody;
+  const MyApp({super.key, required this.notificationBody});
 
   @override
   Widget build(BuildContext context) {
-    final FlutterLocalization localization = FlutterLocalization.instance;
-
-    @override
-    void initState() {
-      localization.init(
-        mapLocales: [
-          const MapLocale('en', AppLocale.EN),
-          const MapLocale('km', AppLocale.KM),
-          const MapLocale('ja', AppLocale.JA),
-        ],
-        initLanguageCode: 'en',
-      );
-      localization.onTranslatedLanguage = _onTranslatedLanguage;
-      super.initState();
+    final List<Locale> locales = [];
+    for (var language in AppConstants.languages) {
+      locales.add(Locale(language.languageCode!, language.countryCode));
     }
 
-    void _onTranslatedLanguage(Locale? locale) {
-      setState(() {});
-    }
     return MaterialApp(
-      title: 'Intelligent financial assistant',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const  SplashScreen(),
+      title: AppConstants.appName,
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      theme: Provider.of<ThemeController>(context).isDarkMode ? dark : light,
+      locale: Provider.of<LocalizationController>(context).locale,
+      localizationsDelegates: [
+        AppLocalization.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        FallbackLocalizationDelegate(),
+      ],
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          child: child!,
+        );
+      },
+      supportedLocales: locales,
+      home: const  AuthenticationScreen(),
     );
   }
+}
+
+
+class Get {
+  static BuildContext? get context => navigatorKey.currentContext;
+  static NavigatorState? get navigator => navigatorKey.currentState;
 }
