@@ -6,18 +6,18 @@ import com.aitsaid.authservice.dtos.LoginRequest;
 import com.aitsaid.authservice.dtos.RegisterRequest;
 import com.aitsaid.authservice.entities.TokenBlockList;
 import com.aitsaid.authservice.entities.User;
+import com.aitsaid.authservice.exceptions.*;
 import com.aitsaid.authservice.mappers.UserMapper;
 import com.aitsaid.authservice.repositories.TokenBlockListRepository;
 import com.aitsaid.authservice.repositories.UserRepository;
 import com.aitsaid.authservice.security.JwtUtil;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 
 /**
@@ -46,7 +46,7 @@ public class AuthService {
     public RegisterResponse register(RegisterRequest request) {
 
         if (Boolean.TRUE.equals(userRepository.existsByEmail(request.getEmail()))) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
         User user = UserMapper.registerRequestToUser(request);
@@ -58,41 +58,66 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        User user = (User) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(user);
-
-        return new LoginResponse(token, user.getEmail(), user.getFirstName(), user.getLastName(), "Login successful");
-    }
-
-    public void logout(String token) {
 
         try {
 
-            if (token != null && token.startsWith("Bearer ")) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            User user = (User) authentication.getPrincipal();
+            String token = jwtUtil.generateToken(user);
+
+            return new LoginResponse(token, user.getEmail(), user.getFirstName(), user.getLastName(), "Login successful");
+
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid email or pasword");
+        } catch (Exception e) {
+            throw new RuntimeException("Login failed " + e.getMessage());
+        }
+    }
+
+    public void logout(String token) {
+        try {
+            if (token == null || token.isEmpty()) {
+                throw new InvalidTokenException("Authorization token is required");
+            }
+
+            if (token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
 
-            if (token != null && !token.isEmpty() && jwtUtil.isTokenValid(token)) {
-                String username = jwtUtil.extractUsername(token);
-                User user = userRepository.findByEmail(username)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-                TokenBlockList blockedToken = new TokenBlockList();
-                blockedToken.setToken(token);
-                blockedToken.setUser(user);
-
-                tokenBlockListRepository.save(blockedToken);
+            if (token.isEmpty()) {
+                throw new InvalidTokenException("Token cannot be empty");
             }
-            SecurityContextHolder.clearContext();
-        } catch (Exception e) {
-            throw new RuntimeException("Logout failed " + e.getMessage());
-        }
 
+            if (!jwtUtil.isTokenValid(token)) {
+                throw new InvalidTokenException("Invalid or expired token");
+            }
+
+            if (isTokenBlocked(token)) {
+                throw new InvalidTokenException("Token is already invalidated");
+            }
+
+            String username = jwtUtil.extractUsername(token);
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            TokenBlockList blockedToken = new TokenBlockList();
+            blockedToken.setToken(token);
+            blockedToken.setUser(user);
+
+            tokenBlockListRepository.save(blockedToken);
+
+            SecurityContextHolder.clearContext();
+
+        } catch (InvalidTokenException | UserNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LogoutFailedException(e);
+        }
     }
 
     public User getCurrentUser() {
@@ -100,9 +125,9 @@ public class AuthService {
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
         }
-        throw new RuntimeException("User not authenticated");
+        throw new UserNotAuthenticatedException();
     }
 
     public boolean isTokenBlocked(String token) {
