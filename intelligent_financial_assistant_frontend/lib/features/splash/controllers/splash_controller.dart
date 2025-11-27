@@ -1,0 +1,6 @@
+class SplashController {
+
+  void initSharedPreferencesData() {
+  }
+
+}

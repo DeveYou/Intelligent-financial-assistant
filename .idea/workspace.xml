@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6c94116b-b76f-463a-8966-f480e0f30610" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/fonts/SF-Pro-Rounded-Regular.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/images/ar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/images/en.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/images/fr.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/images/sp.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/common/basewidgets/show_custom_snackbar_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/api/api_checker.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/api/api_client.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/datasource/remote/dio/dio_client.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/datasource/remote/dio/logging_interceptor.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/datasource/remote/exception/api_error_handler.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/response/api_response.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/data/response/error_response.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/di/dependency_injection.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/assistant/screens/text_chatbot_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/assistant/screens/vocal_chatbot_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/controllers/authentication_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/models/login_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/models/register_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/repositories/authentication_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/repositories/authentication_repository_interface.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/services/authentication_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/domains/services/authentication_service_interface.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/screens/authentication_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/screens/forgot_password_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/screens/reset_password_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/widgets/auth_password_input_field_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/widgets/auth_submit_btn_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/widgets/auth_text_input_field_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/widgets/login_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/authentication/widgets/register_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/dashboard/screens/dashboard_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/home/screens/home_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/notifications/screens/notifications_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/notifications/widgets/notification_card_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/profile/screens/profile_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/profile/widgets/user_info_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/settings/screens/settings_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/splash/controllers/splash_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/features/splash/widgets/splash_shape_widget.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/firebase/firebase_options.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/helpers/fallback_localization_delegate.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/interfaces/repository_interface.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/localization/app_localization.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/localization/controllers/localization_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/localization/language_constrants.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/push_notification/helpers/notification_helper.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/push_notification/models/notification_body.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/push_notification/services/notification_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/theme/controllers/theme_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/theme/dark_mode.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/theme/light_mode.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/utils/dimensions.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/languages/fr.json" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/assets/languages/fr.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/utils/app_constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/utils/app_constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/utils/images.dart" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/utils/images.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/intelligent_financial_assistant_frontend/windows/flutter/generated_plugins.cmake" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;RadouaneAitSaid123&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/DeveYou/Intelligent-financial-assistant.git&quot;,
+    &quot;accountId&quot;: &quot;ec684edb-00af-41df-9b5d-d056efe34757&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="E:\xampp\php\php.exe" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="35cGTCHcJVUjLDSKGUYTaCpShXQ" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.ApiGatewayApplication.executor": "Run",
+    "Spring Boot.AuthServiceApplication.executor": "Run",
+    "Spring Boot.DiscoveryServiceApplication.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "develop",
+    "io.flutter.reload.alreadyRun": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/IT/EMSI/5ème année/Programmation multiplatforme/Rural Assistant/Intelligent-financial-assistant/intelligent_financial_assistant_frontend/assets/images",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.configurations.included.in.services": "true",
+    "show.migrate.to.gradle.popup": "false",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.aitsaid.apigateway.security" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\IT\EMSI\5ème année\Programmation multiplatforme\Rural Assistant\Intelligent-financial-assistant\intelligent_financial_assistant_frontend\assets\images" />
+      <recent name="E:\IT\EMSI\5ème année\Programmation multiplatforme\Rural Assistant\Intelligent-financial-assistant\intelligent_financial_assistant_frontend\assets\fonts" />
+      <recent name="E:\IT\EMSI\5ème année\Programmation multiplatforme\Rural Assistant\Intelligent-financial-assistant\intelligent_financial_assistant_frontend\lib\features\splash\domain" />
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend" />
+      <recent name="C:\Emsi\JEE\Projet\Intelligent-financial-assistant\intelligent_financial_assistant_backend\api-gateway\src\main\resources" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\IT\EMSI\5ème année\Programmation multiplatforme\Rural Assistant\Intelligent-financial-assistant\intelligent_financial_assistant_frontend\lib\features\authentication\widgets" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.aitsaid.authservice.dtos" />
+      <recent name="com.aitsaid.authservice.exceptions" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="KtorApplicationConfigurationType" />
+        <option value="MicronautRunConfigurationType" />
+        <option value="QuarkusRunConfigurationType" />
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Flutter.main.dart">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/intelligent_financial_assistant_frontend/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="api-gateway" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.aitsaid.apigateway.ApiGatewayApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="auth-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.aitsaid.authservice.AuthServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DiscoveryServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="discovery-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.aitsaid.discoveryservice.DiscoveryServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6c94116b-b76f-463a-8966-f480e0f30610" name="Changes" comment="" />
+      <created>1763401952409</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763401952409</updated>
+      <workItem from="1763401953796" duration="39503000" />
+      <workItem from="1763537644716" duration="633000" />
+      <workItem from="1763550963544" duration="25000" />
+      <workItem from="1763552547702" duration="6968000" />
+      <workItem from="1763582530183" duration="16285000" />
+      <workItem from="1764062963600" duration="17319000" />
+      <workItem from="1764110858524" duration="22087000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.apollographql.ijplugin.settings.ProjectSettingsState">
+    <option name="hasEnabledGraphQLPluginApolloKotlinSupport" value="true" />
+    <option name="lspPassPathToSuperGraphYaml" value="false" />
+    <option name="telemetryInstanceId" value="c2e4de6b-ae25-4164-9a71-398d6377a692" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
