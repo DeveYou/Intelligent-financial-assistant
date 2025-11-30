@@ -1,5 +1,6 @@
 package com.aitsaid.authservice.config;
 
+import com.aitsaid.authservice.entities.Role;
 import com.aitsaid.authservice.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/validate-token").authenticated()
+                        .requestMatchers("/auth/logout").authenticated()
+                        .requestMatchers("/admin/**").hasAuthority(String.valueOf(Role.ROLE_ADMIN))
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

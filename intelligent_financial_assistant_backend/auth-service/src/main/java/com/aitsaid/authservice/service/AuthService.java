@@ -133,4 +133,37 @@ public class AuthService {
     public boolean isTokenBlocked(String token) {
         return tokenBlockListRepository.existsByToken(token);
     }
+
+    public boolean validateToken(String token) {
+        try {
+            if (token == null || token.isEmpty()) {
+                return false;
+            }
+
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            if (token.isEmpty()) {
+                return false;
+            }
+
+            // Vérifier si le token est valide
+            if (!jwtUtil.isTokenValid(token)) {
+                return false;
+            }
+
+            // Vérifier si le token est bloqué
+            if (isTokenBlocked(token)) {
+                return false;
+            }
+
+            // Vérifier si l'utilisateur existe
+            String username = jwtUtil.extractUsername(token);
+            return userRepository.findByEmail(username).isPresent();
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
