@@ -1,0 +1,144 @@
+<!-- src/app/features/accounts/account-list/account-list.component.html -->
+<div class="accounts-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gestion des Comptes Bancaires</h1>
+      <p class="page-subtitle">{{ accounts.length }} comptes actifs</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="addAccount()">
+      <mat-icon>add</mat-icon>
+      Nouveau Compte
+    </button>
+  </div>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Barre de recherche -->
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-label>Rechercher un compte</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Numéro de compte, propriétaire...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Table des comptes -->
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="accounts-table">
+
+          <!-- Account Number Column -->
+          <ng-container matColumnDef="accountNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Numéro de Compte</th>
+            <td mat-cell *matCellDef="let account">
+              <div class="account-number">
+                <mat-icon>credit_card</mat-icon>
+                <span>{{ account.accountNumber }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Owner Column -->
+          <ng-container matColumnDef="owner">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Propriétaire</th>
+            <td mat-cell *matCellDef="let account">
+              <div class="owner-info">
+                <mat-icon class="owner-avatar">account_circle</mat-icon>
+                <span>{{ account.owner }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let account">
+              <mat-chip
+                [class.type-courant]="account.type === 'Compte Courant'"
+                [class.type-epargne]="account.type === 'Compte Épargne'"
+                [class.type-pro]="account.type === 'Compte Pro'">
+                {{ account.type }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Balance Column -->
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Solde</th>
+            <td mat-cell *matCellDef="let account">
+              <span class="balance" [class.balance-negative]="account.balance < 0">
+                {{ account.balance | currency:'EUR' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Last Transaction Column -->
+          <ng-container matColumnDef="lastTransaction">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Dernière Transaction</th>
+            <td mat-cell *matCellDef="let account">
+              <span class="date">{{ account.lastTransaction | date:'dd/MM/yyyy' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let account">
+              <mat-chip
+                [class.status-active]="account.status === 'Actif'"
+                [class.status-frozen]="account.status === 'Gelé'">
+                <mat-icon>{{ account.status === 'Actif' ? 'check_circle' : 'ac_unit' }}</mat-icon>
+                {{ account.status }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let account">
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu" matTooltip="Plus d'actions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="viewAccount(account)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir détails</span>
+                </button>
+                <button mat-menu-item (click)="editAccount(account)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Modifier</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="freezeAccount(account)">
+                  <mat-icon>ac_unit</mat-icon>
+                  <span>Geler le compte</span>
+                </button>
+                <button mat-menu-item (click)="closeAccount(account)" class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  <span>Clôturer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+
+          <!-- Row shown when there is no matching data -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="7">
+              <div class="no-data">
+                <mat-icon>search_off</mat-icon>
+                <p>Aucun compte trouvé</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        [pageSize]="10"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

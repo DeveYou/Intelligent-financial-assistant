@@ -19,6 +19,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "Last name is required")
     private String lastName;
+    private String cin;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
@@ -27,5 +28,7 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password should be at least 6 characters long")
     private String password;
+    private String phoneNumber;
+    private String address;
 
 }

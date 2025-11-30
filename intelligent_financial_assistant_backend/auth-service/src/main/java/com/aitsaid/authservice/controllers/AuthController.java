@@ -38,5 +38,10 @@ public class AuthController {
         return ResponseEntity.ok("Logged out successfully");
     }
 
+    @GetMapping("/validate-token")
+    public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token) {
+        boolean isValid = authService.validateToken(token);
+        return ResponseEntity.ok(isValid);
+    }
 
 }
