@@ -15,6 +15,9 @@ import { MatDivider } from "@angular/material/divider";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UserFormComponent } from '../user-form/user-form.component';
+import { UserDetailsComponent } from '../user-details/user-details.component';
 
 @Component({
   selector: 'app-user-list',
@@ -33,7 +36,8 @@ import { User } from '../../../models/user.model';
     MatMenuModule,
     MatTooltipModule,
     MatDivider,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
@@ -49,7 +53,7 @@ export class UserListComponent implements OnInit {
 
   users: User[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -96,18 +100,49 @@ export class UserListComponent implements OnInit {
   }
 
   viewUser(user: User): void {
-    console.log('View user:', user);
+    this.dialog.open(UserDetailsComponent, {
+      width: '500px',
+      data: user
+    });
   }
 
   editUser(user: User): void {
-    console.log('Edit user:', user);
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '500px',
+      data: { user: user }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers();
+      }
+    });
   }
 
   deleteUser(user: User): void {
-    console.log('Delete user:', user);
+    if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
+      this.userService.deleteUser(user.id).subscribe({
+        next: () => {
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Error deleting user', err);
+          // Show error message
+        }
+      });
+    }
   }
 
   addUser(): void {
-    console.log('Add new user');
+    const dialogRef = this.dialog.open(UserFormComponent, {
+      width: '500px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers();
+      }
+    });
   }
 }

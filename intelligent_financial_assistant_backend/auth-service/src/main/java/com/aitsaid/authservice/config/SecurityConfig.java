@@ -34,11 +34,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/files/**").permitAll() // Accès public aux fichiers uploadés
                         .requestMatchers("/auth/validate-token").authenticated()
                         .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/admin/**").hasAuthority(String.valueOf(Role.ROLE_ADMIN))
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

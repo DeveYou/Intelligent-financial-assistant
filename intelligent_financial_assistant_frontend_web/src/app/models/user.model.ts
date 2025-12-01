@@ -27,4 +27,5 @@ export interface User {
   address?: string;
   enabled: boolean;
   createdAt: string;
+  profileImage?: string;
 }
