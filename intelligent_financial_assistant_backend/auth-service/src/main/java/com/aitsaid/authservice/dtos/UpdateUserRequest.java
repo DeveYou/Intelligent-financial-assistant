@@ -2,22 +2,17 @@ package com.aitsaid.authservice.dtos;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 /**
  * @author radouane
  **/
 @Data
-public class UserDetails {
+public class UpdateUserRequest {
 
-    private Long id;
     private String firstName;
     private String lastName;
-    private String cin;
     private String email;
-    private String phoneNumber;
+    private String cin;
     private String address;
+    private String phoneNumber;
     private String profileImage;
-    private LocalDateTime createdAt;
-    private boolean enabled;
 }

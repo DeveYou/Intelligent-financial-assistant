@@ -129,6 +129,14 @@
   height: 32px;
 }
 
+.user-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #F44E1E;
+}
+
 .user-name {
   font-weight: 500;
 }

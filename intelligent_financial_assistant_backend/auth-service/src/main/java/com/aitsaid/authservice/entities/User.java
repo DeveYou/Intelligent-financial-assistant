@@ -41,6 +41,8 @@ public class User implements UserDetails {
     private String password;
     private String phoneNumber;
     private String address;
+    @Column(columnDefinition = "TEXT")
+    private String profileImage;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -48,7 +50,7 @@ public class User implements UserDetails {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private boolean enabled;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
     private List<TokenBlockList> tokenBlockList;
 
     @Override

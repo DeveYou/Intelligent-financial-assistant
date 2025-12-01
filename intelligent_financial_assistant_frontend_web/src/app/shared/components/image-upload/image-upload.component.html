@@ -1,0 +1,47 @@
+<div class="image-upload-container">
+  <input
+    type="file"
+    id="fileInput"
+    accept="image/*"
+    (change)="onFileSelected($event)"
+    style="display: none;"
+  />
+
+  <div class="image-preview-container">
+    <div *ngIf="getDisplayUrl()" class="image-preview">
+      <img [src]="getDisplayUrl()" alt="Profile preview">
+      <button
+        mat-icon-button
+        class="remove-button"
+        (click)="removeImage()"
+        *ngIf="!uploading"
+        matTooltip="Supprimer l'image"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <div *ngIf="uploading" class="upload-overlay">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Upload en cours...</p>
+      </div>
+    </div>
+
+    <div *ngIf="!getDisplayUrl()" class="no-image">
+      <mat-icon>person</mat-icon>
+      <p>Aucune image</p>
+    </div>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="triggerFileInput()"
+    [disabled]="uploading"
+    class="upload-button"
+  >
+    <mat-icon>cloud_upload</mat-icon>
+    {{ getDisplayUrl() ? 'Changer l\'image' : 'Ajouter une image' }}
+  </button>
+
+  <p class="upload-hint">Formats acceptés: JPG, PNG, GIF (Max 5MB)</p>
+</div>
+
