@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadChildren: () => import('./layout/admin-layout/admin-layout.routes').then(m => m.ADMIN_ROUTES)
   },
   {
+    path: 'transactions',
+    loadChildren: () => import('./features/transactions/transactions.routes').then(m => m.TRANSACTION_ROUTES)
+  },
+  {
     path: '',
     redirectTo: '/auth/login',
     pathMatch: 'full'

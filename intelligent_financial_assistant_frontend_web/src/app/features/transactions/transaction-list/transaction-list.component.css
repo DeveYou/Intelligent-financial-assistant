@@ -1,0 +1,35 @@
+.transactions-container {
+  padding: 16px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: gray;
+}
+
+.filters-card {
+  margin-bottom: 16px;
+}
+
+.filters-form {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
