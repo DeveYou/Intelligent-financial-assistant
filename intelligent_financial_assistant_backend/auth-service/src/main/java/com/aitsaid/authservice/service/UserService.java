@@ -22,14 +22,11 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
-    private final FileStorageService fileStorageService;
 
     public UserService(UserRepository userRepository,
-                       org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
-                       FileStorageService fileStorageService) {
+                       org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.fileStorageService = fileStorageService;
     }
 
     public List<UserDetails> getAllUsers() {
@@ -72,7 +69,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
 
-        if (!updateRequest.getEmail().equals(user.getEmail())) {
+        if (updateRequest.getEmail() != null && !updateRequest.getEmail().equals(user.getEmail())) {
             if (Boolean.TRUE.equals(userRepository.existsByEmail(updateRequest.getEmail()))) {
                 throw new EmailAlreadyExistsException(updateRequest.getEmail());
             }
@@ -95,25 +92,6 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
         return UserMapper.userToUserDetails(user);
-    }
-
-    public User updateUserProfileImage(Long userId, String imageUrl) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
-
-        // Supprimer l'ancienne image si elle existe
-        if (user.getProfileImage() != null && !user.getProfileImage().isEmpty()) {
-            try {
-                String oldFileName = user.getProfileImage().substring(user.getProfileImage().lastIndexOf('/') + 1);
-                fileStorageService.deleteFile(oldFileName);
-            } catch (Exception e) {
-                // Log l'erreur mais continuer
-                System.err.println("Erreur lors de la suppression de l'ancienne image: " + e.getMessage());
-            }
-        }
-
-        user.setProfileImage(imageUrl);
-        return userRepository.save(user);
     }
 
 }

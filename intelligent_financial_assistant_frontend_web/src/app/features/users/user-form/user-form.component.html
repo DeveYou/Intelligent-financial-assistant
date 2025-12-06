@@ -1,17 +1,5 @@
 <h2 mat-dialog-title>{{ isEditMode ? 'Modifier Utilisateur' : 'Nouvel Utilisateur' }}</h2>
 <mat-dialog-content>
-  <!-- Section Upload d'image -->
-  <div class="image-section">
-    <app-image-upload
-      [currentImageUrl]="currentImageUrl"
-      [uploading]="uploadingImage"
-      (imageSelected)="onImageSelected($event)"
-      (imageRemoved)="onImageRemoved()"
-    ></app-image-upload>
-  </div>
-
-  <mat-divider style="margin: 20px 0;"></mat-divider>
-
   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
     <div class="form-row">
       <mat-form-field appearance="outline">

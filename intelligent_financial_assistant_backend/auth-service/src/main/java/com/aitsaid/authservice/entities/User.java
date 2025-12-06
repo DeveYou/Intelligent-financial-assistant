@@ -1,5 +1,6 @@
 package com.aitsaid.authservice.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -38,11 +39,10 @@ public class User implements UserDetails {
     @Email
     private String email;
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     private String phoneNumber;
     private String address;
-    @Column(columnDefinition = "TEXT")
-    private String profileImage;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -51,6 +51,7 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private boolean enabled;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+    @JsonIgnore
     private List<TokenBlockList> tokenBlockList;
 
     @Override
