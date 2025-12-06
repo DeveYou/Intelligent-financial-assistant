@@ -17,7 +17,6 @@ public class UserDetails {
     private String email;
     private String phoneNumber;
     private String address;
-    private String profileImage;
     private LocalDateTime createdAt;
     private boolean enabled;
 }

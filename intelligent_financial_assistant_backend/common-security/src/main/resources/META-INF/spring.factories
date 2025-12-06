@@ -1,0 +1,5 @@
+# Fichier : src/main/resources/META-INF/spring.factories
+# Ce fichier permet l'auto-configuration Spring Boot
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.aitsaid.commonsecurity.security.MicroserviceSecurityConfig

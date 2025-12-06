@@ -24,7 +24,6 @@ public final class UserMapper {
         user.setPassword(registerRequest.getPassword());
         user.setPhoneNumber(registerRequest.getPhoneNumber());
         user.setAddress(registerRequest.getAddress());
-        user.setProfileImage(registerRequest.getProfileImage());
         user.setRole(Role.ROLE_USER);
         user.setEnabled(true);
 
@@ -32,13 +31,24 @@ public final class UserMapper {
     }
 
     public static void updateUserFromRequest(UpdateUserRequest updateUserRequest, User user) {
-        user.setFirstName(updateUserRequest.getFirstName());
-        user.setLastName(updateUserRequest.getLastName());
-        user.setCin(updateUserRequest.getCin());
-        user.setEmail(updateUserRequest.getEmail());
-        user.setPhoneNumber(updateUserRequest.getPhoneNumber());
-        user.setAddress(updateUserRequest.getAddress());
-        user.setProfileImage(updateUserRequest.getProfileImage());
+        if (updateUserRequest.getFirstName() != null) {
+            user.setFirstName(updateUserRequest.getFirstName());
+        }
+        if (updateUserRequest.getLastName() != null) {
+            user.setLastName(updateUserRequest.getLastName());
+        }
+        if (updateUserRequest.getCin() != null) {
+            user.setCin(updateUserRequest.getCin());
+        }
+        if (updateUserRequest.getAddress() != null) {
+            user.setAddress(updateUserRequest.getAddress());
+        }
+        if (updateUserRequest.getPhoneNumber() != null) {
+            user.setPhoneNumber(updateUserRequest.getPhoneNumber());
+        }
+        if (updateUserRequest.getEnabled() != null) {
+            user.setEnabled(updateUserRequest.getEnabled());
+        }
     }
 
     public static UserDetails userToUserDetails(User user) {
@@ -50,7 +60,6 @@ public final class UserMapper {
         userDetails.setEmail(user.getEmail());
         userDetails.setPhoneNumber(user.getPhoneNumber());
         userDetails.setAddress(user.getAddress());
-        userDetails.setProfileImage(user.getProfileImage());
         userDetails.setCreatedAt(user.getCreatedAt());
         userDetails.setEnabled(user.isEnabled());
 

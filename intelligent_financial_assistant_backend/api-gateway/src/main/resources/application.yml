@@ -20,17 +20,10 @@ spring:
         locator:
           enabled: true
           lowerCaseServiceId: true
-      routes:
-        - id: transactions-service
-          uri: lb://transactions-service
-          predicates:
-            - Path=/transactions/**
-          filters:
-            - StripPrefix=1
   application:
     name: api-gateway
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:default}
+    active: ${SPRING_PROFILES_ACTIVE:secrets}
 
 eureka:
   client:
@@ -41,3 +34,4 @@ eureka:
 
 server:
   port: ${SERVER_PORT:8080}
+

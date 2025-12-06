@@ -16,8 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * @author radouane
- **/
+ * Configuration de sécurité pour Auth-Service
+ * La validation JWT principale se fait au Gateway, mais on garde une couche locale
+ * pour la défense en profondeur
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -33,11 +35,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // ====== Endpoints publics (sans authentification) ======
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        .requestMatchers("/files/**").permitAll() // Accès public aux fichiers uploadés
-                        .requestMatchers("/auth/validate-token").authenticated()
-                        .requestMatchers("/auth/logout").authenticated()
+
+                        // ====== Endpoints Auth protégés (authentification requise) ======
+                        .requestMatchers("/auth/logout", "/auth/validate-token").authenticated()
+
+                        // ====== Endpoints ADMIN (rôle ROLE_ADMIN requis) ======
                         .requestMatchers("/admin/**").hasAuthority(String.valueOf(Role.ROLE_ADMIN))
+
+                        // ====== Endpoints USER (rôle ROLE_USER requis) ======
+                        .requestMatchers("/user/**").hasAuthority(String.valueOf(Role.ROLE_USER))
+
+                        // ====== Tous les autres endpoints nécessitent une authentification ======
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

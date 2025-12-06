@@ -14,5 +14,5 @@ public class UpdateUserRequest {
     private String cin;
     private String address;
     private String phoneNumber;
-    private String profileImage;
+    private Boolean enabled;
 }
