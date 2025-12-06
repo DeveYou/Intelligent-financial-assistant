@@ -9,7 +9,7 @@ import {isPlatformBrowser} from "@angular/common";
 })
 export class AuthService {
 
-  private readonly AUTH_API_URL = 'http://localhost:8080/AUTH-SERVICE/auth';
+  private readonly AUTH_API_URL = 'http://localhost:8080/auth-service/auth';
 
   private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
