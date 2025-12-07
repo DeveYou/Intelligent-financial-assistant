@@ -5,7 +5,7 @@ class AppConstants {
   static const String appName = "Intelligent Financial Assistant";
   static const double appVersion = 1.0;
 
-  static const String baseUrl = "http://localhost:8000";
+  static const String baseUrl = "http://localhost:8888";
 
 
   // Application languages
@@ -13,6 +13,7 @@ class AppConstants {
     LanguageModel(imageUrl: Images.fr, languageName: 'French', countryCode: 'FR', languageCode: 'fr'),
     LanguageModel(imageUrl: Images.ar, languageName: 'Arabic', countryCode: 'MA', languageCode: 'ar'),
     LanguageModel(imageUrl: Images.en, languageName: 'English', countryCode: 'US', languageCode: 'en'),
+    LanguageModel(imageUrl: Images.es, languageName: 'Spanish', countryCode: 'ES', languageCode: 'es'),
   ];
 
 
@@ -30,6 +31,8 @@ class AppConstants {
   static const String userLoginToken = 'user_login_token';
   static const String topic = 'financial_assistant';
   static const String demoTopic = 'demo_reset';
+  static const String kIsFirstTime = 'is_first_time';
+  static const String kIsLoggedIn = 'is_logged_in';
 
 
   // API Endpoints
@@ -40,6 +43,14 @@ class AppConstants {
   static const String forgotPasswordUri = "/api/v1/auth/forgot-password";
   static const String resetPasswordUri = "/api/v1/auth/reset-password";
   static const String updateTokenUri = "/api/v1/auth/update-token";
+  static const String homeUri = "/api/v1/customer/account/data";
+  static const String accountUri = "/api/v1/customer/account/summary";
+  static const String updateAccountUri = "/api/v1/customer/account/update";
+  static const String resendCardCodeUri = "/api/v1/auth/resend-card-code";
+  static const String getTransactionsUri = "/api/v1/customer/transactions";
+  static const String deleteAccountUri = "/api/v1/customer/account/delete";
+  static const String assistantMessageUri = "/api/v1/assistant/message";
+  static const String getMessagesUri = "/api/v1/assistant/messages";
 
 
 }

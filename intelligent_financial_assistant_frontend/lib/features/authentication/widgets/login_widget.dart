@@ -24,8 +24,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 
-  final Color _primaryColor = const Color(0xFFF44E1E);
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -119,7 +117,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               child: Text(
                 getTranslated("forgot_password", context)!,
                 style: TextStyle(
-                  color: _primaryColor,
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
