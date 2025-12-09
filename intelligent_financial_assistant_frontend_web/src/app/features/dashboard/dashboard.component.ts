@@ -6,6 +6,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatTableModule} from "@angular/material/table";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatMenuModule} from "@angular/material/menu";
+import {UserService} from "../../services/user.service";
 
 interface StatCard {
   title: string;
@@ -105,8 +106,22 @@ export class DashboardComponent implements OnInit {
 
   displayedColumns: string[] = ['id', 'user', 'type', 'amount', 'date', 'status', 'actions'];
 
+  constructor(private userService: UserService) {}
+
   ngOnInit(): void {
-    // Charger les données depuis le backend
+    this.loadUserCount();
+  }
+
+  loadUserCount(): void {
+    this.userService.getUserCount().subscribe({
+      next: (count) => {
+        // Update the first card (Utilisateurs Actifs)
+        this.stats[0].value = count.toString();
+      },
+      error: (err) => {
+        console.error('Error fetching user count', err);
+      }
+    });
   }
 
   viewDetails(transaction: RecentTransaction): void {

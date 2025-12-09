@@ -18,6 +18,15 @@ export const authGuard: CanActivateFn = (route, state) => {
   return authService.validateToken().pipe(
     map((isValid) => {
       if (isValid) {
+        const requiredRoles = route.data['roles'] as Array<string>;
+        if (requiredRoles && requiredRoles.length > 0) {
+          const userRoles = authService.getUserRoles();
+          const hasRole = requiredRoles.some(role => userRoles.includes(role));
+          if (!hasRole) {
+            router.navigate(['/access-denied']);
+            return false;
+          }
+        }
         return true;
       }
 

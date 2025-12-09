@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByCin(String cin);
 
     List<User>findAllByRole(Role role);
+
+    long countByRole(Role role);
 }

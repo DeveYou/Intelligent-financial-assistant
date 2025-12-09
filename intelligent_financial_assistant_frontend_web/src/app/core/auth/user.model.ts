@@ -10,4 +10,8 @@ export interface LoginResponse {
   email: string;
   firstName: string;
   lastName: string;
+  id: number;
+  address?: string;
+  phoneNumber?: string;
+  cin?: string;
 }

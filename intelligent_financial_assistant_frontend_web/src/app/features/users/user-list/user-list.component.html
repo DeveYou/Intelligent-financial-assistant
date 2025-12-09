@@ -29,12 +29,25 @@
 
       <!-- Contenu de la table -->
       <div *ngIf="!loading && !error">
-        <!-- Barre de recherche -->
-        <mat-form-field class="search-field" appearance="outline">
-          <mat-label>Rechercher un utilisateur</mat-label>
-          <input matInput (keyup)="applyFilter($event)" placeholder="Nom, email, téléphone...">
-          <mat-icon matPrefix>search</mat-icon>
-        </mat-form-field>
+        <!-- Filtres -->
+        <div class="filters-container flex gap-4 mb-4">
+          <!-- Barre de recherche -->
+          <mat-form-field class="search-field flex-1" appearance="outline">
+            <mat-label>Rechercher un utilisateur</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Nom, email, téléphone...">
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+
+          <!-- Filtre Statut -->
+          <mat-form-field appearance="outline" class="w-48">
+            <mat-label>Statut</mat-label>
+            <mat-select (selectionChange)="onStatusFilterChange($event.value)" value="all">
+              <mat-option value="all">Tous</mat-option>
+              <mat-option value="active">Actif</mat-option>
+              <mat-option value="inactive">Inactif</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
         <!-- Table des utilisateurs -->
         <div class="table-container">
@@ -44,13 +57,18 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
             <td mat-cell *matCellDef="let user">
               <div class="user-info">
-                <mat-icon class="user-avatar">account_circle</mat-icon>
-                <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+                <div class="user-avatar-placeholder">
+                  {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+                </div>
+                <div class="flex flex-col ml-3">
+                  <span class="user-name font-medium">{{ user.firstName }} {{ user.lastName }}</span>
+                  <span class="text-xs text-gray-500">{{ user.email }}</span>
+                </div>
               </div>
             </td>
           </ng-container>
 
-          <!-- Email Column -->
+          <!-- Email Column (Removed as it's now under name) -->
           <ng-container matColumnDef="email">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
             <td mat-cell *matCellDef="let user">{{ user.email }}</td>

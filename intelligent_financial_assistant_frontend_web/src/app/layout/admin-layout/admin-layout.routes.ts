@@ -7,6 +7,7 @@ export const ADMIN_ROUTES: Routes = [
     path: '',
     component: AdminLayoutComponent,
     canActivate: [authGuard],
+    data: { roles: ['ROLE_ADMIN'] },
     children: [
       {
         path: 'dashboard',
@@ -19,6 +20,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'accounts',
         loadComponent: () => import('../../features/accounts/account-list/account-list.component').then(m => m.AccountListComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('../../features/profile/profile.component').then(m => m.ProfileComponent)
       },
       {
         path: '',

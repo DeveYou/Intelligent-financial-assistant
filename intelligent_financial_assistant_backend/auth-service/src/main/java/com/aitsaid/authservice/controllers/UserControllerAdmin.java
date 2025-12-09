@@ -37,6 +37,16 @@ public class UserControllerAdmin {
     }
 
     /**
+     * Récupérer le nombre total d'utilisateurs (ADMIN uniquement)
+     */
+    @GetMapping("/count")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Long> countUsers(Authentication authentication) {
+        log.info("Admin {} retrieving user count", authentication.getName());
+        return ResponseEntity.ok(userService.countUsers());
+    }
+
+    /**
      * Créer un utilisateur (ADMIN uniquement)
      */
     @PostMapping()
@@ -51,6 +61,7 @@ public class UserControllerAdmin {
      * Mettre à jour un utilisateur (ADMIN uniquement)
      */
     @PatchMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<UserDetails> updateUser(@PathVariable Long userId,
             @RequestBody UpdateUserRequest updateRequest, Authentication authentication) {
         log.info("Admin {} updating user ID: {}", authentication.getName(), userId);

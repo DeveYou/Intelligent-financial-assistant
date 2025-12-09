@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/transactions/transactions.routes').then(m => m.TRANSACTION_ROUTES)
   },
   {
+    path: 'access-denied',
+    loadComponent: () => import('./features/errors/access-denied/access-denied.component').then(m => m.AccessDeniedComponent)
+  },
+  {
     path: '',
     redirectTo: '/auth/login',
     pathMatch: 'full'

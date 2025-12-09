@@ -50,8 +50,54 @@
 
 .search-field {
   width: 100%;
-  max-width: 400px;
+  margin-bottom: 0; /* Reset margin as it's now in a flex container */
+}
+
+.filters-container {
+  display: flex;
+  gap: 16px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.user-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info .ml-3 {
+  margin-left: 12px;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-xs {
+  font-size: 12px;
+}
+
+.text-gray-500 {
+  color: #6b7280;
 }
 
 /* Styles pour le spinner de chargement */
