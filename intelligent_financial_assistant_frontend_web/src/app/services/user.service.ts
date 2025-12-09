@@ -8,7 +8,7 @@ import { User } from '../models/user.model';
 })
 export class UserService {
 
-  private readonly API_URL = 'http://localhost:8080/auth-service/admin/users/';
+  private readonly API_URL = 'http://localhost:8080/auth-service/admin/users';
   private readonly API_URL_files = 'http://localhost:8080/auth-service/files';
 
   constructor(private http: HttpClient) { }
@@ -17,35 +17,24 @@ export class UserService {
     return this.http.get<User[]>(`${this.API_URL}`);
   }
 
+  getUserCount(): Observable<number> {
+    return this.http.get<number>(`${this.API_URL}/count`);
+  }
+
   createUser(user: any): Observable<User> {
     return this.http.post<User>(`${this.API_URL}`, user);
   }
 
   updateUser(userId: number, user: any): Observable<User> {
-    return this.http.patch<User>(`${this.API_URL}${userId}`, user);
+    return this.http.patch<User>(`${this.API_URL}/${userId}`, user);
   }
 
   deleteUser(userId: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_URL}${userId}`);
+    return this.http.delete<void>(`${this.API_URL}/${userId}`);
   }
 
   getUserById(userId: number): Observable<User> {
-    return this.http.get<User>(`${this.API_URL}${userId}`);
-  }
-
-  uploadProfileImage(userId: number, file: File): Observable<User> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<User>(`${this.API_URL}${userId}/profile-image`, formData);
-  }
-
-  uploadFile(file: File): Observable<{ fileName: string; fileUrl: string; fileType: string; size: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ fileName: string; fileUrl: string; fileType: string; size: string }>(
-      `${this.API_URL_files}/upload`,
-      formData
-    );
+    return this.http.get<User>(`${this.API_URL}/${userId}`);
   }
 }
 

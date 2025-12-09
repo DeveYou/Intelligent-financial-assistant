@@ -3,6 +3,7 @@ import {BehaviorSubject, catchError, map, Observable, of, tap} from "rxjs";
 import {LoginRequest, LoginResponse} from "./user.model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {isPlatformBrowser} from "@angular/common";
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -125,5 +126,21 @@ export class AuthService {
         return of(false);
       })
     );
+  }
+
+  getUserRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.roles || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  hasRole(role: string): boolean {
+    const roles = this.getUserRoles();
+    return roles.includes(role);
   }
 }

@@ -32,6 +32,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               router.navigate(['/auth/login']);
             }
           });
+        } else if (error.status === 403) {
+          router.navigate(['/access-denied']);
         }
         return throwError(() => error);
       })
