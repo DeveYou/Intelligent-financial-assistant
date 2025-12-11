@@ -61,7 +61,11 @@ export class UserFormComponent implements OnInit {
     ngOnInit(): void {
         if (this.data && this.data.user) {
             this.isEditMode = true;
-            this.currentImageUrl = this.data.user.profileImage;
+            // profileImage may not be declared on User type -> use a safe assertion
+            const userAny = this.data.user as any;
+            if (userAny && userAny.profileImage) {
+                this.currentImageUrl = userAny.profileImage;
+            }
             this.userForm.patchValue(this.data.user);
             // Password is not editable directly here usually, or optional
             this.userForm.get('password')?.clearValidators();
