@@ -21,6 +21,22 @@ spring:
           enabled: true
           lowerCaseServiceId: true
       routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+        - id: auth-service-users
+          uri: lb://auth-service
+          predicates:
+            - Path=/users/**
+        - id: auth-service-admin
+          uri: lb://auth-service
+          predicates:
+            - Path=/admin/**
+        - id: auth-service-files
+          uri: lb://auth-service
+          predicates:
+            - Path=/files/**
         - id: transactions-service
           uri: lb://transactions-service
           predicates:

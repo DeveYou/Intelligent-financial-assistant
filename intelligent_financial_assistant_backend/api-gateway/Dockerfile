@@ -1,4 +1,4 @@
-# Simple multi-stage build for transactions-service
+# Multi-stage build for api-gateway
 FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY mvnw .
@@ -10,7 +10,6 @@ RUN ./mvnw package -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/target/transactions-service-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8082
+COPY --from=build /app/target/api-gateway-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
-
