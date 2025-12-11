@@ -60,6 +60,12 @@ docker compose up -d
 
 **Note**: This builds everything in Docker which may take 10-15 minutes and requires internet connectivity for Maven dependencies.
 
+**Why Two Dockerfiles?**
+- `Dockerfile` - Full multi-stage build inside Docker (self-contained but slower)
+- `Dockerfile.simple` - Uses pre-built JARs (much faster, requires local Java)
+- Option 1 and 2 use `Dockerfile.simple` for faster deployment
+- Option 3 uses `Dockerfile` for fully containerized builds
+
 ### Services Started
 
 Both methods will:

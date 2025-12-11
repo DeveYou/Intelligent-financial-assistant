@@ -156,7 +156,14 @@ if [ "$HTTP_CODE" -eq 200 ]; then
     echo "✓ User created successfully!"
     echo ""
     echo "Response:"
-    echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+    # Try to format JSON with jq, fallback to python3, then to raw output
+    if command -v jq &> /dev/null; then
+        echo "$BODY" | jq 2>/dev/null || echo "$BODY"
+    elif command -v python3 &> /dev/null; then
+        echo "$BODY" | python3 -m json.tool 2>/dev/null || echo "$BODY"
+    else
+        echo "$BODY"
+    fi
     echo ""
     echo "You can now login at http://localhost:4200 with:"
     echo "  Email: $EMAIL"

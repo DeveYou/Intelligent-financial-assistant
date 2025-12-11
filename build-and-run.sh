@@ -45,8 +45,13 @@ fi
 print_success "Java is installed"
 
 # Check Java version
-JAVA_VERSION=$(java -version 2>&1 | grep -oP 'version "?(1\.)?\K\d+' | head -1)
-if [ "$JAVA_VERSION" -lt 17 ]; then
+JAVA_VERSION=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
+if [ -z "$JAVA_VERSION" ]; then
+    # Fallback method for Java 9+
+    JAVA_VERSION=$(java -version 2>&1 | awk '/version/ {print $3}' | tr -d '"' | cut -d'.' -f1)
+fi
+
+if [ -z "$JAVA_VERSION" ] || [ "$JAVA_VERSION" -lt 17 ]; then
     print_error "Java 17 or higher is required (found Java $JAVA_VERSION)"
     exit 1
 fi
