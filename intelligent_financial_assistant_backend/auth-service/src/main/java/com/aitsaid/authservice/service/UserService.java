@@ -37,6 +37,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public long countUsers() {
+        return userRepository.countByRole(Role.ROLE_USER);
+    }
+
     public User updateUserProfile(Long userId, UpdateProfileRequest updateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé"));
