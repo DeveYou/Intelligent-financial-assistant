@@ -113,7 +113,7 @@ read -p "Do you want to start all services with Docker Compose? (y/n) " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     print_info "Starting services with Docker Compose..."
-    docker compose up -d
+    docker compose -f docker-compose.simple.yml up -d
     
     echo ""
     print_success "Services are starting!"

@@ -35,7 +35,22 @@ This will:
 - Optionally start all services with Docker Compose
 - Provide next steps
 
-### Option 2: Manual Docker Compose
+### Option 2: Manual Build then Docker Compose (Fast)
+
+If you have Java 17+ installed, build locally then use Docker:
+
+```bash
+# Build all services
+cd intelligent_financial_assistant_backend/discovery-service && ./mvnw clean package -DskipTests && cd ../..
+cd intelligent_financial_assistant_backend/auth-service && ./mvnw clean package -DskipTests && cd ../..
+cd intelligent_financial_assistant_backend/transactions-service && ./mvnw clean package -DskipTests && cd ../..
+cd intelligent_financial_assistant_backend/api-gateway && ./mvnw clean package -DskipTests && cd ../..
+
+# Start with simple Docker Compose (uses pre-built JARs)
+docker compose -f docker-compose.simple.yml up -d
+```
+
+### Option 3: Full Docker Build (Slow)
 
 From the root directory, run:
 
@@ -43,7 +58,7 @@ From the root directory, run:
 docker compose up -d
 ```
 
-**Note**: This requires the services to be built first, or the Docker images will be built which may take time and requires internet connectivity for Maven dependencies.
+**Note**: This builds everything in Docker which may take 10-15 minutes and requires internet connectivity for Maven dependencies.
 
 ### Services Started
 
@@ -255,22 +270,16 @@ docker compose logs -f [service-name]
 
 ### Docker build fails with network issues
 
-If you encounter Maven download errors during Docker build, you have two options:
+If you encounter Maven download errors during Docker build, use the simple Docker Compose approach:
 
-1. **Build services locally first** (recommended for development):
+1. **Build services locally first** (recommended):
    ```bash
-   # Build all services
-   cd intelligent_financial_assistant_backend/discovery-service && ./mvnw clean package -DskipTests
-   cd ../auth-service && ./mvnw clean package -DskipTests
-   cd ../transactions-service && ./mvnw clean package -DskipTests
-   cd ../api-gateway && ./mvnw clean package -DskipTests
-   
-   # Then copy JARs and use simplified Dockerfiles
+   ./build-and-run.sh
+   # or manually build each service then use:
+   docker compose -f docker-compose.simple.yml up -d
    ```
 
-2. **Use pre-built JARs**: If JARs exist in `target/` directories, create simplified Dockerfiles that just copy the JAR
-
-3. **Run services locally without Docker**: See the "Running Services Locally" section below
+2. **Run services locally without Docker**: See the "Running Services Locally" section below
 
 ### Port conflicts
 
