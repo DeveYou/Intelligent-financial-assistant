@@ -21,16 +21,33 @@ The application consists of the following microservices:
 
 ## Quick Start with Docker Compose
 
-### 1. Start All Services
+### Option 1: Automated Build and Run (Recommended)
+
+Use the provided script that handles building and starting all services:
+
+```bash
+./build-and-run.sh
+```
+
+This will:
+- Check prerequisites (Java 17+, Docker)
+- Build all microservices locally
+- Optionally start all services with Docker Compose
+- Provide next steps
+
+### Option 2: Manual Docker Compose
 
 From the root directory, run:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-This will:
-- Build all microservices
+**Note**: This requires the services to be built first, or the Docker images will be built which may take time and requires internet connectivity for Maven dependencies.
+
+### Services Started
+
+Both methods will:
 - Start PostgreSQL database
 - Start Discovery Service (Eureka)
 - Start Auth Service
@@ -233,8 +250,27 @@ cd intelligent_financial_assistant_backend/auth-service
 
 Check the logs:
 ```bash
-docker-compose logs -f [service-name]
+docker compose logs -f [service-name]
 ```
+
+### Docker build fails with network issues
+
+If you encounter Maven download errors during Docker build, you have two options:
+
+1. **Build services locally first** (recommended for development):
+   ```bash
+   # Build all services
+   cd intelligent_financial_assistant_backend/discovery-service && ./mvnw clean package -DskipTests
+   cd ../auth-service && ./mvnw clean package -DskipTests
+   cd ../transactions-service && ./mvnw clean package -DskipTests
+   cd ../api-gateway && ./mvnw clean package -DskipTests
+   
+   # Then copy JARs and use simplified Dockerfiles
+   ```
+
+2. **Use pre-built JARs**: If JARs exist in `target/` directories, create simplified Dockerfiles that just copy the JAR
+
+3. **Run services locally without Docker**: See the "Running Services Locally" section below
 
 ### Port conflicts
 
@@ -244,7 +280,7 @@ If ports are already in use, you can change them in `docker-compose.yml`
 
 Make sure PostgreSQL is healthy:
 ```bash
-docker-compose ps postgres
+docker compose ps postgres
 ```
 
 ### Eureka registration issues
