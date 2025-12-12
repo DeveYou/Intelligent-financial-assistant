@@ -1,4 +1,4 @@
-<div class="details-container">
+<div class="details-container" *ngIf="user; else loadingOrError">
     <div class="header">
         <div class="profile-image-container">
           <mat-icon class="user-avatar">account_circle</mat-icon>
@@ -32,16 +32,45 @@
 
         <div class="section">
             <h3><mat-icon>account_balance</mat-icon> Informations Bancaires</h3>
-            <div class="info-grid">
-                <div class="info-item full-width">
-                    <span class="value placeholder-text">Les informations bancaires seront disponibles
-                        prochainement.</span>
-                </div>
+            <div class="accounts-grid" *ngIf="bankAccount">
+                <mat-card class="account-card">
+                    <mat-card-header>
+                        <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
+                        <mat-card-title>{{ bankAccount.type }}</mat-card-title>
+                        <mat-card-subtitle>{{ bankAccount.accountNumber }}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="balance-container">
+                            <span class="balance-label">Solde:</span>
+                            <span class="balance-amount">{{ bankAccount.balance | currency:bankAccount.currency }}</span>
+                        </div>
+                        <div class="account-status">
+                            <span class="status-badge" [class.active]="bankAccount.status === 'ACTIVE'">
+                                {{ bankAccount.status }}
+                            </span>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div *ngIf="!bankAccount" class="no-account">
+                <p>Aucun compte bancaire associé.</p>
             </div>
         </div>
     </div>
 
     <div class="actions">
-        <button mat-button mat-dialog-close class="close-btn">Fermer</button>
+        <button mat-button (click)="goBack()" class="close-btn">Retour</button>
     </div>
 </div>
+
+<ng-template #loadingOrError>
+    <div class="loading-container" *ngIf="loading">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des informations...</p>
+    </div>
+    <div class="error-container" *ngIf="error">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-button (click)="goBack()">Retour</button>
+    </div>
+</ng-template>

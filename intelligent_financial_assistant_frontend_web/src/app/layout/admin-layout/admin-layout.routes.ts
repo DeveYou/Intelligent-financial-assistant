@@ -18,6 +18,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('../../features/users/user-list/user-list.component').then(m => m.UserListComponent)
       },
       {
+        path: 'users/:id',
+        loadComponent: () => import('../../features/users/user-details/user-details.component').then(m => m.UserDetailsComponent)
+      },
+      {
         path: 'accounts',
         loadComponent: () => import('../../features/accounts/account-list/account-list.component').then(m => m.AccountListComponent)
       },
