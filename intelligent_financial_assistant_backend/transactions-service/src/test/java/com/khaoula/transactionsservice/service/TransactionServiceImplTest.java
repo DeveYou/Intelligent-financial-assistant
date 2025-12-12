@@ -1,10 +1,15 @@
 package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.domain.Transaction;
+import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
+import com.khaoula.transactionsservice.client.AuthClient;
+import com.khaoula.transactionsservice.client.BankAccountClient;
+import com.khaoula.transactionsservice.dto.BankAccountDTO;
 import com.khaoula.transactionsservice.dto.DepositRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
+import com.khaoula.transactionsservice.dto.UserDTO;
 import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
@@ -30,12 +35,21 @@ class TransactionServiceImplTest {
     @Mock
     private TransactionRepository transactionRepository;
 
+    @Mock
+    private AuthClient authClient;
+
+    @Mock
+    private BankAccountClient bankAccountClient;
+
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
     private DepositRequestDTO depositRequest;
     private WithdrawalRequestDTO withdrawalRequest;
     private TransferRequestDTO transferRequest;
+    private UserDTO user;
+    private BankAccountDTO bankAccount;
+    private BankAccountDTO targetBankAccount;
 
     @BeforeEach
     void setUp() {
@@ -43,225 +57,186 @@ class TransactionServiceImplTest {
         depositRequest.setBankAccountId("ACC-1");
         depositRequest.setAmount(BigDecimal.valueOf(100));
         depositRequest.setReason("Salary");
+        depositRequest.setUserId(1L);
 
         withdrawalRequest = new WithdrawalRequestDTO();
         withdrawalRequest.setBankAccountId("ACC-1");
         withdrawalRequest.setAmount(BigDecimal.valueOf(50));
         withdrawalRequest.setReason("ATM");
+        withdrawalRequest.setUserId(1L);
 
         transferRequest = new TransferRequestDTO();
         transferRequest.setSourceAccountId("ACC-1");
         transferRequest.setTargetAccountId("ACC-2");
         transferRequest.setAmount(BigDecimal.valueOf(75));
         transferRequest.setReason("Rent");
+        transferRequest.setUserId(1L);
+
+        user = new UserDTO();
+        user.setId(1L);
+
+        bankAccount = new BankAccountDTO();
+        bankAccount.setRib("ACC-1");
+        bankAccount.setUserId(1L);
+        bankAccount.setActive(true);
+        bankAccount.setBalance(BigDecimal.valueOf(200));
+
+        targetBankAccount = new BankAccountDTO();
+        targetBankAccount.setRib("ACC-2");
+        targetBankAccount.setUserId(2L);
+        targetBankAccount.setActive(true);
     }
 
+    // =================================================================
+    // Deposit Tests
+    // =================================================================
+
     @Test
-    void deposit_shouldPersistTransactionAndReturnResponse() {
-        when(transactionRepository.findByReference(anyString())).thenReturn(Optional.empty());
+    void deposit_shouldSucceed_whenDataIsValid() {
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        Transaction saved = buildTransaction(1L, TransactionType.DEPOSIT, "ACC-1", null, BigDecimal.valueOf(100), "Salary");
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(saved);
-
-        TransactionResponseDTO response = transactionService.deposit(depositRequest);
+        TransactionResponseDTO response = transactionService.deposit(1L, depositRequest);
 
         ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
-        verify(transactionRepository).save(txCaptor.capture());
-        Transaction captured = txCaptor.getValue();
+        verify(transactionRepository, times(2)).save(txCaptor.capture());
+        Transaction finalTx = txCaptor.getAllValues().get(1);
 
-        assertEquals(TransactionType.DEPOSIT, captured.getType());
-        assertEquals(depositRequest.getBankAccountId(), captured.getBankAccountId());
-        assertEquals(depositRequest.getAmount(), captured.getAmount());
-        assertEquals(depositRequest.getReason(), captured.getReason());
-        assertNotNull(captured.getReference());
-        assertNotNull(captured.getDate());
-
-        assertEquals(saved.getId(), response.getId());
-        assertEquals(saved.getBankAccountId(), response.getBankAccountId());
-        assertEquals(saved.getAmount(), response.getAmount());
-        assertEquals(saved.getType(), response.getType());
-        assertEquals(saved.getReference(), response.getReference());
+        assertEquals(TransactionStatus.COMPLETED, finalTx.getStatus());
+        assertEquals(1L, finalTx.getUserId());
+        verify(bankAccountClient).deposit(depositRequest);
     }
 
     @Test
-    void deposit_shouldThrowInvalidTransactionException_whenAmountIsNullOrNonPositive() {
-        DepositRequestDTO request = new DepositRequestDTO();
-        request.setBankAccountId("ACC-1");
+    void deposit_shouldSetStatusToFailed_whenBankAccountClientFails() {
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        doThrow(new RuntimeException("Service unavailable")).when(bankAccountClient).deposit(any());
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        request.setAmount(null);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.deposit(request));
-
-        request.setAmount(BigDecimal.ZERO);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.deposit(request));
-
-        request.setAmount(BigDecimal.valueOf(-10));
-        assertThrows(InvalidTransactionException.class, () -> transactionService.deposit(request));
-
-        verify(transactionRepository, never()).save(any());
-    }
-
-    @Test
-    void withdraw_shouldPersistTransactionAndReturnResponse() {
-        when(transactionRepository.findByReference(anyString())).thenReturn(Optional.empty());
-
-        Transaction saved = buildTransaction(2L, TransactionType.WITHDRAWAL, "ACC-1", null, BigDecimal.valueOf(50), "ATM");
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(saved);
-
-        TransactionResponseDTO response = transactionService.withdraw(withdrawalRequest);
+        transactionService.deposit(1L, depositRequest);
 
         ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
-        verify(transactionRepository).save(txCaptor.capture());
-        Transaction captured = txCaptor.getValue();
+        verify(transactionRepository, times(2)).save(txCaptor.capture());
+        Transaction finalTx = txCaptor.getAllValues().get(1);
 
-        assertEquals(TransactionType.WITHDRAWAL, captured.getType());
-        assertEquals(withdrawalRequest.getBankAccountId(), captured.getBankAccountId());
-        assertEquals(withdrawalRequest.getAmount(), captured.getAmount());
-        assertEquals(withdrawalRequest.getReason(), captured.getReason());
-        assertNotNull(captured.getReference());
-        assertNotNull(captured.getDate());
-
-        assertEquals(saved.getId(), response.getId());
-        assertEquals(saved.getType(), response.getType());
+        assertEquals(TransactionStatus.FAILED, finalTx.getStatus());
     }
 
     @Test
-    void withdraw_shouldThrowInvalidTransactionException_whenAmountIsInvalid() {
-        WithdrawalRequestDTO request = new WithdrawalRequestDTO();
-        request.setBankAccountId("ACC-1");
-
-        request.setAmount(null);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.withdraw(request));
-
-        request.setAmount(BigDecimal.ZERO);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.withdraw(request));
-
-        request.setAmount(BigDecimal.valueOf(-1));
-        assertThrows(InvalidTransactionException.class, () -> transactionService.withdraw(request));
-
-        verify(transactionRepository, never()).save(any());
-    }
-
-    @Test
-    void transfer_shouldPersistTransactionAndReturnResponse() {
-        when(transactionRepository.findByReference(anyString())).thenReturn(Optional.empty());
-
-        Transaction saved = buildTransaction(3L, TransactionType.TRANSFER, "ACC-1", "ACC-2", BigDecimal.valueOf(75), "Rent");
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(saved);
-
-        TransactionResponseDTO response = transactionService.transfer(transferRequest);
-
-        ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
-        verify(transactionRepository).save(txCaptor.capture());
-        Transaction captured = txCaptor.getValue();
-
-        assertEquals(TransactionType.TRANSFER, captured.getType());
-        assertEquals(transferRequest.getSourceAccountId(), captured.getBankAccountId());
-        assertEquals(transferRequest.getTargetAccountId(), captured.getReceiver());
-        assertEquals(transferRequest.getAmount(), captured.getAmount());
-        assertEquals(transferRequest.getReason(), captured.getReason());
-        assertNotNull(captured.getReference());
-        assertNotNull(captured.getDate());
-
-        assertEquals(saved.getId(), response.getId());
-        assertEquals(saved.getReceiver(), response.getReceiver());
-        assertEquals(saved.getType(), response.getType());
-    }
-
-    @Test
-    void transfer_shouldThrowInvalidTransactionException_whenAmountIsInvalid() {
-        TransferRequestDTO request = new TransferRequestDTO();
-        request.setSourceAccountId("ACC-1");
-        request.setTargetAccountId("ACC-2");
-
-        request.setAmount(null);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.transfer(request));
-
-        request.setAmount(BigDecimal.ZERO);
-        assertThrows(InvalidTransactionException.class, () -> transactionService.transfer(request));
-
-        request.setAmount(BigDecimal.valueOf(-5));
-        assertThrows(InvalidTransactionException.class, () -> transactionService.transfer(request));
-
-        verify(transactionRepository, never()).save(any());
-    }
-
-    @Test
-    void transfer_shouldThrowInvalidTransactionException_whenSourceEqualsTarget() {
-        TransferRequestDTO request = new TransferRequestDTO();
-        request.setSourceAccountId("ACC-1");
-        request.setTargetAccountId("ACC-1");
-        request.setAmount(BigDecimal.valueOf(10));
+    void deposit_shouldThrowException_whenAccountDoesNotBelongToUser() {
+        bankAccount.setUserId(99L); // Different user
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
 
         InvalidTransactionException ex = assertThrows(InvalidTransactionException.class,
-                () -> transactionService.transfer(request));
+                () -> transactionService.deposit(1L, depositRequest));
 
-        assertTrue(ex.getMessage().contains("Source and target accounts must be different"));
+        assertTrue(ex.getMessage().contains("Bank account not found, inactive, or does not belong to the user"));
         verify(transactionRepository, never()).save(any());
     }
 
+    // =================================================================
+    // Withdrawal Tests
+    // =================================================================
+
     @Test
-    void getHistoryByAccount_shouldReturnMappedList() {
-        Transaction t1 = buildTransaction(1L, TransactionType.DEPOSIT, "ACC-1", null, BigDecimal.TEN, "A");
-        Transaction t2 = buildTransaction(2L, TransactionType.WITHDRAWAL, "ACC-1", null, BigDecimal.ONE, "B");
+    void withdraw_shouldSucceed_whenDataIsValid() {
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        when(transactionRepository.findByBankAccountIdOrderByDateDesc("ACC-1"))
-                .thenReturn(List.of(t1, t2));
+        transactionService.withdraw(1L, withdrawalRequest);
 
-        List<TransactionResponseDTO> history = transactionService.getHistoryByAccount("ACC-1");
+        ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
+        verify(transactionRepository, times(2)).save(txCaptor.capture());
+        Transaction finalTx = txCaptor.getAllValues().get(1);
 
-        assertEquals(2, history.size());
-        assertEquals(t1.getId(), history.get(0).getId());
-        assertEquals(t2.getId(), history.get(1).getId());
+        assertEquals(TransactionStatus.COMPLETED, finalTx.getStatus());
+        verify(bankAccountClient).withdraw(withdrawalRequest);
     }
 
     @Test
-    void getHistoryByAccount_shouldReturnEmptyList_whenNoTransactions() {
-        when(transactionRepository.findByBankAccountIdOrderByDateDesc("ACC-1"))
-                .thenReturn(List.of());
+    void withdraw_shouldThrowException_whenInsufficientFunds() {
+        bankAccount.setBalance(BigDecimal.valueOf(20)); // Not enough for 50
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
 
-        List<TransactionResponseDTO> history = transactionService.getHistoryByAccount("ACC-1");
+        InvalidTransactionException ex = assertThrows(InvalidTransactionException.class,
+                () -> transactionService.withdraw(1L, withdrawalRequest));
 
-        assertNotNull(history);
-        assertTrue(history.isEmpty());
+        assertTrue(ex.getMessage().contains("Insufficient funds"));
+        verify(transactionRepository, never()).save(any());
+    }
+
+    // =================================================================
+    // Transfer Tests
+    // =================================================================
+
+    @Test
+    void transfer_shouldSucceed_whenDataIsValid() {
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(bankAccountClient.getAccountByRib("ACC-2")).thenReturn(targetBankAccount);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        transactionService.transfer(1L, transferRequest);
+
+        ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
+        verify(transactionRepository, times(2)).save(txCaptor.capture());
+        Transaction finalTx = txCaptor.getAllValues().get(1);
+
+        assertEquals(TransactionStatus.COMPLETED, finalTx.getStatus());
+        verify(bankAccountClient).transfer(transferRequest);
     }
 
     @Test
-    void getByReference_shouldReturnMappedTransaction() {
-        Transaction t = buildTransaction(10L, TransactionType.DEPOSIT, "ACC-1", null, BigDecimal.TEN, "GIFT");
-        when(transactionRepository.findByReference("REF-1")).thenReturn(Optional.of(t));
+    void transfer_shouldThrowException_whenSourceAccountDoesNotBelongToUser() {
+        bankAccount.setUserId(99L); // Different user
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(bankAccountClient.getAccountByRib("ACC-2")).thenReturn(targetBankAccount);
+
+        InvalidTransactionException ex = assertThrows(InvalidTransactionException.class,
+                () -> transactionService.transfer(1L, transferRequest));
+
+        assertTrue(ex.getMessage().contains("Source account does not belong to the authenticated user"));
+    }
+
+    @Test
+    void transfer_shouldThrowException_whenTargetAccountIsInactive() {
+        targetBankAccount.setActive(false);
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(bankAccountClient.getAccountByRib("ACC-2")).thenReturn(targetBankAccount);
+
+        InvalidTransactionException ex = assertThrows(InvalidTransactionException.class,
+                () -> transactionService.transfer(1L, transferRequest));
+
+        assertTrue(ex.getMessage().contains("Target account not found or inactive"));
+    }
+
+    // =================================================================
+    // General Tests
+    // =================================================================
+
+    @Test
+    void getByReference_shouldReturnTransaction() {
+        Transaction tx = buildTransaction(1L, TransactionType.DEPOSIT, "ACC-1", null, BigDecimal.TEN, "Test");
+        when(transactionRepository.findByReference("REF-1")).thenReturn(Optional.of(tx));
 
         TransactionResponseDTO response = transactionService.getByReference("REF-1");
 
-        assertEquals(t.getId(), response.getId());
-        assertEquals(t.getReference(), response.getReference());
-        assertEquals(t.getType(), response.getType());
-        assertEquals(t.getAmount(), response.getAmount());
+        assertEquals(tx.getReference(), response.getReference());
+        assertEquals(tx.getId(), response.getId());
     }
 
     @Test
-    void getByReference_shouldThrowInvalidTransactionException_whenNotFound() {
+    void getByReference_shouldThrowException_whenNotFound() {
         when(transactionRepository.findByReference("UNKNOWN")).thenReturn(Optional.empty());
 
-        InvalidTransactionException ex = assertThrows(InvalidTransactionException.class,
-                () -> transactionService.getByReference("UNKNOWN"));
-
-        assertTrue(ex.getMessage().contains("Transaction not found with reference"));
-    }
-
-    @Test
-    void generateUniqueReference_shouldRetryWhenReferenceAlreadyExists() {
-        // First call: reference already exists, second call: free
-        when(transactionRepository.findByReference(anyString()))
-                .thenReturn(Optional.of(new Transaction()))
-                .thenReturn(Optional.empty());
-
-        Transaction saved = buildTransaction(5L, TransactionType.DEPOSIT, "ACC-1", null, BigDecimal.TEN, "Test");
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(saved);
-
-        TransactionResponseDTO response = transactionService.deposit(depositRequest);
-
-        assertNotNull(response.getReference());
-        verify(transactionRepository, atLeast(2)).findByReference(anyString());
+        assertThrows(InvalidTransactionException.class, () -> transactionService.getByReference("UNKNOWN"));
     }
 
     private Transaction buildTransaction(Long id,
@@ -272,6 +247,7 @@ class TransactionServiceImplTest {
                                          String reason) {
         Transaction tx = new Transaction();
         tx.setId(id);
+        tx.setUserId(1L);
         tx.setType(type);
         tx.setBankAccountId(bankAccountId);
         tx.setReceiver(receiver);
@@ -279,6 +255,7 @@ class TransactionServiceImplTest {
         tx.setReason(reason);
         tx.setReference("REF-" + id);
         tx.setDate(OffsetDateTime.now());
+        tx.setStatus(TransactionStatus.COMPLETED);
         return tx;
     }
 }

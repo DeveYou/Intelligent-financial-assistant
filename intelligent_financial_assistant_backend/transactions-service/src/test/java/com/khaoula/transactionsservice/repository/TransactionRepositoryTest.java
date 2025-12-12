@@ -58,6 +58,8 @@ class TransactionRepositoryTest {
         tx.setType(TransactionType.DEPOSIT);
         tx.setAmount(BigDecimal.TEN);
         tx.setDate(date);
+        tx.setUserId(1L);
+        tx.setStatus(com.khaoula.transactionsservice.domain.TransactionStatus.COMPLETED);
         return tx;
     }
 }

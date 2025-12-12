@@ -22,6 +22,10 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('../../features/accounts/account-list/account-list.component').then(m => m.AccountListComponent)
       },
       {
+        path: 'transactions',
+        loadComponent: () => import('../../features/transactions/transaction-list/transaction-list.component').then(m => m.TransactionListComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('../../features/profile/profile.component').then(m => m.ProfileComponent)
       },

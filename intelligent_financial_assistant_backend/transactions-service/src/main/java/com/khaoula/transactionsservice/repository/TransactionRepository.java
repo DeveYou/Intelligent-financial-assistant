@@ -16,6 +16,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByBankAccountIdOrderByDateDesc(String bankAccountId);
 
+    List<Transaction> findByUserIdOrderByDateDesc(Long userId);
+
     @Query("""
             SELECT t FROM Transaction t
             WHERE (:type IS NULL OR t.type = :type)

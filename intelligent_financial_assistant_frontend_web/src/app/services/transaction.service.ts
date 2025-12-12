@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment'; // Correction du chemin
+import { environment } from '../../environments/environment';
 import { Transaction } from '../models/transaction.model';
 
 @Injectable({
@@ -16,11 +16,15 @@ export class TransactionService {
     return this.http.get<Transaction[]>(this.apiUrl);
   }
 
-  createTransaction(transaction: Transaction): Observable<Transaction> {
+  getTransactionsByAccountId(accountId: string): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/account/${accountId}`);
+  }
+
+  createTransaction(transaction: Omit<Transaction, 'id'>): Observable<Transaction> {
     return this.http.post<Transaction>(this.apiUrl, transaction);
   }
 
-  updateTransaction(id: string, transaction: Transaction): Observable<Transaction> {
+  updateTransaction(id: string, transaction: Partial<Transaction>): Observable<Transaction> {
     return this.http.put<Transaction>(`${this.apiUrl}/${id}`, transaction);
   }
 
@@ -28,3 +32,5 @@ export class TransactionService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
+
+
