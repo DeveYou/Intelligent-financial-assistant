@@ -1,16 +1,17 @@
 package com.khaoula.transactionsservice.dto;
 
+import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 public class TransactionResponseDTO {
-
     private Long id;
     private String bankAccountId;
     private String reference;
     private TransactionType type;
+    private TransactionStatus status;
     private BigDecimal amount;
     private String receiver;
     private String reason;
@@ -48,6 +49,14 @@ public class TransactionResponseDTO {
         this.type = type;
     }
 
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
     public BigDecimal getAmount() {
         return amount;
     }
@@ -80,4 +89,3 @@ public class TransactionResponseDTO {
         this.date = date;
     }
 }
-

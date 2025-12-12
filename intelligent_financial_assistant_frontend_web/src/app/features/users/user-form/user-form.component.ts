@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
+import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 
 @Component({
     selector: 'app-user-form',
@@ -25,7 +26,8 @@ import { UserService } from '../../../services/user.service';
         MatSelectModule,
         MatSnackBarModule,
         MatTooltipModule,
-        MatDividerModule
+        MatDividerModule,
+        ImageUploadComponent
     ],
     templateUrl: './user-form.component.html',
     styleUrls: ['./user-form.component.css']
@@ -33,6 +35,9 @@ import { UserService } from '../../../services/user.service';
 export class UserFormComponent implements OnInit {
     userForm: FormGroup;
     isEditMode: boolean = false;
+    selectedImageFile: File | null = null;
+    uploadingImage = false;
+    currentImageUrl?: string;
 
     constructor(
         private fb: FormBuilder,
@@ -49,13 +54,14 @@ export class UserFormComponent implements OnInit {
             cin: [''],
             phoneNumber: [''],
             address: [''],
-            roles: [['ROLE_USER']]
+            role: ['ROLE_USER']
         });
     }
 
     ngOnInit(): void {
         if (this.data && this.data.user) {
             this.isEditMode = true;
+            this.currentImageUrl = this.data.user.profileImage;
             this.userForm.patchValue(this.data.user);
             // Password is not editable directly here usually, or optional
             this.userForm.get('password')?.clearValidators();
@@ -68,28 +74,84 @@ export class UserFormComponent implements OnInit {
 
     onSubmit(): void {
         if (this.userForm.valid) {
-            const userObservable = this.isEditMode && this.data.user?.id
-                ? this.userService.updateUser(this.data.user.id, this.userForm.value)
-                : this.userService.createUser(this.userForm.value);
-
-            userObservable.subscribe({
-                next: (user) => {
-                    this.closeDialog(true, `Utilisateur ${this.isEditMode ? 'mis à jour' : 'créé'} avec succès`);
-                },
-                error: (err) => {
-                    console.error('Error saving user', err);
-                    this.snackBar.open('Erreur lors de l\'enregistrement', 'Fermer', {
-                        duration: 3000,
-                        panelClass: ['error-snackbar']
-                    });
-                }
-            });
+            if (this.isEditMode && this.data.user?.id) {
+                this.userService.updateUser(this.data.user.id, this.userForm.value).subscribe({
+                    next: (user) => {
+                        // Si une image a été sélectionnée, l'uploader
+                        if (this.selectedImageFile) {
+                            this.uploadImage(this.data.user!.id);
+                        } else {
+                            this.snackBar.open('Utilisateur mis à jour avec succès', 'Fermer', {
+                                duration: 3000
+                            });
+                            this.dialogRef.close(user);
+                        }
+                    },
+                    error: (err) => {
+                        console.error('Error updating user', err);
+                        this.snackBar.open('Erreur lors de la mise à jour de l\'utilisateur', 'Fermer', {
+                            duration: 3000,
+                            panelClass: ['error-snackbar']
+                        });
+                    }
+                });
+            } else {
+                this.userService.createUser(this.userForm.value).subscribe({
+                    next: (user) => {
+                        // Si une image a été sélectionnée, l'uploader
+                        if (this.selectedImageFile) {
+                            this.uploadImage(user.id);
+                        } else {
+                            this.snackBar.open('Utilisateur créé avec succès', 'Fermer', {
+                                duration: 3000
+                            });
+                            this.dialogRef.close(user);
+                        }
+                    },
+                    error: (err) => {
+                        console.error('Error creating user', err);
+                        const errorMessage = err?.error?.message || 'Erreur lors de la création de l\'utilisateur';
+                        this.snackBar.open(errorMessage, 'Fermer', {
+                            duration: 5000,
+                            panelClass: ['error-snackbar']
+                        });
+                    }
+                });
+            }
         }
     }
 
-    private closeDialog(success: boolean, message: string): void {
-        this.snackBar.open(message, 'Fermer', { duration: 3000 });
-        this.dialogRef.close(success);
+    uploadImage(userId: number): void {
+        if (!this.selectedImageFile) return;
+
+        this.uploadingImage = true;
+        this.userService.uploadProfileImage(userId, this.selectedImageFile).subscribe({
+            next: (user) => {
+                this.uploadingImage = false;
+                this.snackBar.open(
+                    this.isEditMode ? 'Utilisateur et image mis à jour avec succès' : 'Utilisateur créé avec succès',
+                    'Fermer',
+                    { duration: 3000 }
+                );
+                this.dialogRef.close(user);
+            },
+            error: (err) => {
+                this.uploadingImage = false;
+                console.error('Error uploading image', err);
+                this.snackBar.open('Erreur lors de l\'upload de l\'image', 'Fermer', {
+                    duration: 3000,
+                    panelClass: ['error-snackbar']
+                });
+            }
+        });
+    }
+
+    onImageSelected(file: File): void {
+        this.selectedImageFile = file;
+    }
+
+    onImageRemoved(): void {
+        this.selectedImageFile = null;
     }
 
     onCancel(): void {

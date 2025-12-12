@@ -17,6 +17,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     @Column(name = "bank_account_id", nullable = false, length = 100)
     private String bankAccountId;
 
@@ -26,6 +29,10 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 20)
     private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 20)
+    private TransactionStatus status;
 
     @Column(name = "amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
@@ -50,6 +57,14 @@ public class Transaction {
         this.id = id;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public String getBankAccountId() {
         return bankAccountId;
     }
@@ -72,6 +87,14 @@ public class Transaction {
 
     public void setType(TransactionType type) {
         this.type = type;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
     }
 
     public BigDecimal getAmount() {

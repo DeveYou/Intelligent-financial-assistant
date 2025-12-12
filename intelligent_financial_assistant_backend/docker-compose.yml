@@ -1,15 +1,155 @@
-version: '3.8'
-services:
-  postgres:
-    image: postgres:14
-    environment:
-      POSTGRES_DB: finance_db
-      POSTGRES_USER: finance_user
-      POSTGRES_PASSWORD: 1234
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+version: "3.8"
+
+networks:
+  ifa_net:
+    driver: bridge
 
 volumes:
-  postgres_data:
+  auth_db_data:
+  transactions_db_data:
+  accounts_db_data:
+
+services:
+  discovery-service:
+    build:
+      context: ./discovery-service
+    image: ifa/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: ifa/api-gateway:latest
+    container_name: api-gateway
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+    networks:
+      - ifa_net
+
+  auth-db:
+    image: postgres:14
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build:
+      context: ./auth-service
+    image: ifa/auth-service:latest
+    container_name: auth-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://auth-db:5432/auth_db
+      DB_USERNAME: auth_user
+      DB_PASSWORD: auth_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    networks:
+      - ifa_net
+
+  transactions-db:
+    image: postgres:14
+    container_name: transactions-db
+    environment:
+      POSTGRES_DB: transactions_db
+      POSTGRES_USER: transactions_user
+      POSTGRES_PASSWORD: transactions_pass
+    volumes:
+      - transactions_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transactions_user -d transactions_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  transactions-service:
+    build:
+      context: ./transactions-service
+    image: ifa/transactions-service:latest
+    container_name: transactions-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      transactions-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://transactions-db:5432/transactions_db
+      DB_USERNAME: transactions_user
+      DB_PASSWORD: transactions_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8082
+    ports:
+      - "8082:8082"
+    networks:
+      - ifa_net
+
+  accounts-db:
+    image: postgres:14
+    container_name: accounts-db
+    environment:
+      POSTGRES_DB: accounts_db
+      POSTGRES_USER: accounts_user
+      POSTGRES_PASSWORD: accounts_pass
+    volumes:
+      - accounts_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U accounts_user -d accounts_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  account-service:
+    build:
+      context: ./account-service/account-service
+    image: ifa/account-service:latest
+    container_name: account-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      accounts-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://accounts-db:5432/accounts_db
+      DB_USERNAME: accounts_user
+      DB_PASSWORD: accounts_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8083
+    ports:
+      - "8083:8083"
+    networks:
+      - ifa_net
