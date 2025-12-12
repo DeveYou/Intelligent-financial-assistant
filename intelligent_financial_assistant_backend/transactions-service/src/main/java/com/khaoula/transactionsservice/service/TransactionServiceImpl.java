@@ -1,11 +1,16 @@
 package com.khaoula.transactionsservice.service;
 
+import com.khaoula.transactionsservice.client.AuthClient;
+import com.khaoula.transactionsservice.client.BankAccountClient;
 import com.khaoula.transactionsservice.domain.Transaction;
+import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
+import com.khaoula.transactionsservice.dto.BankAccountDTO;
 import com.khaoula.transactionsservice.dto.DepositRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
+import com.khaoula.transactionsservice.dto.UserDTO;
 import com.khaoula.transactionsservice.exception.DuplicateReferenceException;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
@@ -23,52 +28,125 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final AuthClient authClient;
+    private final BankAccountClient bankAccountClient;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AuthClient authClient, BankAccountClient bankAccountClient) {
         this.transactionRepository = transactionRepository;
+        this.authClient = authClient;
+        this.bankAccountClient = bankAccountClient;
     }
 
     @Override
-    public TransactionResponseDTO deposit(DepositRequestDTO request) {
+    public TransactionResponseDTO deposit(Long authenticatedUserId, DepositRequestDTO request) {
         validateAmount(request.getAmount());
 
+        UserDTO user = authClient.getUserById(authenticatedUserId);
+        if (user == null) {
+            throw new InvalidTransactionException("User not found with ID: " + authenticatedUserId);
+        }
+
+        BankAccountDTO account = bankAccountClient.getAccountByRib(request.getBankAccountId());
+        if (account == null || !account.isActive() || !account.getUserId().equals(authenticatedUserId)) {
+            throw new InvalidTransactionException("Bank account not found, inactive, or does not belong to the user: " + request.getBankAccountId());
+        }
+
         Transaction transaction = new Transaction();
+        transaction.setUserId(authenticatedUserId);
         transaction.setBankAccountId(request.getBankAccountId());
         transaction.setType(TransactionType.DEPOSIT);
         transaction.setAmount(request.getAmount());
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
         transaction.setReference(generateUniqueReference());
+        transaction.setStatus(TransactionStatus.PENDING);
 
         Transaction saved = transactionRepository.save(transaction);
-        return toDto(saved);
+
+        try {
+            bankAccountClient.deposit(request);
+            saved.setStatus(TransactionStatus.COMPLETED);
+        } catch (Exception e) {
+            saved.setStatus(TransactionStatus.FAILED);
+            // Optionally log the exception e
+        }
+
+        return toDto(transactionRepository.save(saved));
     }
 
     @Override
-    public TransactionResponseDTO withdraw(WithdrawalRequestDTO request) {
+    public TransactionResponseDTO withdraw(Long authenticatedUserId, WithdrawalRequestDTO request) {
         validateAmount(request.getAmount());
 
+        UserDTO user = authClient.getUserById(authenticatedUserId);
+        if (user == null) {
+            throw new InvalidTransactionException("User not found with ID: " + authenticatedUserId);
+        }
+
+        BankAccountDTO account = bankAccountClient.getAccountByRib(request.getBankAccountId());
+        if (account == null || !account.isActive() || !account.getUserId().equals(authenticatedUserId)) {
+            throw new InvalidTransactionException("Bank account not found, inactive, or does not belong to the user: " + request.getBankAccountId());
+        }
+
+        if (account.getBalance() == null || account.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new InvalidTransactionException("Insufficient funds for account: " + request.getBankAccountId());
+        }
+
         Transaction transaction = new Transaction();
+        transaction.setUserId(authenticatedUserId);
         transaction.setBankAccountId(request.getBankAccountId());
         transaction.setType(TransactionType.WITHDRAWAL);
         transaction.setAmount(request.getAmount());
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
         transaction.setReference(generateUniqueReference());
+        transaction.setStatus(TransactionStatus.PENDING);
 
         Transaction saved = transactionRepository.save(transaction);
-        return toDto(saved);
+
+        try {
+            bankAccountClient.withdraw(request);
+            saved.setStatus(TransactionStatus.COMPLETED);
+        } catch (Exception e) {
+            saved.setStatus(TransactionStatus.FAILED);
+        }
+
+        return toDto(transactionRepository.save(saved));
     }
 
     @Override
-    public TransactionResponseDTO transfer(TransferRequestDTO request) {
+    public TransactionResponseDTO transfer(Long authenticatedUserId, TransferRequestDTO request) {
         validateAmount(request.getAmount());
 
         if (request.getSourceAccountId().equals(request.getTargetAccountId())) {
             throw new InvalidTransactionException("Source and target accounts must be different for a transfer");
         }
 
+        UserDTO user = authClient.getUserById(authenticatedUserId);
+        if (user == null) {
+            throw new InvalidTransactionException("Authenticated user not found with ID: " + authenticatedUserId);
+        }
+
+        BankAccountDTO source = bankAccountClient.getAccountByRib(request.getSourceAccountId());
+        BankAccountDTO target = bankAccountClient.getAccountByRib(request.getTargetAccountId());
+
+        if (source == null || !source.isActive()) {
+            throw new InvalidTransactionException("Source account not found or inactive: " + request.getSourceAccountId());
+        }
+        if (target == null || !target.isActive()) {
+            throw new InvalidTransactionException("Target account not found or inactive: " + request.getTargetAccountId());
+        }
+
+        if (!source.getUserId().equals(authenticatedUserId)) {
+            throw new InvalidTransactionException("Source account does not belong to the authenticated user");
+        }
+
+        if (source.getBalance() == null || source.getBalance().compareTo(request.getAmount()) < 0) {
+            throw new InvalidTransactionException("Insufficient funds in source account: " + request.getSourceAccountId());
+        }
+
         Transaction transaction = new Transaction();
+        transaction.setUserId(authenticatedUserId);
         transaction.setBankAccountId(request.getSourceAccountId());
         transaction.setReceiver(request.getTargetAccountId());
         transaction.setType(TransactionType.TRANSFER);
@@ -76,9 +154,31 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
         transaction.setReference(generateUniqueReference());
+        transaction.setStatus(TransactionStatus.PENDING);
 
         Transaction saved = transactionRepository.save(transaction);
-        return toDto(saved);
+
+        try {
+            bankAccountClient.transfer(request);
+            saved.setStatus(TransactionStatus.COMPLETED);
+        } catch (Exception e) {
+            saved.setStatus(TransactionStatus.FAILED);
+        }
+
+        return toDto(transactionRepository.save(saved));
+    }
+
+    @Override
+    public List<TransactionResponseDTO> search(
+            String type, String bankAccountId, String reference,
+            String search, OffsetDateTime startDate, OffsetDateTime endDate
+    ) {
+        TransactionType transactionType = type != null ? TransactionType.valueOf(type.toUpperCase()) : null;
+        return transactionRepository.searchTransactions(
+                        transactionType, bankAccountId, reference, search, startDate, endDate
+                ).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -119,6 +219,7 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setBankAccountId(transaction.getBankAccountId());
         dto.setReference(transaction.getReference());
         dto.setType(transaction.getType());
+        dto.setStatus(transaction.getStatus());
         dto.setAmount(transaction.getAmount());
         dto.setReceiver(transaction.getReceiver());
         dto.setReason(transaction.getReason());
@@ -126,4 +227,3 @@ public class TransactionServiceImpl implements TransactionService {
         return dto;
     }
 }
-

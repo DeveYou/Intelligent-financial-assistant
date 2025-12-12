@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 
 public class TransferRequestDTO {
 
+    @NotNull
+    private Long userId;
+
     @NotBlank
     private String sourceAccountId;
 
@@ -19,6 +22,14 @@ public class TransferRequestDTO {
     private BigDecimal amount;
 
     private String reason;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getSourceAccountId() {
         return sourceAccountId;
@@ -52,4 +63,3 @@ public class TransferRequestDTO {
         this.reason = reason;
     }
 }
-
