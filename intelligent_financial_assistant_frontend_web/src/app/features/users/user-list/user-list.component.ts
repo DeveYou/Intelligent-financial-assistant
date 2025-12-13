@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -17,7 +18,6 @@ import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UserFormComponent } from '../user-form/user-form.component';
-import { UserDetailsComponent } from '../user-details/user-details.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
 
@@ -60,7 +60,11 @@ export class UserListComponent implements OnInit {
   filterStatus: string = 'all';
   searchText: string = '';
 
-  constructor(private userService: UserService, private dialog: MatDialog) { }
+  constructor(
+    private userService: UserService, 
+    private dialog: MatDialog,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -139,10 +143,7 @@ export class UserListComponent implements OnInit {
   }
 
   viewUser(user: User): void {
-    this.dialog.open(UserDetailsComponent, {
-      width: '500px',
-      data: user
-    });
+    this.router.navigate(['/admin/users', user.id]);
   }
 
   editUser(user: User): void {

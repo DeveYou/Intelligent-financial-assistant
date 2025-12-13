@@ -21,14 +21,7 @@
       <input matInput formControlName="email" placeholder="Email" type="email">
       <mat-error *ngIf="userForm.get('email')?.hasError('required')">Email is required</mat-error>
       <mat-error *ngIf="userForm.get('email')?.hasError('email')">Invalid email address</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Rôles</mat-label>
-      <mat-select formControlName="roles" multiple>
-        <mat-option value="ROLE_USER">Utilisateur</mat-option>
-        <mat-option value="ROLE_ADMIN">Administrateur</mat-option>
-      </mat-select>
+      <mat-error *ngIf="userForm.get('email')?.hasError('emailTaken')">Email already exists</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode">
@@ -43,6 +36,9 @@
       <mat-form-field appearance="outline">
         <mat-label>CIN</mat-label>
         <input matInput formControlName="cin" placeholder="CIN">
+        <mat-error *ngIf="userForm.get('cin')?.hasError('required')">CIN is required</mat-error>
+              <mat-error *ngIf="userForm.get('cin')?.hasError('cinTaken')">CIN already exists</mat-error>
+
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -50,6 +46,15 @@
         <input matInput formControlName="phoneNumber" placeholder="Phone Number">
       </mat-form-field>
     </div>
+
+    <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode">
+      <mat-label>Account Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="CURRENT_ACCOUNT">Current Account</mat-option>
+        <mat-option value="SAVING_ACCOUNT">Saving Account</mat-option>
+      </mat-select>
+      <mat-error *ngIf="userForm.get('type')?.hasError('required')">Account Type is required</mat-error>
+    </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Address</mat-label>

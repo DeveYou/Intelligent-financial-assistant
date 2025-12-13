@@ -2,6 +2,7 @@ package com.aitsaid.authservice.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,8 @@ public class RegisterRequest {
 
     @NotBlank(message = "Last name is required")
     private String lastName;
+
+    @NotBlank(message = "CIN is required")
     private String cin;
 
     @NotBlank(message = "Email is required")
@@ -30,6 +33,6 @@ public class RegisterRequest {
     private String password;
     private String phoneNumber;
     private String address;
-    private String profileImage;
-
+    @NotNull(message = "Type cannot be null")
+    private String type;
 }

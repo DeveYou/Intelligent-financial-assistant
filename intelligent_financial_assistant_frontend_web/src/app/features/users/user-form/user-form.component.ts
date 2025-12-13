@@ -11,7 +11,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
-import { ImageUploadComponent } from '../../../shared/components/image-upload/image-upload.component';
 
 @Component({
     selector: 'app-user-form',
@@ -27,7 +26,6 @@ import { ImageUploadComponent } from '../../../shared/components/image-upload/im
         MatSnackBarModule,
         MatTooltipModule,
         MatDividerModule,
-        ImageUploadComponent
     ],
     templateUrl: './user-form.component.html',
     styleUrls: ['./user-form.component.css']
@@ -35,8 +33,6 @@ import { ImageUploadComponent } from '../../../shared/components/image-upload/im
 export class UserFormComponent implements OnInit {
     userForm: FormGroup;
     isEditMode: boolean = false;
-    selectedImageFile: File | null = null;
-    uploadingImage = false;
     currentImageUrl?: string;
 
     constructor(
@@ -51,9 +47,10 @@ export class UserFormComponent implements OnInit {
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: [''],
-            cin: [''],
+            cin: ['', Validators.required],
             phoneNumber: [''],
             address: [''],
+            type: ['CURRENT_ACCOUNT', Validators.required],
             role: ['ROLE_USER']
         });
     }
@@ -61,7 +58,6 @@ export class UserFormComponent implements OnInit {
     ngOnInit(): void {
         if (this.data && this.data.user) {
             this.isEditMode = true;
-            this.currentImageUrl = this.data.user.profileImage;
             this.userForm.patchValue(this.data.user);
             // Password is not editable directly here usually, or optional
             this.userForm.get('password')?.clearValidators();
@@ -77,15 +73,10 @@ export class UserFormComponent implements OnInit {
             if (this.isEditMode && this.data.user?.id) {
                 this.userService.updateUser(this.data.user.id, this.userForm.value).subscribe({
                     next: (user) => {
-                        // Si une image a été sélectionnée, l'uploader
-                        if (this.selectedImageFile) {
-                            this.uploadImage(this.data.user!.id);
-                        } else {
                             this.snackBar.open('Utilisateur mis à jour avec succès', 'Fermer', {
                                 duration: 3000
                             });
                             this.dialogRef.close(user);
-                        }
                     },
                     error: (err) => {
                         console.error('Error updating user', err);
@@ -98,60 +89,44 @@ export class UserFormComponent implements OnInit {
             } else {
                 this.userService.createUser(this.userForm.value).subscribe({
                     next: (user) => {
-                        // Si une image a été sélectionnée, l'uploader
-                        if (this.selectedImageFile) {
-                            this.uploadImage(user.id);
-                        } else {
                             this.snackBar.open('Utilisateur créé avec succès', 'Fermer', {
                                 duration: 3000
                             });
                             this.dialogRef.close(user);
-                        }
                     },
                     error: (err) => {
                         console.error('Error creating user', err);
-                        const errorMessage = err?.error?.message || 'Erreur lors de la création de l\'utilisateur';
-                        this.snackBar.open(errorMessage, 'Fermer', {
-                            duration: 5000,
-                            panelClass: ['error-snackbar']
-                        });
+                        if (err.status === 409) {
+                            const message = err.error?.message || '';
+                            
+                            if (message.toLowerCase().includes('cin')) {
+                                const cinControl = this.userForm.get('cin');
+                                cinControl?.setErrors({ cinTaken: true });
+                                cinControl?.markAsTouched();
+                                this.snackBar.open('Ce CIN est déjà utilisé', 'Fermer', {
+                                    duration: 5000,
+                                    panelClass: ['error-snackbar']
+                                });
+                            } else {
+                                const emailControl = this.userForm.get('email');
+                                emailControl?.setErrors({ emailTaken: true });
+                                emailControl?.markAsTouched();
+                                this.snackBar.open('Cet email est déjà utilisé', 'Fermer', {
+                                    duration: 5000,
+                                    panelClass: ['error-snackbar']
+                                });
+                            }
+                        } else {
+                            const errorMessage = err?.error?.message || 'Erreur lors de la création de l\'utilisateur';
+                            this.snackBar.open(errorMessage, 'Fermer', {
+                                duration: 5000,
+                                panelClass: ['error-snackbar']
+                            });
+                        }
                     }
                 });
             }
         }
-    }
-
-    uploadImage(userId: number): void {
-        if (!this.selectedImageFile) return;
-
-        this.uploadingImage = true;
-        this.userService.uploadProfileImage(userId, this.selectedImageFile).subscribe({
-            next: (user) => {
-                this.uploadingImage = false;
-                this.snackBar.open(
-                    this.isEditMode ? 'Utilisateur et image mis à jour avec succès' : 'Utilisateur créé avec succès',
-                    'Fermer',
-                    { duration: 3000 }
-                );
-                this.dialogRef.close(user);
-            },
-            error: (err) => {
-                this.uploadingImage = false;
-                console.error('Error uploading image', err);
-                this.snackBar.open('Erreur lors de l\'upload de l\'image', 'Fermer', {
-                    duration: 3000,
-                    panelClass: ['error-snackbar']
-                });
-            }
-        });
-    }
-
-    onImageSelected(file: File): void {
-        this.selectedImageFile = file;
-    }
-
-    onImageRemoved(): void {
-        this.selectedImageFile = null;
     }
 
     onCancel(): void {

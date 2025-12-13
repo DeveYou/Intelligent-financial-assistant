@@ -46,7 +46,6 @@ export class AdminLayoutComponent {
     {icon: 'people', label: 'Utilisateurs', route: '/admin/users'},
     {icon: 'account_balance', label: 'Comptes Bancaires', route: '/admin/accounts'},
     {icon: 'receipt_long', label: 'Transactions', route: '/admin/transactions'},
-    {icon: 'settings', label: 'Paramètres', route: '/admin/settings'},
   ];
 
   constructor(

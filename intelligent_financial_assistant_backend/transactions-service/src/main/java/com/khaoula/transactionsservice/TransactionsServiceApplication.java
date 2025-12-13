@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableDiscoveryClient
 @EnableFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.khaoula.transactionsservice", "com.aitsaid.commonsecurity"})
 @OpenAPIDefinition(
 		info = @Info(
 				title = "Transaction Service API",

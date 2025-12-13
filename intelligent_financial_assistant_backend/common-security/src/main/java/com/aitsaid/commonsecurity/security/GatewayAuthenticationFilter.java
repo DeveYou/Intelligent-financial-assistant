@@ -39,6 +39,14 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // DEBUG: Log all headers
+        log.info("Processing request: {} {}", request.getMethod(), request.getRequestURI());
+        java.util.Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            log.info("Header: {} = {}", headerName, request.getHeader(headerName));
+        }
+
         // Récupérer les headers propagés par le Gateway
         String username = request.getHeader(HEADER_USER);
         String rolesHeader = request.getHeader(HEADER_ROLES);
@@ -55,8 +63,15 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
                     .collect(Collectors.toList());
 
             // Créer l'authentification Spring Security
+            // On stocke le token (si disponible dans le header Authorization) dans les credentials pour propagation Feign
+            String rawToken = null;
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                rawToken = authHeader.substring(7);
+            }
+
             UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    new UsernamePasswordAuthenticationToken(username, rawToken, authorities);
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             // Définir l'authentification dans le contexte de sécurité
