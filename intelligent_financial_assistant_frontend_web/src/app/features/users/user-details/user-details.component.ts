@@ -8,6 +8,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
+import { AccountService } from '../../../services/account.service';
+import { BankAccount } from '../../../models/bank-account.model';
 
 @Component({
     selector: 'app-user-details',
@@ -25,24 +27,15 @@ import { UserService } from '../../../services/user.service';
 })
 export class UserDetailsComponent implements OnInit {
     user: User | null = null;
+    accounts: BankAccount[] = [];
     loading = true;
     error: string | null = null;
-    
-    // Mock bank account
-    bankAccount = {
-        id: '1',
-        accountNumber: '1234567890123456',
-        balance: 15420.50,
-        currency: 'MAD',
-        type: 'Compte Courant',
-        status: 'ACTIVE',
-        createdAt: new Date('2023-01-15')
-    };
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private userService: UserService
+        private userService: UserService,
+        private accountService: AccountService
     ) { }
 
     ngOnInit(): void {
@@ -57,16 +50,28 @@ export class UserDetailsComponent implements OnInit {
 
     loadUser(id: string): void {
         this.loading = true;
-        // Assuming getUserById exists in UserService. If not, I might need to implement it or use a workaround.
-        // Based on standard practices, it should exist. If not, I'll check UserService.
         this.userService.getUserById(Number(id)).subscribe({
             next: (user) => {
                 this.user = user;
-                this.loading = false;
+                this.loadAccounts(user.id);
             },
             error: (err) => {
                 console.error('Error loading user', err);
                 this.error = 'Erreur lors du chargement de l\'utilisateur';
+                this.loading = false;
+            }
+        });
+    }
+
+    loadAccounts(userId: number): void {
+        this.accountService.getAccountsByUserId(userId).subscribe({
+            next: (accounts) => {
+                this.accounts = accounts;
+                this.loading = false;
+            },
+            error: (err) => {
+                console.error('Error loading accounts', err);
+                // We don't block the UI if accounts fail to load, just show user info
                 this.loading = false;
             }
         });

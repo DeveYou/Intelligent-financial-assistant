@@ -178,6 +178,11 @@
     color: #2e7d32;
 }
 
+.status-badge.inactive {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
 .loading-container, .error-container {
     display: flex;
     flex-direction: column;
@@ -194,4 +199,3 @@
     height: 48px;
 }
     /* Hover color */
-}

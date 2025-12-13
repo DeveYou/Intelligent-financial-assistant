@@ -1,11 +1,14 @@
 package com.aitsaid.authservice.controllers;
 
 import com.aitsaid.authservice.dtos.RegisterRequest;
+import com.aitsaid.authservice.dtos.RegisterResponse;
 import com.aitsaid.authservice.dtos.UpdateUserRequest;
 import com.aitsaid.authservice.dtos.UserDetails;
 import com.aitsaid.authservice.entities.User;
 import com.aitsaid.authservice.mappers.UserMapper;
+import com.aitsaid.authservice.service.AuthService;
 import com.aitsaid.authservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,17 @@ import java.util.List;
 public class UserControllerAdmin {
 
     private final UserService userService;
+    private final AuthService authService;
+
+    /**
+     * Créer un nouvel utilisateur (ADMIN uniquement)
+     */
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<RegisterResponse> createUser(@Valid @RequestBody RegisterRequest request) {
+        log.info("Admin creating user: {}", request.getEmail());
+        return ResponseEntity.ok(authService.register(request));
+    }
 
     /**
      * Récupérer tous les utilisateurs (ADMIN uniquement)
@@ -44,17 +58,6 @@ public class UserControllerAdmin {
     public ResponseEntity<Long> countUsers(Authentication authentication) {
         log.info("Admin {} retrieving user count", authentication.getName());
         return ResponseEntity.ok(userService.countUsers());
-    }
-
-    /**
-     * Créer un utilisateur (ADMIN uniquement)
-     */
-    @PostMapping()
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<UserDetails> createUser(@RequestBody RegisterRequest request, Authentication authentication) {
-        log.info("Admin {} creating new user: {}", authentication.getName(), request.getEmail());
-        User user = userService.createUser(request);
-        return ResponseEntity.ok(UserMapper.userToUserDetails(user));
     }
 
     /**

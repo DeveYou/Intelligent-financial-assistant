@@ -1,6 +1,5 @@
 package com.aitsaid.authservice.service;
 
-import com.aitsaid.authservice.dtos.RegisterRequest;
 import com.aitsaid.authservice.dtos.UpdateProfileRequest;
 import com.aitsaid.authservice.dtos.UpdateUserRequest;
 import com.aitsaid.authservice.dtos.UserDetails;
@@ -11,6 +10,7 @@ import com.aitsaid.authservice.exceptions.UserNotFoundException;
 import com.aitsaid.authservice.mappers.UserMapper;
 import com.aitsaid.authservice.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
  * @author radouane
  **/
 @Service
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
-    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDetails> getAllUsers() {
@@ -54,17 +52,6 @@ public class UserService {
         if (updateRequest.getPhoneNumber() != null) {
             user.setPhoneNumber(updateRequest.getPhoneNumber());
         }
-
-        return userRepository.save(user);
-    }
-
-    public User createUser(RegisterRequest request) {
-        if (Boolean.TRUE.equals(userRepository.existsByEmail(request.getEmail()))) {
-            throw new EmailAlreadyExistsException(request.getEmail());
-        }
-
-        User user = UserMapper.registerRequestToUser(request);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
     }

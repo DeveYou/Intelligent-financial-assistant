@@ -32,27 +32,27 @@
 
         <div class="section">
             <h3><mat-icon>account_balance</mat-icon> Informations Bancaires</h3>
-            <div class="accounts-grid" *ngIf="bankAccount">
-                <mat-card class="account-card">
+            <div class="accounts-grid" *ngIf="accounts.length > 0">
+                <mat-card class="account-card" *ngFor="let account of accounts">
                     <mat-card-header>
                         <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
-                        <mat-card-title>{{ bankAccount.type }}</mat-card-title>
-                        <mat-card-subtitle>{{ bankAccount.accountNumber }}</mat-card-subtitle>
+                        <mat-card-title>{{ account.type }}</mat-card-title>
+                        <mat-card-subtitle>{{ account.rib }}</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>
                         <div class="balance-container">
                             <span class="balance-label">Solde:</span>
-                            <span class="balance-amount">{{ bankAccount.balance | currency:bankAccount.currency }}</span>
+                            <span class="balance-amount">{{ account.balance | currency:'MAD':'symbol':'1.2-2' }}</span>
                         </div>
                         <div class="account-status">
-                            <span class="status-badge" [class.active]="bankAccount.status === 'ACTIVE'">
-                                {{ bankAccount.status }}
+                            <span class="status-badge" [class.active]="account.isActive" [class.inactive]="!account.isActive">
+                                {{ account.isActive ? 'ACTIF' : 'INACTIF' }}
                             </span>
                         </div>
                     </mat-card-content>
                 </mat-card>
             </div>
-            <div *ngIf="!bankAccount" class="no-account">
+            <div *ngIf="accounts.length === 0" class="no-account">
                 <p>Aucun compte bancaire associé.</p>
             </div>
         </div>

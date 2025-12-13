@@ -10,4 +10,5 @@ export interface User {
   enabled: boolean;
   createdAt: string;
   role?: string;
+  type?: string;
 }
