@@ -15,4 +15,8 @@ export class AccountService {
   getAccountsByUserId(userId: number): Observable<BankAccount[]> {
     return this.http.get<BankAccount[]>(`${this.API_URL}/user/${userId}`);
   }
+
+  getAccounts(): Observable<BankAccount[]> {
+    return this.http.get<BankAccount[]>(`${this.API_URL}`);
+  }
 }

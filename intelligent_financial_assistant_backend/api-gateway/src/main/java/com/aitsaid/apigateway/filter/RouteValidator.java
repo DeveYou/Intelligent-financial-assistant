@@ -18,7 +18,7 @@ public class RouteValidator {
     public Predicate<ServerHttpRequest> isSecured =
             request -> {
                 // Allow OPTIONS requests for CORS
-                if (request.getMethod().matches("OPTIONS")) {
+                if (request.getMethod().name().equals("OPTIONS")) {
                     return false;
                 }
                 return openApiEndpoints

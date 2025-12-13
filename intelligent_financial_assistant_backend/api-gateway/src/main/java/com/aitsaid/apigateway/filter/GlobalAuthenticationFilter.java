@@ -49,12 +49,17 @@ public class GlobalAuthenticationFilter implements GlobalFilter, Ordered {
                 
                 System.out.println("DEBUG GLOBAL FILTER: Token valid. User: " + username + ", Roles: " + roles);
 
+                if (username == null) username = "";
+                if (roles == null) roles = List.of();
+
                 ServerHttpRequest request = exchange.getRequest()
                         .mutate()
                         .header("X-Auth-User", username)
                         .header("X-Auth-Roles", String.join(",", roles))
                         .header("X-Auth-Token-Validated", "true")
                         .build();
+
+                System.out.println("DEBUG GLOBAL FILTER: Added headers X-Auth-User=" + username + ", X-Auth-Roles=" + String.join(",", roles));
 
                 return chain.filter(exchange.mutate().request(request).build());
 

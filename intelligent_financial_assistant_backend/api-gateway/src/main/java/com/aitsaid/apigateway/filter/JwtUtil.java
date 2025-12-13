@@ -3,6 +3,7 @@ package com.aitsaid.apigateway.filter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,23 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    private boolean looksLikeBase64(String value) {
+        if (value == null) return false;
+        String v = value.trim();
+        return v.length() % 4 == 0 && v.matches("[A-Za-z0-9+/=]+");
+    }
+
     private SecretKey getSigningKey() {
         byte[] keyBytes;
+        String trimmed = secret == null ? "" : secret.trim();
         try {
-            keyBytes = Decoders.BASE64.decode(secret);
-        } catch (IllegalArgumentException e) {
-            keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+            if (looksLikeBase64(trimmed)) {
+                keyBytes = Decoders.BASE64.decode(trimmed);
+            } else {
+                keyBytes = trimmed.getBytes(StandardCharsets.UTF_8);
+            }
+        } catch (IllegalArgumentException | DecodingException e) {
+            keyBytes = trimmed.getBytes(StandardCharsets.UTF_8);
         }
         return Keys.hmacShaKeyFor(keyBytes);
     }
@@ -39,6 +51,8 @@ public class JwtUtil {
         try {
             return !isTokenExpired(token);
         } catch (Exception e) {
+            System.out.println("DEBUG JWT: Token validation failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

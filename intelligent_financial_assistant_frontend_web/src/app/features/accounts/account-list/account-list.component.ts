@@ -13,17 +13,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {MatDivider} from "@angular/material/divider";
+import { BankAccount } from '../../../models/bank-account.model';
+import { AccountService } from '../../../services/account.service';
 
-interface BankAccount {
-  id: string;
-  accountNumber: string;
-  owner: string;
-  type: string;
-  balance: number;
-  status: string;
-  createdAt: Date;
-  lastTransaction: Date;
-}
 
 @Component({
   selector: 'app-account-list',
@@ -47,63 +39,38 @@ interface BankAccount {
   styleUrls: ['./account-list.component.css']
 })
 export class AccountListComponent implements OnInit {
-  displayedColumns: string[] = ['accountNumber', 'owner', 'type', 'balance', 'lastTransaction', 'status', 'actions'];
-  dataSource!: MatTableDataSource<BankAccount>;
+  accounts: BankAccount[] = [];
+  dataSource = new MatTableDataSource<BankAccount>();
+  displayedColumns: string[] = ['iban', 'type', 'balance', 'createdAt', 'isActive', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  accounts: BankAccount[] = [
-    {
-      id: 'ACC001',
-      accountNumber: 'FR76 1234 5678 9012 3456 7890 123',
-      owner: 'Jean Dupont',
-      type: 'Compte Courant',
-      balance: 15250.00,
-      status: 'Actif',
-      createdAt: new Date('2024-01-15'),
-      lastTransaction: new Date('2024-11-28')
-    },
-    {
-      id: 'ACC002',
-      accountNumber: 'FR76 9876 5432 1098 7654 3210 987',
-      owner: 'Marie Martin',
-      type: 'Compte Épargne',
-      balance: 8430.50,
-      status: 'Actif',
-      createdAt: new Date('2024-02-20'),
-      lastTransaction: new Date('2024-11-25')
-    },
-    {
-      id: 'ACC003',
-      accountNumber: 'FR76 5555 4444 3333 2222 1111 000',
-      owner: 'Pierre Bernard',
-      type: 'Compte Pro',
-      balance: 25780.00,
-      status: 'Gelé',
-      createdAt: new Date('2023-12-10'),
-      lastTransaction: new Date('2024-11-15')
-    },
-    {
-      id: 'ACC004',
-      accountNumber: 'FR76 1111 2222 3333 4444 5555 666',
-      owner: 'Sophie Lefebvre',
-      type: 'Compte Courant',
-      balance: 3200.75,
-      status: 'Actif',
-      createdAt: new Date('2024-03-05'),
-      lastTransaction: new Date('2024-11-29')
-    }
-  ];
+  constructor(
+    private accountService: AccountService
+  ) { }
+  
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource(this.accounts);
+    this.loadAccounts();
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  loadAccounts(): void {
+        this.accountService.getAccounts().subscribe({
+            next: (accounts) => {
+                this.accounts = accounts;
+                this.dataSource.data = accounts;
+            },
+            error: (err) => {
+                console.error('Error loading accounts', err);
+            }
+        });
+    }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -114,23 +81,24 @@ export class AccountListComponent implements OnInit {
     }
   }
 
-  viewAccount(account: BankAccount): void {
-    console.log('View account:', account);
+  addAccount() {
+    // TODO: Implement add account logic or navigation
+    console.log('Add account clicked');
   }
 
-  editAccount(account: BankAccount): void {
-    console.log('Edit account:', account);
+  viewAccount(account: BankAccount) {
+    console.log('View account', account);
   }
 
-  freezeAccount(account: BankAccount): void {
-    console.log('Freeze account:', account);
+  editAccount(account: BankAccount) {
+    console.log('Edit account', account);
   }
 
-  closeAccount(account: BankAccount): void {
-    console.log('Close account:', account);
+  freezeAccount(account: BankAccount) {
+    console.log('Freeze account', account);
   }
 
-  addAccount(): void {
-    console.log('Add new account');
+  closeAccount(account: BankAccount) {
+    console.log('Close account', account);
   }
 }

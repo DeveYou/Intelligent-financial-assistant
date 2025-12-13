@@ -7,6 +7,7 @@ import com.lachguer.accountservice.dto.TransactionResponseDTO;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -20,6 +21,7 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<BankAccountResponseDTO> getAccounts() {
         return accountService.getAccounts();
     }
@@ -30,6 +32,7 @@ public class AccountController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, jakarta.servlet.http.HttpServletRequest request) {
         System.out.println("Headers received in getAccountsByUserId:");
         java.util.Enumeration<String> headerNames = request.getHeaderNames();

@@ -8,7 +8,6 @@ import java.util.Date;
 @Data
 public class BankAccountResponseDTO {
     private Long id;
-    private String rib;
     private String iban;
     private Double balance;
     private Date expirationDate;

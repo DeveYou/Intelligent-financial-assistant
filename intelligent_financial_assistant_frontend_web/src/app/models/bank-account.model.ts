@@ -1,6 +1,5 @@
 export interface BankAccount {
   id: number;
-  rib: string;
   iban: string;
   balance: number;
   expirationDate: string;
