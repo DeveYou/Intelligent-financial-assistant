@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
     List<BankAccount> findByUserId(Long userId);
+    long count();
 }
 

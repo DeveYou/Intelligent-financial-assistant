@@ -21,8 +21,8 @@
         <table mat-table [dataSource]="dataSource" matSort class="accounts-table">
 
           <!-- Account Number Column -->
-          <ng-container matColumnDef="iban">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>IBAN</th>
+          <ng-container matColumnDef="rib">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>RIB</th>
             <td mat-cell *matCellDef="let account">
               <div class="account-number">
                 <mat-icon>credit_card</mat-icon>
@@ -48,7 +48,7 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Solde</th>
             <td mat-cell *matCellDef="let account">
               <span class="balance" [class.balance-negative]="account.balance < 0">
-                {{ account.balance | currency:'EUR' }}
+                {{ account.balance | currency:'MAD' }}
               </span>
             </td>
           </ng-container>

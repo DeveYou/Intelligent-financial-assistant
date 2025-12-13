@@ -156,4 +156,9 @@ public class AccountServiceImpl implements AccountService {
         request.setUserId(account.getUserId());
         return transactionRestClient.createTransaction(request, authorizationHeader);
     }
+
+    @Override
+    public long countUsers() {
+        return bankAccountRepository.count();
+    }
 }

@@ -41,7 +41,7 @@ import { AccountService } from '../../../services/account.service';
 export class AccountListComponent implements OnInit {
   accounts: BankAccount[] = [];
   dataSource = new MatTableDataSource<BankAccount>();
-  displayedColumns: string[] = ['iban', 'type', 'balance', 'createdAt', 'isActive', 'actions'];
+  displayedColumns: string[] = ['rib', 'type', 'balance', 'createdAt', 'isActive', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;

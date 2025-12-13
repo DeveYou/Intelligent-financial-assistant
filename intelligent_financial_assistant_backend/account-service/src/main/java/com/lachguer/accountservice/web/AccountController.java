@@ -7,7 +7,10 @@ import com.lachguer.accountservice.dto.TransactionResponseDTO;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -16,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/accounts")
 @AllArgsConstructor
+@Slf4j
 public class AccountController {
 
     private AccountService accountService;
@@ -70,6 +74,16 @@ public class AccountController {
                                                            @RequestBody @Valid TransactionRequestDTO request,
                                                            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.createTransactionForAccount(accountId, request, authorizationHeader);
+    }
+
+    /**
+     * Récupérer le nombre total des comptes (ADMIN uniquement)
+     */
+    @GetMapping("/count")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Long> countUsers(Authentication authentication) {
+        log.info("Admin {} retrieving user count", authentication.getName());
+        return ResponseEntity.ok(accountService.countUsers());
     }
 }
 

@@ -19,5 +19,7 @@ public interface AccountService {
     // Transaction operations via TRANSACTION-SERVICE
     List<TransactionResponseDTO> getTransactionsForAccount(Long accountId, String authorizationHeader);
     TransactionResponseDTO createTransactionForAccount(Long accountId, TransactionRequestDTO request, String authorizationHeader);
+
+    long countUsers();
 }
 
