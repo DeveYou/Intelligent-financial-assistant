@@ -2,10 +2,7 @@ package com.lachguer.accountservice.service;
 
 import com.lachguer.accountservice.client.AuthRestClient;
 import com.lachguer.accountservice.client.TransactionRestClient;
-import com.lachguer.accountservice.dto.BankAccountRequestDTO;
-import com.lachguer.accountservice.dto.BankAccountResponseDTO;
-import com.lachguer.accountservice.dto.TransactionRequestDTO;
-import com.lachguer.accountservice.dto.TransactionResponseDTO;
+import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.enums.AccountType;
 import com.lachguer.accountservice.mapper.AccountMapper;
 import com.lachguer.accountservice.model.BankAccount;
@@ -20,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.lachguer.accountservice.dto.UserDTO;
 import com.lachguer.accountservice.model.User;
 import org.springframework.beans.BeanUtils;
 
@@ -36,6 +32,26 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BankAccountResponseDTO addAccount(BankAccountRequestDTO bankAccountDTO) {
+        // Check existing accounts
+        List<BankAccount> existingAccounts = bankAccountRepository.findByUserId(bankAccountDTO.getUserId());
+
+        if (existingAccounts.size() >= 2) {
+            throw new RuntimeException("User already has maximum number of accounts (2)");
+        }
+
+        boolean hasSameType = existingAccounts.stream()
+                .anyMatch(acc -> {
+                    if (bankAccountDTO.getType() == AccountType.CURRENT_ACCOUNT) {
+                        return acc instanceof CurrentAccount;
+                    } else {
+                        return acc instanceof SavingAccount;
+                    }
+                });
+
+        if (hasSameType) {
+            throw new RuntimeException("User already has an account of type " + bankAccountDTO.getType());
+        }
+
         BankAccount bankAccount;
         if (bankAccountDTO.getType() == AccountType.CURRENT_ACCOUNT) {
             bankAccount = new CurrentAccount();
@@ -112,15 +128,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public BankAccount updateAccount(Long id, BankAccount bankAccount) {
+    public BankAccount updateAccount(Long id, BankAccountUpdateDTO updateDTO) {
         BankAccount accountToUpdate = bankAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
-        if (bankAccount.getBalance() != null) accountToUpdate.setBalance(bankAccount.getBalance());
-        if (bankAccount.getIsActive() != null) accountToUpdate.setIsActive(bankAccount.getIsActive());
-        if (bankAccount instanceof CurrentAccount && accountToUpdate instanceof CurrentAccount) {
-            ((CurrentAccount) accountToUpdate).setOverDraft(((CurrentAccount) bankAccount).getOverDraft());
+        if (updateDTO.getBalance() != null) accountToUpdate.setBalance(updateDTO.getBalance());
+        if (updateDTO.getIsActive() != null) accountToUpdate.setIsActive(updateDTO.getIsActive());
+        if (updateDTO.getIsContactless() != null) accountToUpdate.setIsContactless(updateDTO.getIsContactless());
+        if (updateDTO.getIsWithdrawal() != null) accountToUpdate.setIsWithdrawal(updateDTO.getIsWithdrawal());
+        if (updateDTO.getIsPaymentByCard() != null) accountToUpdate.setIsPaymentByCard(updateDTO.getIsPaymentByCard());
+        if (updateDTO.getIsOnlinePayment() != null) accountToUpdate.setIsOnlinePayment(updateDTO.getIsOnlinePayment());
+
+        if (accountToUpdate instanceof CurrentAccount && updateDTO.getOverDraft() != null) {
+            ((CurrentAccount) accountToUpdate).setOverDraft(updateDTO.getOverDraft());
         }
-        if (bankAccount instanceof SavingAccount && accountToUpdate instanceof SavingAccount) {
-            ((SavingAccount) accountToUpdate).setInterestRate(((SavingAccount) bankAccount).getInterestRate());
+        if (accountToUpdate instanceof SavingAccount && updateDTO.getInterestRate() != null) {
+            ((SavingAccount) accountToUpdate).setInterestRate(updateDTO.getInterestRate());
         }
         return bankAccountRepository.save(accountToUpdate);
     }

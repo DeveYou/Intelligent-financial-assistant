@@ -5,6 +5,7 @@ import com.aitsaid.authservice.dtos.UpdateUserRequest;
 import com.aitsaid.authservice.dtos.UserDetails;
 import com.aitsaid.authservice.entities.Role;
 import com.aitsaid.authservice.entities.User;
+import com.aitsaid.authservice.exceptions.CinAlreadyExistsException;
 import com.aitsaid.authservice.exceptions.EmailAlreadyExistsException;
 import com.aitsaid.authservice.exceptions.UserNotFoundException;
 import com.aitsaid.authservice.mappers.UserMapper;
@@ -65,6 +66,13 @@ public class UserService {
                 throw new EmailAlreadyExistsException(updateRequest.getEmail());
             }
             user.setEmail(updateRequest.getEmail());
+        }
+
+        if (updateRequest.getCin() != null && !updateRequest.getCin().equals(user.getCin())) {
+            if (userRepository.existsByCin(updateRequest.getCin())) {
+                throw new CinAlreadyExistsException(updateRequest.getCin());
+            }
+            // CIN will be updated by UserMapper
         }
 
         UserMapper.updateUserFromRequest(updateRequest, user);

@@ -80,10 +80,32 @@ export class UserFormComponent implements OnInit {
                     },
                     error: (err) => {
                         console.error('Error updating user', err);
-                        this.snackBar.open('Erreur lors de la mise à jour de l\'utilisateur', 'Fermer', {
-                            duration: 3000,
-                            panelClass: ['error-snackbar']
-                        });
+                        if (err.status === 409) {
+                            const message = err.error?.message || '';
+                            
+                            if (message.toLowerCase().includes('cin')) {
+                                const cinControl = this.userForm.get('cin');
+                                cinControl?.setErrors({ cinTaken: true });
+                                cinControl?.markAsTouched();
+                                this.snackBar.open('Ce CIN est déjà utilisé', 'Fermer', {
+                                    duration: 5000,
+                                    panelClass: ['error-snackbar']
+                                });
+                            } else {
+                                const emailControl = this.userForm.get('email');
+                                emailControl?.setErrors({ emailTaken: true });
+                                emailControl?.markAsTouched();
+                                this.snackBar.open('Cet email est déjà utilisé', 'Fermer', {
+                                    duration: 5000,
+                                    panelClass: ['error-snackbar']
+                                });
+                            }
+                        } else {
+                            this.snackBar.open('Erreur lors de la mise à jour de l\'utilisateur', 'Fermer', {
+                                duration: 3000,
+                                panelClass: ['error-snackbar']
+                            });
+                        }
                     }
                 });
             } else {

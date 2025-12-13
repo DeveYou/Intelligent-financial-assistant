@@ -77,6 +77,55 @@ export class UserDetailsComponent implements OnInit {
         });
     }
 
+    canCreateAccount(): boolean {
+        return this.accounts.length < 2;
+    }
+
+    getMissingAccountType(): string {
+        const hasCurrent = this.accounts.some(acc => acc.type === 'CURRENT_ACCOUNT');
+        return hasCurrent ? 'SAVING_ACCOUNT' : 'CURRENT_ACCOUNT';
+    }
+
+    getMissingAccountLabel(): string {
+        const type = this.getMissingAccountType();
+        return type === 'CURRENT_ACCOUNT' ? 'Compte Courant' : 'Compte Épargne';
+    }
+
+    createMissingAccount(): void {
+        if (!this.user || !this.canCreateAccount()) return;
+
+        const type = this.getMissingAccountType();
+        const newAccount = {
+            userId: this.user.id,
+            type: type,
+            overDraft: type === 'CURRENT_ACCOUNT' ? 1000 : undefined,
+            interestRate: type === 'SAVING_ACCOUNT' ? 3.5 : undefined,
+            iban: this.generateIban(),
+            expirationDate: new Date(new Date().setFullYear(new Date().getFullYear() + 4)).toISOString().split('T')[0]
+        };
+
+        this.loading = true;
+        this.accountService.createAccount(newAccount).subscribe({
+            next: (account) => {
+                this.accounts.push(account);
+                this.loading = false;
+            },
+            error: (err) => {
+                console.error('Error creating account', err);
+                this.error = 'Erreur lors de la création du compte';
+                this.loading = false;
+            }
+        });
+    }
+
+    private generateIban(): string {
+        let iban = '';
+        for (let i = 0; i < 16; i++) {
+            iban += Math.floor(Math.random() * 10);
+        }
+        return iban;
+    }
+
     goBack(): void {
         this.router.navigate(['/admin/users']);
     }
