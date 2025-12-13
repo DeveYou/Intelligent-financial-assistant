@@ -1,9 +1,6 @@
 package com.lachguer.accountservice.web;
 
-import com.lachguer.accountservice.dto.BankAccountRequestDTO;
-import com.lachguer.accountservice.dto.BankAccountResponseDTO;
-import com.lachguer.accountservice.dto.TransactionRequestDTO;
-import com.lachguer.accountservice.dto.TransactionResponseDTO;
+import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
 import lombok.AllArgsConstructor;
@@ -48,15 +45,18 @@ public class AccountController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public BankAccountResponseDTO addAccount(@RequestBody @Valid BankAccountRequestDTO bankAccountRequestDTO) {
         return accountService.addAccount(bankAccountRequestDTO);
     }
 
-    @PutMapping("/{id}")
-    public BankAccount updateAccount(@PathVariable Long id, @RequestBody @Valid BankAccount bankAccount) {
-        return accountService.updateAccount(id, bankAccount);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PatchMapping("/{id}")
+    public BankAccount updateAccount(@PathVariable Long id, @RequestBody @Valid BankAccountUpdateDTO updateDTO) {
+        return accountService.updateAccount(id, updateDTO);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);

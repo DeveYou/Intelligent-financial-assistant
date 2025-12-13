@@ -23,4 +23,16 @@ export class AccountService {
   getAccountCount(): Observable<number> {
     return this.http.get<number>(`${this.API_URL}/count`);
   }
+
+  createAccount(account: any): Observable<BankAccount> {
+    return this.http.post<BankAccount>(this.API_URL, account);
+  }
+
+  updateAccount(id: number, account: Partial<BankAccount>): Observable<BankAccount> {
+    return this.http.patch<BankAccount>(`${this.API_URL}/${id}`, account);
+  }
+
+  deleteAccount(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/${id}`);
+  }
 }

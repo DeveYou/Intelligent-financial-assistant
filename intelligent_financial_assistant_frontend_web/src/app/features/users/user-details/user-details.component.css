@@ -58,22 +58,31 @@
     margin-bottom: 24px;
 }
 
-.section h3 {
-    color: #F44E1E;
-    /* Primary color */
+.section-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
     margin-bottom: 16px;
-    font-size: 1.1rem;
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 8px;
 }
 
-.info-grid {
+.section-header h3 {
+    color: #F44E1E;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 1.1rem;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.accounts-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
 }
 
 .info-item {
@@ -198,4 +207,17 @@
     width: 48px;
     height: 48px;
 }
-    /* Hover color */
+
+.add-account-button {
+  background-color: #F44E1E !important;
+  color: white !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-account-button:hover {
+  background-color: #d63e10 !important;
+  box-shadow: 0 4px 8px rgba(244, 78, 30, 0.3);
+  transform: translateY(-2px);
+}
+   

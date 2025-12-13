@@ -31,12 +31,20 @@
         </div>
 
         <div class="section">
-            <h3><mat-icon>account_balance</mat-icon> Informations Bancaires</h3>
+            <div class="section-header">
+                <h3><mat-icon>account_balance</mat-icon> Informations Bancaires</h3>
+                <button mat-raised-button class="add-account-button" 
+                        *ngIf="canCreateAccount()" 
+                        (click)="createMissingAccount()">
+                    <mat-icon>add</mat-icon>
+                    Ajouter {{ getMissingAccountLabel() }}
+                </button>
+            </div>
             <div class="accounts-grid" *ngIf="accounts.length > 0">
                 <mat-card class="account-card" *ngFor="let account of accounts">
                     <mat-card-header>
                         <mat-icon mat-card-avatar>account_balance_wallet</mat-icon>
-                        <mat-card-title>{{ account.type }}</mat-card-title>
+                        <mat-card-title>{{ account.type === 'CURRENT_ACCOUNT' ? 'Compte Courant' : 'Compte Épargne' }}</mat-card-title>
                         <mat-card-subtitle>{{ account.iban }}</mat-card-subtitle>
                     </mat-card-header>
                     <mat-card-content>

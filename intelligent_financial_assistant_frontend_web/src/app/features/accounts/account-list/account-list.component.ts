@@ -11,8 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import {MatDivider} from "@angular/material/divider";
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDivider } from "@angular/material/divider";
 import { BankAccount } from '../../../models/bank-account.model';
 import { AccountService } from '../../../services/account.service';
 
@@ -32,8 +32,8 @@ import { AccountService } from '../../../services/account.service';
     MatInputModule,
     MatChipsModule,
     MatMenuModule,
-    MatTooltipModule,
-    MatDivider
+    MatDivider,
+    MatSnackBarModule
   ],
   templateUrl: './account-list.component.html',
   styleUrls: ['./account-list.component.css']
@@ -47,7 +47,8 @@ export class AccountListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private accountService: AccountService
+    private accountService: AccountService,
+    private snackBar: MatSnackBar
   ) { }
   
 
@@ -68,6 +69,7 @@ export class AccountListComponent implements OnInit {
             },
             error: (err) => {
                 console.error('Error loading accounts', err);
+                this.snackBar.open('Erreur lors du chargement des comptes', 'Fermer', { duration: 3000 });
             }
         });
     }
@@ -91,14 +93,43 @@ export class AccountListComponent implements OnInit {
   }
 
   editAccount(account: BankAccount) {
+    // TODO: Implement edit dialog
     console.log('Edit account', account);
+    this.snackBar.open('Fonctionnalité de modification à venir', 'Fermer', { duration: 2000 });
   }
 
   freezeAccount(account: BankAccount) {
-    console.log('Freeze account', account);
+    const updatedStatus = !account.isActive;
+    this.accountService.updateAccount(account.id, { isActive: updatedStatus }).subscribe({
+      next: (updatedAccount) => {
+        const index = this.accounts.findIndex(a => a.id === updatedAccount.id);
+        if (index !== -1) {
+          this.accounts[index] = updatedAccount;
+          this.dataSource.data = [...this.accounts]; // Refresh table
+        }
+        const message = updatedStatus ? 'Compte activé' : 'Compte gelé';
+        this.snackBar.open(message, 'Fermer', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error updating account status', err);
+        this.snackBar.open('Erreur lors de la mise à jour du statut', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
   closeAccount(account: BankAccount) {
-    console.log('Close account', account);
+    if (confirm(`Êtes-vous sûr de vouloir clôturer le compte ${account.iban} ?`)) {
+      this.accountService.deleteAccount(account.id).subscribe({
+        next: () => {
+          this.accounts = this.accounts.filter(a => a.id !== account.id);
+          this.dataSource.data = this.accounts;
+          this.snackBar.open('Compte clôturé avec succès', 'Fermer', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Error deleting account', err);
+          this.snackBar.open('Erreur lors de la clôture du compte', 'Fermer', { duration: 3000 });
+        }
+      });
+    }
   }
 }

@@ -3,6 +3,7 @@ package com.lachguer.accountservice.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lachguer.accountservice.dto.BankAccountRequestDTO;
 import com.lachguer.accountservice.dto.BankAccountResponseDTO;
+import com.lachguer.accountservice.dto.BankAccountUpdateDTO;
 import com.lachguer.accountservice.enums.AccountType;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.model.CurrentAccount;
@@ -101,18 +102,32 @@ class AccountControllerTest {
 
     @Test
     void updateAccount_shouldUpdateAccount() throws Exception {
+        // Créez un DTO pour la mise à jour
+        BankAccountUpdateDTO updateDTO = new BankAccountUpdateDTO();
+        updateDTO.setBalance(1500.0);
+        updateDTO.setIsActive(true);
+        updateDTO.setOverDraft(200.0); // Si c'est un CurrentAccount
+
+        // Créez un CurrentAccount qui sera retourné par le service
         CurrentAccount updatedAccount = new CurrentAccount();
         updatedAccount.setId(1L);
         updatedAccount.setBalance(1500.0);
+        updatedAccount.setOverDraft(200.0);
+        updatedAccount.setIsActive(true);
         updatedAccount.setAccountType(AccountType.CURRENT_ACCOUNT);
 
-        when(accountService.updateAccount(anyLong(), any(BankAccount.class))).thenReturn(updatedAccount);
+        // Mockez avec BankAccountUpdateDTO, pas BankAccount
+        when(accountService.updateAccount(anyLong(), any(BankAccountUpdateDTO.class)))
+                .thenReturn(updatedAccount);
 
-        mockMvc.perform(put("/api/accounts/1")
+        // Utilisez PATCH (pas PUT) et envoyez le DTO
+        mockMvc.perform(patch("/api/accounts/1")  // PATCH pour les mises à jour partielles
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedAccount)))
+                        .content(objectMapper.writeValueAsString(updateDTO)))  // Envoyez le DTO
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.balance").value(1500.0));
+                .andExpect(jsonPath("$.balance").value(1500.0))
+                .andExpect(jsonPath("$.overDraft").value(200.0))
+                .andExpect(jsonPath("$.isActive").value(true));
     }
 
     @Test

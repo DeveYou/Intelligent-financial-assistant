@@ -2,6 +2,7 @@ package com.lachguer.accountservice.service;
 
 import com.lachguer.accountservice.dto.BankAccountRequestDTO;
 import com.lachguer.accountservice.dto.BankAccountResponseDTO;
+import com.lachguer.accountservice.dto.BankAccountUpdateDTO;
 import com.lachguer.accountservice.enums.AccountType;
 import com.lachguer.accountservice.mapper.AccountMapper;
 import com.lachguer.accountservice.model.BankAccount;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceImplTest {
@@ -152,35 +153,47 @@ class AccountServiceImplTest {
     @Test
     void updateAccount_shouldUpdateCurrentAccount() {
         Long accountId = 1L;
+
+        // Créez une instance de CurrentAccount existante
         CurrentAccount existingAccount = new CurrentAccount();
         existingAccount.setId(accountId);
         existingAccount.setBalance(1000.0);
         existingAccount.setOverDraft(200.0);
+        existingAccount.setAccountType(AccountType.CURRENT_ACCOUNT);
 
-        CurrentAccount updatedInfo = new CurrentAccount();
-        updatedInfo.setBalance(1500.0);
-        updatedInfo.setOverDraft(300.0);
+        // Créez le DTO pour la mise à jour
+        BankAccountUpdateDTO updateDTO = new BankAccountUpdateDTO();
+        updateDTO.setBalance(1500.0);
+        updateDTO.setOverDraft(300.0);
 
         when(bankAccountRepository.findById(accountId)).thenReturn(Optional.of(existingAccount));
         when(bankAccountRepository.save(any(BankAccount.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        BankAccount result = accountService.updateAccount(accountId, updatedInfo);
+        // Utilisez updateDTO au lieu de CurrentAccount
+        BankAccount result = accountService.updateAccount(accountId, updateDTO);
 
         assertEquals(1500.0, result.getBalance());
         assertEquals(300.0, ((CurrentAccount) result).getOverDraft());
+        verify(bankAccountRepository, times(1)).save(existingAccount);
     }
 
     @Test
     void updateAccount_shouldThrowExceptionWhenNotFound() {
         Long accountId = 1L;
+        BankAccountUpdateDTO updateDTO = new BankAccountUpdateDTO();
+
         when(bankAccountRepository.findById(accountId)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> accountService.updateAccount(accountId, new CurrentAccount()));
+
+        // Utilisez updateDTO au lieu de CurrentAccount
+        assertThrows(RuntimeException.class, () -> accountService.updateAccount(accountId, updateDTO));
+
+        verify(bankAccountRepository, never()).save(any());
     }
 
     @Test
     void deleteAccount_shouldCallRepositoryDelete() {
         Long accountId = 1L;
         accountService.deleteAccount(accountId);
-        org.mockito.Mockito.verify(bankAccountRepository, org.mockito.Mockito.times(1)).deleteById(accountId);
+        verify(bankAccountRepository, times(1)).deleteById(accountId);
     }
 }
