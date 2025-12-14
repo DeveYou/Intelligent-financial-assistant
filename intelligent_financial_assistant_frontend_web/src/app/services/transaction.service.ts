@@ -1,36 +1,67 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 import { Transaction } from '../models/transaction.model';
+import { environment } from '../../environments/environment';
+import { AuthService } from '../core/auth/auth.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TransactionService {
-  private readonly apiUrl = `${environment.apiBaseUrl}/transactions`;
+  private apiUrl = `${environment.apiBaseUrl}/transactions`;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
-  getTransactions(): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(this.apiUrl);
+  private buildHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
   }
 
-  getTransactionsByAccountId(accountId: string): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.apiUrl}/account/${accountId}`);
+  deposit(depositRequest: any): Observable<Transaction> {
+    // ensure userId is present
+    const userId = this.authService.getCurrentUser()?.id;
+    const body = { userId, bankAccountId: depositRequest.bankAccountId, amount: depositRequest.amount, reason: depositRequest.reason };
+    return this.http.post<Transaction>(`${this.apiUrl}/deposit`, body, { headers: this.buildHeaders() });
   }
 
-  createTransaction(transaction: Omit<Transaction, 'id'>): Observable<Transaction> {
-    return this.http.post<Transaction>(this.apiUrl, transaction);
+  withdraw(withdrawalRequest: any): Observable<Transaction> {
+    const userId = this.authService.getCurrentUser()?.id;
+    const body = { userId, bankAccountId: withdrawalRequest.bankAccountId, amount: withdrawalRequest.amount, reason: withdrawalRequest.reason };
+    return this.http.post<Transaction>(`${this.apiUrl}/withdrawal`, body, { headers: this.buildHeaders() });
   }
 
-  updateTransaction(id: string, transaction: Partial<Transaction>): Observable<Transaction> {
-    return this.http.put<Transaction>(`${this.apiUrl}/${id}`, transaction);
+  transfer(transferRequest: any): Observable<Transaction> {
+    const userId = this.authService.getCurrentUser()?.id;
+    const body = {
+      userId,
+      sourceAccountId: transferRequest.sourceBankAccountId || transferRequest.sourceAccountId || transferRequest.bankAccountId,
+      targetAccountId: transferRequest.destinationBankAccountId || transferRequest.targetAccountId,
+      amount: transferRequest.amount,
+      reason: transferRequest.reason
+    };
+    return this.http.post<Transaction>(`${this.apiUrl}/transfer`, body, { headers: this.buildHeaders() });
   }
 
-  deleteTransaction(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  getHistoryByAccount(bankAccountId: string): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/by-account/${bankAccountId}`, { headers: this.buildHeaders() });
+  }
+
+  getByReference(reference: string): Observable<Transaction> {
+    return this.http.get<Transaction>(`${this.apiUrl}/by-reference/${reference}`, { headers: this.buildHeaders() });
+  }
+
+  search(params: any): Observable<Transaction[]> {
+    let httpParams = new HttpParams();
+    Object.keys(params).forEach(key => {
+      if (params[key]) {
+        httpParams = httpParams.append(key, params[key]);
+      }
+    });
+    return this.http.get<Transaction[]>(`${this.apiUrl}/search`, { params: httpParams, headers: this.buildHeaders() });
   }
 }
-
-

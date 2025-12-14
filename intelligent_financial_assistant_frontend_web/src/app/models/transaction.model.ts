@@ -1,9 +1,11 @@
 export interface Transaction {
-  id: string;
+  id?: number;
+  reference?: string;
+  type?: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
+  status?: string;
   amount: number;
-  date: string;
-  description: string;
-  type: 'DEBIT' | 'CREDIT';
-  accountId: string;
+  date?: string; // ISO date string from backend
+  bankAccountId: string;
+  recipientId?: number | null; // new field to reference a recipient
+  reason?: string;
 }
-

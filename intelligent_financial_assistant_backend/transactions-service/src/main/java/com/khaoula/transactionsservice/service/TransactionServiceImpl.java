@@ -2,6 +2,7 @@ package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AuthClient;
 import com.khaoula.transactionsservice.client.BankAccountClient;
+import com.khaoula.transactionsservice.client.RecipientClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
@@ -11,11 +12,13 @@ import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
 import com.khaoula.transactionsservice.dto.UserDTO;
+import com.khaoula.transactionsservice.dto.RecipientDTO;
 import com.khaoula.transactionsservice.exception.DuplicateReferenceException;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -30,14 +33,17 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AuthClient authClient;
     private final BankAccountClient bankAccountClient;
+    private final RecipientClient recipientClient;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AuthClient authClient, BankAccountClient bankAccountClient) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AuthClient authClient, BankAccountClient bankAccountClient, RecipientClient recipientClient) {
         this.transactionRepository = transactionRepository;
         this.authClient = authClient;
         this.bankAccountClient = bankAccountClient;
+        this.recipientClient = recipientClient;
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public TransactionResponseDTO deposit(Long authenticatedUserId, DepositRequestDTO request) {
         validateAmount(request.getAmount());
 
@@ -75,6 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public TransactionResponseDTO withdraw(Long authenticatedUserId, WithdrawalRequestDTO request) {
         validateAmount(request.getAmount());
 
@@ -115,6 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public TransactionResponseDTO transfer(Long authenticatedUserId, TransferRequestDTO request) {
         validateAmount(request.getAmount());
 
@@ -130,10 +138,30 @@ public class TransactionServiceImpl implements TransactionService {
         BankAccountDTO source = bankAccountClient.getAccountByRib(request.getSourceAccountId());
         BankAccountDTO target = bankAccountClient.getAccountByRib(request.getTargetAccountId());
 
+        // Si la target n'existe pas côté bank-account, tenter de la résoudre via recipient-service (IBAN)
+        boolean targetResolvedViaRecipient = false;
+        if (target == null) {
+            RecipientDTO recipient = null;
+            try {
+                recipient = recipientClient.getByIban(request.getTargetAccountId());
+            } catch (Exception e) {
+                // ignore, we'll fail later if not resolvable
+            }
+            if (recipient != null) {
+                // marquer receiver avec l'IBAN/nom selon besoin
+                request.setTargetAccountId(recipient.getIban());
+                targetResolvedViaRecipient = true;
+            }
+        }
+
         if (source == null || !source.isActive()) {
             throw new InvalidTransactionException("Source account not found or inactive: " + request.getSourceAccountId());
         }
-        if (target == null || !target.isActive()) {
+        if (target == null && !targetResolvedViaRecipient) {
+            // après tentative recipient, toujours null => erreur
+            throw new InvalidTransactionException("Target account not found or inactive: " + request.getTargetAccountId());
+        }
+        if (target != null && !target.isActive()) {
             throw new InvalidTransactionException("Target account not found or inactive: " + request.getTargetAccountId());
         }
 
@@ -148,7 +176,16 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = new Transaction();
         transaction.setUserId(authenticatedUserId);
         transaction.setBankAccountId(request.getSourceAccountId());
-        transaction.setReceiver(request.getTargetAccountId());
+        // Si la target a été résolue via recipient-service, on stocke son id
+        if (targetResolvedViaRecipient) {
+            RecipientDTO recipient = recipientClient.getByIban(request.getTargetAccountId());
+            if (recipient != null && recipient.getId() != null) {
+                transaction.setRecipientId(recipient.getId());
+            }
+        } else {
+            // transferts vers un autre account : recipientId non renseigné
+            transaction.setRecipientId(null);
+        }
         transaction.setType(TransactionType.TRANSFER);
         transaction.setAmount(request.getAmount());
         transaction.setReason(request.getReason());
@@ -169,6 +206,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<TransactionResponseDTO> search(
             String type, String bankAccountId, String reference,
             String search, OffsetDateTime startDate, OffsetDateTime endDate
@@ -183,6 +221,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<TransactionResponseDTO> getHistoryByAccount(String bankAccountId) {
         return transactionRepository.findByBankAccountIdOrderByDateDesc(bankAccountId)
                 .stream()
@@ -192,6 +231,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public TransactionResponseDTO getByReference(String reference) {
         Transaction transaction = transactionRepository.findByReference(reference)
                 .orElseThrow(() -> new InvalidTransactionException("Transaction not found with reference: " + reference));
@@ -221,7 +261,7 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setType(transaction.getType());
         dto.setStatus(transaction.getStatus());
         dto.setAmount(transaction.getAmount());
-        dto.setReceiver(transaction.getReceiver());
+        dto.setRecipientId(transaction.getRecipientId());
         dto.setReason(transaction.getReason());
         dto.setDate(transaction.getDate());
         return dto;

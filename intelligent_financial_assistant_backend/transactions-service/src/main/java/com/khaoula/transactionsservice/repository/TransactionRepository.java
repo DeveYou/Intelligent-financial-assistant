@@ -27,7 +27,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                     :search IS NULL OR
                     LOWER(t.reference) LIKE LOWER(CONCAT('%', :search, '%')) OR
                     LOWER(t.bankAccountId) LIKE LOWER(CONCAT('%', :search, '%')) OR
-                    LOWER(COALESCE(t.receiver, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR
                     LOWER(COALESCE(t.reason, '')) LIKE LOWER(CONCAT('%', :search, '%'))
                   )
               AND (:startDate IS NULL OR t.date >= :startDate)

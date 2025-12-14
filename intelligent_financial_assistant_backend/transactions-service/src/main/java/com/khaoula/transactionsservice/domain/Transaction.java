@@ -37,8 +37,8 @@ public class Transaction {
     @Column(name = "amount", nullable = false, precision = 19, scale = 4)
     private BigDecimal amount;
 
-    @Column(name = "receiver", length = 100)
-    private String receiver;
+    @Column(name = "recipient_id")
+    private Long recipientId;
 
     @Column(name = "reason")
     private String reason;
@@ -105,12 +105,12 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public String getReceiver() {
-        return receiver;
+    public Long getRecipientId() {
+        return recipientId;
     }
 
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
+    public void setRecipientId(Long recipientId) {
+        this.recipientId = recipientId;
     }
 
     public String getReason() {

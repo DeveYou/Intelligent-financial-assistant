@@ -1,0 +1,55 @@
+<div class="container-fluid">
+  <div class="page-header">
+    <a mat-icon-button routerLink="/admin/transactions">
+      <mat-icon>arrow_back</mat-icon>
+    </a>
+    <h1 class="page-title">Détails de la Transaction</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <mat-card *ngIf="transaction" class="details-card">
+    <mat-card-header>
+      <mat-card-title>Référence : {{ transaction.reference }}</mat-card-title>
+      <mat-card-subtitle>
+        <span class="badge" [ngClass]="{
+          'badge-success': transaction.type === 'DEPOSIT',
+          'badge-danger': transaction.type === 'WITHDRAWAL',
+          'badge-info': transaction.type === 'TRANSFER'
+        }">{{ transaction.type }}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Montant</span>
+          <span class="detail-value">{{ transaction.amount | currency:'MAD' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">{{ transaction.date ? (transaction.date | date:'full') : '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ transaction.type === 'TRANSFER' ? 'Compte Source' : 'Compte Bancaire' }}</span>
+          <span class="detail-value">{{ transaction.bankAccountId }}</span>
+        </div>
+        <div *ngIf="transaction.type === 'TRANSFER'" class="detail-item">
+          <span class="detail-label">Compte Destination / Recipient</span>
+          <span class="detail-value">{{ transaction.recipientId ? transaction.recipientId : '-' }}</span>
+        </div>
+        <div class="detail-item reason-item">
+          <span class="detail-label">Raison</span>
+          <span class="detail-value">{{ transaction.reason || 'N/A' }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
