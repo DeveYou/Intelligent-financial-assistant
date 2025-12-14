@@ -5,12 +5,14 @@ import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
 import com.khaoula.transactionsservice.client.AuthClient;
 import com.khaoula.transactionsservice.client.BankAccountClient;
+import com.khaoula.transactionsservice.client.RecipientClient;
 import com.khaoula.transactionsservice.dto.BankAccountDTO;
 import com.khaoula.transactionsservice.dto.DepositRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.UserDTO;
 import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
+import com.khaoula.transactionsservice.dto.RecipientDTO;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +42,9 @@ class TransactionServiceImplTest {
 
     @Mock
     private BankAccountClient bankAccountClient;
+
+    @Mock
+    private RecipientClient recipientClient;
 
     @InjectMocks
     private TransactionServiceImpl transactionService;
@@ -217,6 +222,34 @@ class TransactionServiceImplTest {
         assertTrue(ex.getMessage().contains("Target account not found or inactive"));
     }
 
+    @Test
+    void transfer_shouldResolveRecipientByIban_whenTargetNotFoundAsAccount() {
+        // CAS: target account not found in account-service, but exists as recipient with IBAN
+        transferRequest.setTargetAccountId("IBAN-XYZ");
+
+        when(authClient.getUserById(1L)).thenReturn(user);
+        when(bankAccountClient.getAccountByRib("ACC-1")).thenReturn(bankAccount);
+        when(bankAccountClient.getAccountByRib("IBAN-XYZ")).thenReturn(null);
+
+        RecipientDTO recipientDTO = new RecipientDTO();
+        recipientDTO.setIban("IBAN-XYZ");
+        recipientDTO.setFullName("John Doe");
+        recipientDTO.setId(123L);
+
+        when(recipientClient.getByIban("IBAN-XYZ")).thenReturn(recipientDTO);
+        when(transactionRepository.save(any(Transaction.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        transactionService.transfer(1L, transferRequest);
+
+        ArgumentCaptor<Transaction> txCaptor = ArgumentCaptor.forClass(Transaction.class);
+        verify(transactionRepository, times(2)).save(txCaptor.capture());
+        Transaction finalTx = txCaptor.getAllValues().get(1);
+
+        assertEquals(TransactionStatus.COMPLETED, finalTx.getStatus());
+        assertEquals(123L, finalTx.getRecipientId());
+        verify(bankAccountClient).transfer(transferRequest);
+    }
+
     // =================================================================
     // General Tests
     // =================================================================
@@ -242,7 +275,7 @@ class TransactionServiceImplTest {
     private Transaction buildTransaction(Long id,
                                          TransactionType type,
                                          String bankAccountId,
-                                         String receiver,
+                                         Long recipientId,
                                          BigDecimal amount,
                                          String reason) {
         Transaction tx = new Transaction();
@@ -250,7 +283,7 @@ class TransactionServiceImplTest {
         tx.setUserId(1L);
         tx.setType(type);
         tx.setBankAccountId(bankAccountId);
-        tx.setReceiver(receiver);
+        tx.setRecipientId(recipientId);
         tx.setAmount(amount);
         tx.setReason(reason);
         tx.setReference("REF-" + id);

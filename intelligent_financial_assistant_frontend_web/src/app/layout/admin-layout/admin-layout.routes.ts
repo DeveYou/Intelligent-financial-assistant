@@ -27,7 +27,7 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'transactions',
-        loadComponent: () => import('../../features/transactions/transaction-list/transaction-list.component').then(m => m.TransactionListComponent)
+        loadChildren: () => import('../../features/transactions/transactions.routes').then(m => m.TRANSACTION_ROUTES)
       },
       {
         path: 'profile',

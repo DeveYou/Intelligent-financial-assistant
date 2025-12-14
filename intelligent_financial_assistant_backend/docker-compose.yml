@@ -8,6 +8,7 @@ volumes:
   auth_db_data:
   transactions_db_data:
   accounts_db_data:
+  recipient_db_data:
 
 services:
   discovery-service:
@@ -183,5 +184,49 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
+    networks:
+      - ifa_net
+
+  recipient-db:
+    image: postgres:14
+    container_name: recipient-db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: recipient_db
+      POSTGRES_USER: recipient_user
+      POSTGRES_PASSWORD: recipient_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - recipient_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recipient_user -d recipient_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  recipient-service:
+    build:
+      context: .
+      dockerfile: recipient-service/Dockerfile
+    image: ifa/recipient-service:latest
+    container_name: recipient-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      recipient-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://recipient-db:5432/recipient_db
+      DB_USERNAME: recipient_user
+      DB_PASSWORD: recipient_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8084
+      TZ: Africa/Casablanca
+    ports:
+      - "8084:8084"
     networks:
       - ifa_net

@@ -13,7 +13,7 @@ public class TransactionResponseDTO {
     private TransactionType type;
     private TransactionStatus status;
     private BigDecimal amount;
-    private String receiver;
+    private Long recipientId;
     private String reason;
     private OffsetDateTime date;
 
@@ -65,12 +65,12 @@ public class TransactionResponseDTO {
         this.amount = amount;
     }
 
-    public String getReceiver() {
-        return receiver;
+    public Long getRecipientId() {
+        return recipientId;
     }
 
-    public void setReceiver(String receiver) {
-        this.receiver = receiver;
+    public void setRecipientId(Long recipientId) {
+        this.recipientId = recipientId;
     }
 
     public String getReason() {
