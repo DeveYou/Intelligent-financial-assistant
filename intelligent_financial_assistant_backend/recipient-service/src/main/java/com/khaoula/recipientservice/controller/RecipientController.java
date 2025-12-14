@@ -9,6 +9,8 @@ import com.khaoula.recipientservice.dto.RecipientRequest;
 import com.khaoula.recipientservice.service.RecipientService;
 import org.springframework.web.bind.annotation.*;
 
+import com.khaoula.recipientservice.exception.ResourceNotFoundException;
+
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
