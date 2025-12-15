@@ -1,26 +1,76 @@
 package com.khaoula.transactionsservice.service;
 
-import com.khaoula.transactionsservice.dto.DepositRequestDTO;
-import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
-import com.khaoula.transactionsservice.dto.TransferRequestDTO;
-import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
+import com.khaoula.transactionsservice.dto.*;
+import lombok.Data;
+import org.springframework.data.domain.Page;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface TransactionService {
-    TransactionResponseDTO deposit(Long authenticatedUserId, DepositRequestDTO request);
-    TransactionResponseDTO withdraw(Long authenticatedUserId, WithdrawalRequestDTO request);
-    TransactionResponseDTO transfer(Long authenticatedUserId, TransferRequestDTO request);
-    List<TransactionResponseDTO> getHistoryByAccount(String bankAccountId);
-    TransactionResponseDTO getByReference(String reference);
-    List<TransactionResponseDTO> search(
-            String type,
-            String bankAccountId,
-            String reference,
-            String search,
-            OffsetDateTime startDate,
-            OffsetDateTime endDate
-    );
-}
 
+    /**
+     * Créer un dépôt
+     */
+    TransactionResponseDTO createDeposit(TransactionRequestDTO request, Long userId, String authHeader);
+
+    /**
+     * Créer un retrait
+     */
+    TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, Long userId, String authHeader);
+
+    /**
+     * Créer un transfert
+     */
+    TransactionResponseDTO createTransfer(TransactionRequestDTO request, Long userId, String authHeader);
+
+    /**
+     * Récupérer toutes les transactions (Admin)
+     */
+    Page<TransactionResponseDTO> getAllTransactions(TransactionFilterDTO filter);
+
+    /**
+     * Récupérer les transactions d'un utilisateur
+     */
+    List<TransactionResponseDTO> getUserTransactions(Long userId);
+
+    /**
+     * Récupérer les transactions d'un compte bancaire
+     */
+    List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId);
+
+    /**
+     * Récupérer une transaction par son ID
+     */
+    TransactionResponseDTO getTransactionById(Long id);
+
+    /**
+     * Récupérer une transaction par sa référence
+     */
+    TransactionResponseDTO getTransactionByReference(String reference);
+
+    /**
+     * Annuler une transaction (si PENDING)
+     */
+    TransactionResponseDTO cancelTransaction(Long id, Long userId);
+
+    /**
+     * Statistiques (Admin)
+     */
+    TransactionStatsDTO getTransactionStats();
+
+    @Data
+    class TransactionStatsDTO {
+        private Long totalTransactions;
+        private Long pendingTransactions;
+        private Long completedTransactions;
+        private Long failedTransactions;
+
+        public TransactionStatsDTO(Long total, Long pending, Long completed, Long failed) {
+            this.totalTransactions = total;
+            this.pendingTransactions = pending;
+            this.completedTransactions = completed;
+            this.failedTransactions = failed;
+        }
+
+    }
+}

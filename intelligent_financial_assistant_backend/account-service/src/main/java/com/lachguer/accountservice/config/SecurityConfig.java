@@ -1,10 +1,8 @@
 package com.lachguer.accountservice.config;
 
 import com.aitsaid.commonsecurity.security.GatewayAuthenticationFilter;
-import com.aitsaid.commonsecurity.security.MicroserviceSecurityConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,7 +12,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@Import(MicroserviceSecurityConfig.class)
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -31,7 +28,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/accounts").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/accounts/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/accounts").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(new org.springframework.web.filter.OncePerRequestFilter() {
                     @Override

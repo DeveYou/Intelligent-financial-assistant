@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // Active @PreAuthorize, @PostAuthorize, etc.
+@EnableMethodSecurity() // Active @PreAuthorize, @PostAuthorize, etc.
 public class MicroserviceSecurityConfig {
 
     private final GatewayAuthenticationFilter gatewayAuthenticationFilter;

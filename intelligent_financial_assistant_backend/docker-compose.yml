@@ -126,6 +126,7 @@ services:
       EUREKA_SERVER: http://discovery-service:8761/eureka
       SERVER_PORT: 8082
       TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
     ports:
       - "8082:8082"
     networks:
@@ -170,6 +171,7 @@ services:
       EUREKA_SERVER: http://discovery-service:8761/eureka
       SERVER_PORT: 8083
       TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
     ports:
       - "8083:8083"
     networks:
@@ -225,6 +227,7 @@ services:
       EUREKA_SERVER: http://discovery-service:8761/eureka
       SERVER_PORT: 8084
       TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
     ports:
       - "8084:8084"
     networks:

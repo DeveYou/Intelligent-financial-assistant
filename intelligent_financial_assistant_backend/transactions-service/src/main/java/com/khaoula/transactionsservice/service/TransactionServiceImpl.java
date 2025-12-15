@@ -1,261 +1,323 @@
 package com.khaoula.transactionsservice.service;
 
-import com.khaoula.transactionsservice.client.AuthClient;
-import com.khaoula.transactionsservice.client.BankAccountClient;
+import com.khaoula.transactionsservice.client.AccountClient;
 import com.khaoula.transactionsservice.client.RecipientClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
-import com.khaoula.transactionsservice.dto.BankAccountDTO;
-import com.khaoula.transactionsservice.dto.DepositRequestDTO;
-import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
-import com.khaoula.transactionsservice.dto.TransferRequestDTO;
-import com.khaoula.transactionsservice.dto.WithdrawalRequestDTO;
-import com.khaoula.transactionsservice.dto.UserDTO;
-import com.khaoula.transactionsservice.dto.RecipientDTO;
-import com.khaoula.transactionsservice.exception.DuplicateReferenceException;
+import com.khaoula.transactionsservice.dto.*;
+import com.khaoula.transactionsservice.exception.InsufficientBalanceException;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
+import com.khaoula.transactionsservice.exception.ResourceNotFoundException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final AuthClient authClient;
-    private final BankAccountClient bankAccountClient;
+    private final AccountClient accountClient;
     private final RecipientClient recipientClient;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AuthClient authClient, BankAccountClient bankAccountClient, RecipientClient recipientClient) {
-        this.transactionRepository = transactionRepository;
-        this.authClient = authClient;
-        this.bankAccountClient = bankAccountClient;
-        this.recipientClient = recipientClient;
-    }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public TransactionResponseDTO deposit(Long authenticatedUserId, DepositRequestDTO request) {
-        validateAmount(request.getAmount());
+    @Transactional
+    public TransactionResponseDTO createDeposit(TransactionRequestDTO request, Long userId, String authHeader) {
+        log.info("Creating deposit for user: {}, amount: {}", userId, request.getAmount());
 
-        UserDTO user = authClient.getUserById(authenticatedUserId);
-        if (user == null) {
-            throw new InvalidTransactionException("User not found with ID: " + authenticatedUserId);
+        // Valider le compte
+        AccountClient.AccountResponse account = accountClient.getAccountById(request.getBankAccountId(), authHeader);
+
+        if (!account.getIsActive()) {
+            throw new InvalidTransactionException("Account is not active");
         }
 
-        BankAccountDTO account = bankAccountClient.getAccountByRib(request.getBankAccountId());
-        if (account == null || !account.isActive() || !account.getUserId().equals(authenticatedUserId)) {
-            throw new InvalidTransactionException("Bank account not found, inactive, or does not belong to the user: " + request.getBankAccountId());
-        }
-
+        // Créer la transaction
         Transaction transaction = new Transaction();
-        transaction.setUserId(authenticatedUserId);
+        transaction.setUserId(userId);
         transaction.setBankAccountId(request.getBankAccountId());
+        transaction.setReference(generateReference());
         transaction.setType(TransactionType.DEPOSIT);
+        transaction.setStatus(TransactionStatus.PENDING);
         transaction.setAmount(request.getAmount());
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
-        transaction.setReference(generateUniqueReference());
-        transaction.setStatus(TransactionStatus.PENDING);
 
-        Transaction saved = transactionRepository.save(transaction);
+        // Sauvegarder
+        transaction = transactionRepository.save(transaction);
 
         try {
-            bankAccountClient.deposit(request);
-            saved.setStatus(TransactionStatus.COMPLETED);
+            // Mettre à jour le solde
+            accountClient.updateBalance(
+                    account.getId(),
+                    new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "ADD"),
+                    authHeader
+            );
+
+            // Marquer comme complétée
+            transaction.setStatus(TransactionStatus.COMPLETED);
+            transaction = transactionRepository.save(transaction);
+
+            log.info("Deposit completed successfully: {}", transaction.getReference());
         } catch (Exception e) {
-            saved.setStatus(TransactionStatus.FAILED);
-            // Optionally log the exception e
+            log.error("Failed to complete deposit: {}", e.getMessage());
+            transaction.setStatus(TransactionStatus.FAILED);
+            transactionRepository.save(transaction);
+            throw new InvalidTransactionException("Failed to process deposit: " + e.getMessage());
         }
 
-        return toDto(transactionRepository.save(saved));
+        return mapToResponseDTO(transaction);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public TransactionResponseDTO withdraw(Long authenticatedUserId, WithdrawalRequestDTO request) {
-        validateAmount(request.getAmount());
+    @Transactional
+    public TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, Long userId, String authHeader) {
+        log.info("Creating withdrawal for user: {}, amount: {}", userId, request.getAmount());
 
-        UserDTO user = authClient.getUserById(authenticatedUserId);
-        if (user == null) {
-            throw new InvalidTransactionException("User not found with ID: " + authenticatedUserId);
+        // Valider le compte
+        AccountClient.AccountResponse account = accountClient.getAccountById(request.getBankAccountId(), authHeader);
+
+        if (!account.getIsActive()) {
+            throw new InvalidTransactionException("Account is not active");
         }
 
-        BankAccountDTO account = bankAccountClient.getAccountByRib(request.getBankAccountId());
-        if (account == null || !account.isActive() || !account.getUserId().equals(authenticatedUserId)) {
-            throw new InvalidTransactionException("Bank account not found, inactive, or does not belong to the user: " + request.getBankAccountId());
+        // Vérifier le solde
+        if (account.getBalance() < request.getAmount().doubleValue()) {
+            throw new InsufficientBalanceException("Insufficient balance for withdrawal");
         }
 
-        if (account.getBalance() == null || account.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new InvalidTransactionException("Insufficient funds for account: " + request.getBankAccountId());
-        }
-
+        // Créer la transaction
         Transaction transaction = new Transaction();
-        transaction.setUserId(authenticatedUserId);
+        transaction.setUserId(userId);
         transaction.setBankAccountId(request.getBankAccountId());
+        transaction.setReference(generateReference());
         transaction.setType(TransactionType.WITHDRAWAL);
+        transaction.setStatus(TransactionStatus.PENDING);
         transaction.setAmount(request.getAmount());
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
-        transaction.setReference(generateUniqueReference());
-        transaction.setStatus(TransactionStatus.PENDING);
 
-        Transaction saved = transactionRepository.save(transaction);
+        transaction = transactionRepository.save(transaction);
 
         try {
-            bankAccountClient.withdraw(request);
-            saved.setStatus(TransactionStatus.COMPLETED);
+            // Mettre à jour le solde
+            accountClient.updateBalance(
+                    account.getId(),
+                    new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
+                    authHeader
+            );
+
+            // Marquer comme complétée
+            transaction.setStatus(TransactionStatus.COMPLETED);
+            transaction = transactionRepository.save(transaction);
+
+            log.info("Withdrawal completed successfully: {}", transaction.getReference());
         } catch (Exception e) {
-            saved.setStatus(TransactionStatus.FAILED);
+            log.error("Failed to complete withdrawal: {}", e.getMessage());
+            transaction.setStatus(TransactionStatus.FAILED);
+            transactionRepository.save(transaction);
+            throw new InvalidTransactionException("Failed to process withdrawal: " + e.getMessage());
         }
 
-        return toDto(transactionRepository.save(saved));
+        return mapToResponseDTO(transaction);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public TransactionResponseDTO transfer(Long authenticatedUserId, TransferRequestDTO request) {
-        validateAmount(request.getAmount());
+    @Transactional
+    public TransactionResponseDTO createTransfer(TransactionRequestDTO request, Long userId, String authHeader) {
+        log.info("Creating transfer for user: {}, amount: {}", userId, request.getAmount());
 
-        if (request.getSourceAccountId().equals(request.getTargetAccountId())) {
-            throw new InvalidTransactionException("Source and target accounts must be different for a transfer");
+        // Valider le compte source
+        AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(), authHeader);
+
+        if (!sourceAccount.getIsActive()) {
+            throw new InvalidTransactionException("Source account is not active");
         }
 
-        UserDTO user = authClient.getUserById(authenticatedUserId);
-        if (user == null) {
-            throw new InvalidTransactionException("Authenticated user not found with ID: " + authenticatedUserId);
+        // Vérifier le solde
+        if (sourceAccount.getBalance() < request.getAmount().doubleValue()) {
+            throw new InsufficientBalanceException("Insufficient balance for transfer");
         }
 
-        BankAccountDTO source = bankAccountClient.getAccountByRib(request.getSourceAccountId());
-        BankAccountDTO target = bankAccountClient.getAccountByRib(request.getTargetAccountId());
+        // MODIFICATION IMPORTANTE ICI :
+        // Récupérer le destinataire - Utiliser IBAN au lieu de ID
+        RecipientClient.RecipientResponse recipient = null;
+        String recipientIban = null;
 
-        // Si la target n'existe pas côté bank-account, tenter de la résoudre via recipient-service (IBAN)
-        boolean targetResolvedViaRecipient = false;
-        if (target == null) {
-            RecipientDTO recipient = null;
-            try {
-                recipient = recipientClient.getByIban(request.getTargetAccountId());
-            } catch (Exception e) {
-                // ignore, we'll fail later if not resolvable
-            }
-            if (recipient != null) {
-                // marquer receiver avec l'IBAN/nom selon besoin
-                request.setTargetAccountId(recipient.getIban());
-                targetResolvedViaRecipient = true;
-            }
-        }
+        if (request.getRecipientIban() != null) {
+            // Utiliser directement l'IBAN fourni
+            recipientIban = request.getRecipientIban();
 
-        if (source == null || !source.isActive()) {
-            throw new InvalidTransactionException("Source account not found or inactive: " + request.getSourceAccountId());
-        }
-        if (target == null && !targetResolvedViaRecipient) {
-            // après tentative recipient, toujours null => erreur
-            throw new InvalidTransactionException("Target account not found or inactive: " + request.getTargetAccountId());
-        }
-        if (target != null && !target.isActive()) {
-            throw new InvalidTransactionException("Target account not found or inactive: " + request.getTargetAccountId());
-        }
-
-        if (!source.getUserId().equals(authenticatedUserId)) {
-            throw new InvalidTransactionException("Source account does not belong to the authenticated user");
-        }
-
-        if (source.getBalance() == null || source.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new InvalidTransactionException("Insufficient funds in source account: " + request.getSourceAccountId());
-        }
-
-        Transaction transaction = new Transaction();
-        transaction.setUserId(authenticatedUserId);
-        transaction.setBankAccountId(request.getSourceAccountId());
-        // Si la target a été résolue via recipient-service, on stocke son id
-        if (targetResolvedViaRecipient) {
-            RecipientDTO recipient = recipientClient.getByIban(request.getTargetAccountId());
-            if (recipient != null && recipient.getId() != null) {
-                transaction.setRecipientId(recipient.getId());
-            }
+            log.info("Fetching recipient by IBAN: {}", recipientIban);
+            RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response =
+                    recipientClient.getRecipientByIban(recipientIban, authHeader);
+            recipient = response.getData();
+        } else if (request.getRecipientId() != null) {
+            // Si on a un ID, il faut d'abord récupérer l'IBAN
+            // Option 1: Stocker l'IBAN localement
+            // Option 2: Modifier le frontend pour envoyer l'IBAN directement
+            throw new InvalidTransactionException("Recipient by ID not supported. Please provide IBAN directly.");
         } else {
-            // transferts vers un autre account : recipientId non renseigné
-            transaction.setRecipientId(null);
+            throw new InvalidTransactionException("Recipient IBAN is required for transfer");
         }
+
+        // Créer la transaction
+        Transaction transaction = new Transaction();
+        transaction.setUserId(userId);
+        transaction.setBankAccountId(request.getBankAccountId());
+        transaction.setReference(generateReference());
         transaction.setType(TransactionType.TRANSFER);
+        transaction.setStatus(TransactionStatus.PENDING);
         transaction.setAmount(request.getAmount());
+
+        // Stocker l'ID du bénéficiaire si disponible, sinon stocker l'IBAN
+        if (recipient != null) {
+            transaction.setRecipientId(recipient.getId());
+        } else {
+            // Stocker une référence à l'IBAN
+            transaction.setRecipientId(null); // ou créer une entrée spéciale
+            // Alternative: ajouter un champ recipientIban dans Transaction
+        }
+
         transaction.setReason(request.getReason());
         transaction.setDate(OffsetDateTime.now());
-        transaction.setReference(generateUniqueReference());
-        transaction.setStatus(TransactionStatus.PENDING);
 
-        Transaction saved = transactionRepository.save(transaction);
+        transaction = transactionRepository.save(transaction);
 
         try {
-            bankAccountClient.transfer(request);
-            saved.setStatus(TransactionStatus.COMPLETED);
+            // Débiter le compte source
+            accountClient.updateBalance(
+                    sourceAccount.getId(),
+                    new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
+                    authHeader
+            );
+
+            // TODO: Créditer le compte destinataire si interne
+            // Pour l'instant, on considère que le transfert est vers un compte externe
+
+            // Marquer comme complétée
+            transaction.setStatus(TransactionStatus.COMPLETED);
+            transaction = transactionRepository.save(transaction);
+
+            log.info("Transfer completed successfully: {} to IBAN: {}",
+                    transaction.getReference(), recipientIban);
         } catch (Exception e) {
-            saved.setStatus(TransactionStatus.FAILED);
+            log.error("Failed to complete transfer: {}", e.getMessage());
+            transaction.setStatus(TransactionStatus.FAILED);
+            transactionRepository.save(transaction);
+            throw new InvalidTransactionException("Failed to process transfer: " + e.getMessage());
         }
 
-        return toDto(transactionRepository.save(saved));
+        return mapToResponseDTO(transaction, recipient);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public List<TransactionResponseDTO> search(
-            String type, String bankAccountId, String reference,
-            String search, OffsetDateTime startDate, OffsetDateTime endDate
-    ) {
-        TransactionType transactionType = type != null ? TransactionType.valueOf(type.toUpperCase()) : null;
-        return transactionRepository.searchTransactions(
-                        transactionType, bankAccountId, reference, search, startDate, endDate
-                ).stream()
-                .map(this::toDto)
+    public Page<TransactionResponseDTO> getAllTransactions(TransactionFilterDTO filter) {
+        Pageable pageable = PageRequest.of(
+                filter.getPage(),
+                filter.getSize(),
+                Sort.Direction.fromString(filter.getSortDirection()),
+                filter.getSortBy()
+        );
+
+        Page<Transaction> transactions = transactionRepository.findByFilters(
+                filter.getUserId(),
+                filter.getBankAccountId(),
+                filter.getType(),
+                filter.getStatus(),
+                filter.getStartDate(),
+                filter.getEndDate(),
+                pageable
+        );
+
+        return transactions.map(this::mapToResponseDTO);
+    }
+
+    @Override
+    public List<TransactionResponseDTO> getUserTransactions(Long userId) {
+        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        return transactions.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
+        List<Transaction> transactions = transactionRepository.findByBankAccountId(bankAccountId);
+        return transactions.stream()
+                .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public List<TransactionResponseDTO> getHistoryByAccount(String bankAccountId) {
-        return transactionRepository.findByBankAccountIdOrderByDateDesc(bankAccountId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public TransactionResponseDTO getTransactionById(Long id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
+        return mapToResponseDTO(transaction);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public TransactionResponseDTO getByReference(String reference) {
+    public TransactionResponseDTO getTransactionByReference(String reference) {
         Transaction transaction = transactionRepository.findByReference(reference)
-                .orElseThrow(() -> new InvalidTransactionException("Transaction not found with reference: " + reference));
-        return toDto(transaction);
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with reference: " + reference));
+        return mapToResponseDTO(transaction);
     }
 
-    private void validateAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidTransactionException("Amount must be greater than zero");
+    @Override
+    @Transactional
+    public TransactionResponseDTO cancelTransaction(Long id, Long userId) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + id));
+
+        if (!transaction.getUserId().equals(userId)) {
+            throw new InvalidTransactionException("You are not authorized to cancel this transaction");
         }
+
+        if (transaction.getStatus() != TransactionStatus.PENDING) {
+            throw new InvalidTransactionException("Only pending transactions can be cancelled");
+        }
+
+        transaction.setStatus(TransactionStatus.CANCELLED);
+        transaction = transactionRepository.save(transaction);
+
+        log.info("Transaction cancelled: {}", transaction.getReference());
+        return mapToResponseDTO(transaction);
     }
 
-    private String generateUniqueReference() {
-        String ref;
-        do {
-            ref = UUID.randomUUID().toString();
-        } while (transactionRepository.findByReference(ref).isPresent());
+    @Override
+    public TransactionStatsDTO getTransactionStats() {
+        Long total = transactionRepository.count();
+        Long pending = transactionRepository.countByStatus(TransactionStatus.PENDING);
+        Long completed = transactionRepository.countByStatus(TransactionStatus.COMPLETED);
+        Long failed = transactionRepository.countByStatus(TransactionStatus.FAILED);
 
-        return ref;
+        return new TransactionStatsDTO(total, pending, completed, failed);
     }
 
-    private TransactionResponseDTO toDto(Transaction transaction) {
+    // Helper methods
+    private String generateReference() {
+        return "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private TransactionResponseDTO mapToResponseDTO(Transaction transaction) {
         TransactionResponseDTO dto = new TransactionResponseDTO();
         dto.setId(transaction.getId());
+        dto.setUserId(transaction.getUserId());
         dto.setBankAccountId(transaction.getBankAccountId());
         dto.setReference(transaction.getReference());
         dto.setType(transaction.getType());
@@ -264,6 +326,15 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setRecipientId(transaction.getRecipientId());
         dto.setReason(transaction.getReason());
         dto.setDate(transaction.getDate());
+        return dto;
+    }
+
+    private TransactionResponseDTO mapToResponseDTO(Transaction transaction, RecipientClient.RecipientResponse recipient) {
+        TransactionResponseDTO dto = mapToResponseDTO(transaction);
+        if (recipient != null) {
+            dto.setRecipientName(recipient.getFullName());
+            dto.setRecipientIban(recipient.getIban());
+        }
         return dto;
     }
 }

@@ -32,34 +32,48 @@ public class GlobalAuthenticationFilter implements GlobalFilter, Ordered {
                 return onError(exchange, "Missing authorization header", HttpStatus.UNAUTHORIZED);
             }
 
-            String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                authHeader = authHeader.substring(7);
+            // Conserver le header Authorization COMPLET
+            String fullAuthHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+            // Extraire le token pour validation
+            String tokenForValidation = fullAuthHeader;
+            if (fullAuthHeader != null && fullAuthHeader.startsWith("Bearer ")) {
+                tokenForValidation = fullAuthHeader.substring(7);
             }
 
             try {
-                if (!jwtUtil.isTokenValid(authHeader)) {
+                if (!jwtUtil.isTokenValid(tokenForValidation)) {
                     System.out.println("DEBUG GLOBAL FILTER: Token invalid");
                     return onError(exchange, "Invalid Access Token", HttpStatus.UNAUTHORIZED);
                 }
 
-                Claims claims = jwtUtil.extractAllClaims(authHeader);
+                Claims claims = jwtUtil.extractAllClaims(tokenForValidation);
                 String username = claims.getSubject();
                 List<String> roles = claims.get("roles", List.class);
-                
+
+                Object userIdObj = claims.get("userId");
+                String userId = "";
+                if (userIdObj != null) {
+                    userId = String.valueOf(userIdObj);
+                }
+
                 System.out.println("DEBUG GLOBAL FILTER: Token valid. User: " + username + ", Roles: " + roles);
 
                 if (username == null) username = "";
                 if (roles == null) roles = List.of();
 
+                // PROPAGER LE HEADER AUTHORIZATION COMPLET (avec "Bearer ")
                 ServerHttpRequest request = exchange.getRequest()
                         .mutate()
+                        .header("Authorization", fullAuthHeader) // ← PROPAGER LE HEADER COMPLET
                         .header("X-Auth-User", username)
                         .header("X-Auth-Roles", String.join(",", roles))
+                        .header("X-Auth-User-Id", userId)
                         .header("X-Auth-Token-Validated", "true")
                         .build();
 
-                System.out.println("DEBUG GLOBAL FILTER: Added headers X-Auth-User=" + username + ", X-Auth-Roles=" + String.join(",", roles));
+                System.out.println("DEBUG GLOBAL FILTER: Added headers including Authorization: " +
+                        (fullAuthHeader != null ? "Bearer token present" : "null"));
 
                 return chain.filter(exchange.mutate().request(request).build());
 

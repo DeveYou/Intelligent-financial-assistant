@@ -1,6 +1,8 @@
 package com.khaoula.transactionsservice.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
@@ -11,6 +13,7 @@ import java.time.OffsetDateTime;
         @Index(name = "idx_transaction_bank_account", columnList = "bank_account_id"),
         @Index(name = "idx_transaction_date", columnList = "tx_date")
 })
+@Data
 public class Transaction {
 
     @Id
@@ -20,8 +23,8 @@ public class Transaction {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "bank_account_id", nullable = false, length = 100)
-    private String bankAccountId;
+    @Column(name = "bank_account_id", nullable = false)
+    private Long bankAccountId;
 
     @Column(name = "reference", nullable = false, length = 100)
     private String reference;
@@ -47,85 +50,5 @@ public class Transaction {
     private OffsetDateTime date;
 
     public Transaction() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getBankAccountId() {
-        return bankAccountId;
-    }
-
-    public void setBankAccountId(String bankAccountId) {
-        this.bankAccountId = bankAccountId;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public TransactionType getType() {
-        return type;
-    }
-
-    public void setType(TransactionType type) {
-        this.type = type;
-    }
-
-    public TransactionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TransactionStatus status) {
-        this.status = status;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public Long getRecipientId() {
-        return recipientId;
-    }
-
-    public void setRecipientId(Long recipientId) {
-        this.recipientId = recipientId;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public OffsetDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(OffsetDateTime date) {
-        this.date = date;
     }
 }
