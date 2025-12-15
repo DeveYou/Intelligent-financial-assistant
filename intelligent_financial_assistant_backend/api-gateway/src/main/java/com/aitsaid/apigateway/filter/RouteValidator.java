@@ -1,0 +1,37 @@
+package com.aitsaid.apigateway.filter;
+
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.function.Predicate;
+
+@Component
+public class RouteValidator {
+
+    public static final List<String> openApiEndpoints = List.of(
+            "/auth/register",
+            "/auth/login",
+            "/eureka"
+    );
+
+    public Predicate<ServerHttpRequest> isSecured =
+            request -> {
+                // Allow OPTIONS requests for CORS
+                if (request.getMethod().name().equals("OPTIONS")) {
+                    return false;
+                }
+
+                String path = request.getURI().getPath();
+                String method = request.getMethod().name();
+
+                // Si c'est POST /api/accounts, c'est ouvert (pour l'inscription)
+                if (path.equals("/api/accounts/register") && method.equals("POST")) {
+                    return false;
+                }
+                return openApiEndpoints
+                        .stream()
+                        .noneMatch(uri -> request.getURI().getPath().contains(uri));
+            };
+
+}

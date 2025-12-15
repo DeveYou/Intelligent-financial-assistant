@@ -1,0 +1,30 @@
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.image-section {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+mat-dialog-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}

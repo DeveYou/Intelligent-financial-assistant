@@ -1,15 +1,234 @@
-version: '3.8'
-services:
-  postgres:
-    image: postgres:14
-    environment:
-      POSTGRES_DB: finance_db
-      POSTGRES_USER: finance_user
-      POSTGRES_PASSWORD: 1234
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  ifa_net:
+    driver: bridge
 
 volumes:
-  postgres_data:
+  auth_db_data:
+  transactions_db_data:
+  accounts_db_data:
+  recipient_db_data:
+
+services:
+  discovery-service:
+    build:
+      context: .
+      dockerfile: discovery-service/Dockerfile
+    image: ifa/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    image: ifa/api-gateway:latest
+    container_name: api-gateway
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      TZ: Africa/Casablanca
+    networks:
+      - ifa_net
+
+  auth-db:
+    image: postgres:14
+    container_name: auth-db
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    image: ifa/auth-service:latest
+    container_name: auth-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://auth-db:5432/auth_db
+      DB_USERNAME: auth_user
+      DB_PASSWORD: auth_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8081
+      TZ: Africa/Casablanca
+    ports:
+      - "8081:8081"
+    networks:
+      - ifa_net
+
+  transactions-db:
+    image: postgres:14
+    container_name: transactions-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: transactions_db
+      POSTGRES_USER: transactions_user
+      POSTGRES_PASSWORD: transactions_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - transactions_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transactions_user -d transactions_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  transactions-service:
+    build:
+      context: .
+      dockerfile: transactions-service/Dockerfile
+    image: ifa/transactions-service:latest
+    container_name: transactions-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      transactions-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://transactions-db:5432/transactions_db
+      DB_USERNAME: transactions_user
+      DB_PASSWORD: transactions_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8082
+      TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
+    ports:
+      - "8082:8082"
+    networks:
+      - ifa_net
+
+  accounts-db:
+    image: postgres:14
+    container_name: accounts-db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: accounts_db
+      POSTGRES_USER: accounts_user
+      POSTGRES_PASSWORD: accounts_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - accounts_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U accounts_user -d accounts_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  account-service:
+    build:
+      context: .
+      dockerfile: account-service/Dockerfile
+    image: ifa/account-service:latest
+    container_name: account-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      accounts-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://accounts-db:5432/accounts_db
+      DB_USERNAME: accounts_user
+      DB_PASSWORD: accounts_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8083
+      TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
+    ports:
+      - "8083:8083"
+    networks:
+      - ifa_net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - ifa_net
+
+  recipient-db:
+    image: postgres:14
+    container_name: recipient-db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: recipient_db
+      POSTGRES_USER: recipient_user
+      POSTGRES_PASSWORD: recipient_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - recipient_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recipient_user -d recipient_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  recipient-service:
+    build:
+      context: .
+      dockerfile: recipient-service/Dockerfile
+    image: ifa/recipient-service:latest
+    container_name: recipient-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      recipient-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://recipient-db:5432/recipient_db
+      DB_USERNAME: recipient_user
+      DB_PASSWORD: recipient_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8084
+      TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
+    ports:
+      - "8084:8084"
+    networks:
+      - ifa_net
