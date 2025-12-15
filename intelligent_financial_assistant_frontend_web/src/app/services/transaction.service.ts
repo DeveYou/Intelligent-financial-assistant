@@ -9,59 +9,29 @@ import { AuthService } from '../core/auth/auth.service';
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = `${environment.apiBaseUrl}/transactions`;
+  private apiUrl = `${environment.apiBaseUrl}/transactions-service/admin/transactions`;
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(private http: HttpClient) { }
 
-  private buildHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
-  }
-
-  deposit(depositRequest: any): Observable<Transaction> {
-    // ensure userId is present
-    const userId = this.authService.getCurrentUser()?.id;
-    const body = { userId, bankAccountId: depositRequest.bankAccountId, amount: depositRequest.amount, reason: depositRequest.reason };
-    return this.http.post<Transaction>(`${this.apiUrl}/deposit`, body, { headers: this.buildHeaders() });
-  }
-
-  withdraw(withdrawalRequest: any): Observable<Transaction> {
-    const userId = this.authService.getCurrentUser()?.id;
-    const body = { userId, bankAccountId: withdrawalRequest.bankAccountId, amount: withdrawalRequest.amount, reason: withdrawalRequest.reason };
-    return this.http.post<Transaction>(`${this.apiUrl}/withdrawal`, body, { headers: this.buildHeaders() });
-  }
-
-  transfer(transferRequest: any): Observable<Transaction> {
-    const userId = this.authService.getCurrentUser()?.id;
-    const body = {
-      userId,
-      sourceAccountId: transferRequest.sourceBankAccountId || transferRequest.sourceAccountId || transferRequest.bankAccountId,
-      targetAccountId: transferRequest.destinationBankAccountId || transferRequest.targetAccountId,
-      amount: transferRequest.amount,
-      reason: transferRequest.reason
-    };
-    return this.http.post<Transaction>(`${this.apiUrl}/transfer`, body, { headers: this.buildHeaders() });
-  }
-
-  getHistoryByAccount(bankAccountId: string): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.apiUrl}/by-account/${bankAccountId}`, { headers: this.buildHeaders() });
-  }
-
-  getByReference(reference: string): Observable<Transaction> {
-    return this.http.get<Transaction>(`${this.apiUrl}/by-reference/${reference}`, { headers: this.buildHeaders() });
-  }
-
-  search(params: any): Observable<Transaction[]> {
+  // Pour admin - Récupérer toutes les transactions avec pagination
+ getAllTransactions(params: any): Observable<any> {
     let httpParams = new HttpParams();
+    
+    // Ajouter tous les paramètres de filtrage
     Object.keys(params).forEach(key => {
-      if (params[key]) {
+      if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
         httpParams = httpParams.append(key, params[key]);
       }
     });
-    return this.http.get<Transaction[]>(`${this.apiUrl}/search`, { params: httpParams, headers: this.buildHeaders() });
+    
+    // Ajouter la pagination par défaut si non spécifiée
+    if (!params.page) httpParams = httpParams.append('page', '0');
+    if (!params.size) httpParams = httpParams.append('size', '10');
+    
+    return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
+
+  getByReference(reference: string): Observable<Transaction> {
+  return this.http.get<Transaction>(`${this.apiUrl}/reference/${reference}`);
+}
 }

@@ -1,8 +1,11 @@
 package com.khaoula.transactionsservice.controller;
 
 
+import com.khaoula.transactionsservice.domain.TransactionStatus;
+import com.khaoula.transactionsservice.domain.TransactionType;
 import com.khaoula.transactionsservice.dto.TransactionFilterDTO;
 import com.khaoula.transactionsservice.dto.TransactionRequestDTO;
+import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.service.TransactionService;
 import jakarta.validation.Valid;
@@ -15,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 
@@ -49,7 +54,46 @@ public class TransactionAdminController {
         TransactionFilterDTO filter = new TransactionFilterDTO();
         filter.setUserId(userId);
         filter.setBankAccountId(bankAccountId);
-        // TODO: Parse type, status, dates
+
+        // Parser le type
+        if (type != null && !type.isEmpty()) {
+            try {
+                filter.setType(TransactionType.valueOf(type.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid transaction type: {}", type);
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        // Parser le status
+        if (status != null && !status.isEmpty()) {
+            try {
+                filter.setStatus(TransactionStatus.valueOf(status.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid transaction status: {}", status);
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        // Parser les dates
+        if (startDate != null && !startDate.isEmpty()) {
+            try {
+                filter.setStartDate(OffsetDateTime.parse(startDate));
+            } catch (DateTimeParseException e) {
+                log.warn("Invalid start date format: {}", startDate);
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        if (endDate != null && !endDate.isEmpty()) {
+            try {
+                filter.setEndDate(OffsetDateTime.parse(endDate));
+            } catch (DateTimeParseException e) {
+                log.warn("Invalid end date format: {}", endDate);
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
         filter.setPage(page);
         filter.setSize(size);
         filter.setSortBy(sortBy);
@@ -79,10 +123,8 @@ public class TransactionAdminController {
     @GetMapping("/reference/{reference}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> getByReference(
-            @PathVariable String reference,
-            Authentication authentication) {
+            @PathVariable String reference) {
 
-        log.info("Admin {} retrieving transaction by reference {}", authentication.getName(), reference);
         TransactionResponseDTO transaction = transactionService.getTransactionByReference(reference);
         return ResponseEntity.ok(transaction);
     }
@@ -153,7 +195,7 @@ public class TransactionAdminController {
     @PostMapping("/transfer")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createTransfer(
-            @Valid @RequestBody TransactionRequestDTO request,
+            @Valid @RequestBody TransferRequestDTO request,
             @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {

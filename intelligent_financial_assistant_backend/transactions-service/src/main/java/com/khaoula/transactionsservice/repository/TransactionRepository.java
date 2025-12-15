@@ -30,8 +30,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "(:bankAccountId IS NULL OR t.bankAccountId = :bankAccountId) AND " +
             "(:type IS NULL OR t.type = :type) AND " +
             "(:status IS NULL OR t.status = :status) AND " +
-            "(:startDate IS NULL OR t.date >= :startDate) AND " +
-            "(:endDate IS NULL OR t.date <= :endDate)")
+            "(cast(:startDate as timestamp) IS NULL OR t.date >= :startDate) AND " +
+            "(cast(:endDate as timestamp) IS NULL OR t.date <= :endDate)")
     Page<Transaction> findByFilters(@Param("userId") Long userId,
                                     @Param("bankAccountId") Long bankAccountId,
                                     @Param("type") TransactionType type,

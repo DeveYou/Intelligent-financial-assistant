@@ -23,7 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   ]
 })
 export class TransactionDetailsComponent implements OnInit {
-  transaction: Transaction | undefined;
+  transaction: Transaction | null = null;
   loading = true;
   error: string | null = null;
 
@@ -35,17 +35,71 @@ export class TransactionDetailsComponent implements OnInit {
   ngOnInit(): void {
     const reference = this.route.snapshot.paramMap.get('reference');
     if (reference) {
-      this.transactionService.getByReference(reference).subscribe({
-        next: (data: Transaction) => {
-          this.transaction = data;
-          this.loading = false;
-        },
-        error: (err) => {
-          this.error = 'Échec du chargement des détails de la transaction.';
-          this.loading = false;
-          console.error(err);
-        }
-      });
+      this.loadTransactionByReference(reference);
+    } else {
+      this.error = 'Référence de transaction non fournie.';
+      this.loading = false;
     }
   }
+
+  private loadTransactionByReference(reference: string): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.transactionService.getByReference(reference).subscribe({
+      next: (data: Transaction) => {
+        this.transaction = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Échec du chargement des détails de la transaction.';
+        this.loading = false;
+        console.error('Erreur:', err);
+      }
+    });
+  }
+
+  getTypeLabel(type?: string): string {
+    if (!type) return 'Inconnu';
+    switch(type) {
+      case 'DEPOSIT': return 'Dépôt';
+      case 'WITHDRAWAL': return 'Retrait';
+      case 'TRANSFER': return 'Transfert';
+      default: return type;
+    }
+  }
+
+  getStatusLabel(status?: string): string {
+    if (!status) return 'Inconnu';
+    switch(status) {
+      case 'PENDING': return 'En attente';
+      case 'COMPLETED': return 'Complétée';
+      case 'FAILED': return 'Échouée';
+      case 'CANCELLED': return 'Annulée';
+      default: return status;
+    }
+  }
+
+  formatDate(dateString?: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
+  printDetails(): void {
+    window.print();
+  }
+
+  cancelTransaction(): void {
+   
+      alert('Transaction annulée avec succès.'); 
+      }
+
 }
