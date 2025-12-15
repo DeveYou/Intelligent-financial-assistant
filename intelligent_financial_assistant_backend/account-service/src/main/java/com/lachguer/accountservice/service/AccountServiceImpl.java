@@ -93,6 +93,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public BankAccountResponseDTO getAccountByIBAN(String iban) {
+        BankAccount bankAccount = bankAccountRepository.findByRib(iban);
+
+        //enrichAccountWithUser(bankAccount);
+
+        return accountMapper.fromBankAccount(bankAccount);
+    }
+
+    @Override
     public List<BankAccountResponseDTO> getAccounts() {
         List<BankAccount> bankAccounts = bankAccountRepository.findAll();
         bankAccounts.forEach(this::enrichAccountWithUser);

@@ -9,6 +9,7 @@ public interface AccountService {
     BankAccountResponseDTO addAccount(BankAccountRequestDTO bankAccountDTO);
 
     BankAccountResponseDTO getAccountById(Long id);
+    BankAccountResponseDTO getAccountByIBAN(String iban);
 
     List<BankAccountResponseDTO> getAccounts();
 

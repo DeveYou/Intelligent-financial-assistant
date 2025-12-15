@@ -34,6 +34,12 @@ public class AccountController {
         return accountService.getAccountById(id);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/iban/{iban}")
+    public BankAccountResponseDTO getAccountById(@PathVariable String iban) {
+        return accountService.getAccountByIBAN(iban);
+    }
+
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, jakarta.servlet.http.HttpServletRequest request) {
@@ -103,6 +109,8 @@ public class AccountController {
         accountService.updateBalance(id, request.getAmount(), request.getOperation());
         return ResponseEntity.ok().build();
     }
+
+
 
     @Data
     public static class BalanceUpdateRequest {

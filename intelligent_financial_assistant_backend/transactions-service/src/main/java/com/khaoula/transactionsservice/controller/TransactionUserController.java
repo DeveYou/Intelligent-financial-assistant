@@ -2,6 +2,7 @@ package com.khaoula.transactionsservice.controller;
 
 import com.khaoula.transactionsservice.domain.TransactionType;
 import com.khaoula.transactionsservice.dto.TransactionRequestDTO;
+import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.service.TransactionService;
 import jakarta.validation.Valid;
@@ -63,7 +64,6 @@ public class TransactionUserController {
             Authentication authentication) {
 
         Long userId = getUserIdFromHeader(userIdHeader, authentication);
-        request.setType(TransactionType.WITHDRAWAL);
 
         log.info("User {} initiating withdrawal of {}", userId, request.getAmount());
         TransactionResponseDTO response = transactionService.createWithdrawal(request, userId, authHeader);
@@ -77,16 +77,13 @@ public class TransactionUserController {
     @PostMapping("/transfer")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<TransactionResponseDTO> transfer(
-            @Valid @RequestBody TransactionRequestDTO request,
+            @Valid @RequestBody TransferRequestDTO request,
             @RequestHeader("Authorization") String authHeader,
             @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
             Authentication authentication) {
 
         Long userId = getUserIdFromHeader(userIdHeader, authentication);
-        request.setType(TransactionType.TRANSFER);
 
-        log.info("User {} initiating transfer of {} to recipient {}",
-                userId, request.getAmount(), request.getRecipientId());
         TransactionResponseDTO response = transactionService.createTransfer(request, userId, authHeader);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -106,64 +103,6 @@ public class TransactionUserController {
 
         List<TransactionResponseDTO> transactions = transactionService.getUserTransactions(userId);
         return ResponseEntity.ok(transactions);
-    }
-
-    /**
-     * Récupérer les transactions d'un compte spécifique
-     */
-    @GetMapping("/account/{accountId}")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<List<TransactionResponseDTO>> getAccountTransactions(
-            @PathVariable Long accountId,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-        log.info("User {} retrieving transactions for account {}", userId, accountId);
-
-        // TODO: Vérifier que l'utilisateur est propriétaire du compte
-        List<TransactionResponseDTO> transactions = transactionService.getAccountTransactions(accountId);
-        return ResponseEntity.ok(transactions);
-    }
-
-    /**
-     * Récupérer une transaction par référence
-     */
-    @GetMapping("/reference/{reference}")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<TransactionResponseDTO> getByReference(
-            @PathVariable String reference,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-        log.info("User {} retrieving transaction by reference {}", userId, reference);
-
-        TransactionResponseDTO transaction = transactionService.getTransactionByReference(reference);
-
-        // Vérifier que la transaction appartient à l'utilisateur
-        if (!transaction.getUserId().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        return ResponseEntity.ok(transaction);
-    }
-
-    /**
-     * Annuler une transaction (seulement si PENDING)
-     */
-    @PostMapping("/{id}/cancel")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<TransactionResponseDTO> cancelTransaction(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-        log.info("User {} attempting to cancel transaction {}", userId, id);
-
-        TransactionResponseDTO cancelled = transactionService.cancelTransaction(id, userId);
-        return ResponseEntity.ok(cancelled);
     }
 
     /**

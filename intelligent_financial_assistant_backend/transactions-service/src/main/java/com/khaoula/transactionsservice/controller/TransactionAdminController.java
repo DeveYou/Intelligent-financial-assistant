@@ -3,6 +3,7 @@ package com.khaoula.transactionsservice.controller;
 
 import com.khaoula.transactionsservice.dto.TransactionFilterDTO;
 import com.khaoula.transactionsservice.dto.TransactionRequestDTO;
+import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.service.TransactionService;
 import jakarta.validation.Valid;
@@ -153,7 +154,7 @@ public class TransactionAdminController {
     @PostMapping("/transfer")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createTransfer(
-            @Valid @RequestBody TransactionRequestDTO request,
+            @Valid @RequestBody TransferRequestDTO request,
             @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {

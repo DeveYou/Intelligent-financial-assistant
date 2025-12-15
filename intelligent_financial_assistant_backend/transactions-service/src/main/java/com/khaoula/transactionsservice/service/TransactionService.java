@@ -3,9 +3,11 @@ package com.khaoula.transactionsservice.service;
 import com.khaoula.transactionsservice.dto.*;
 import lombok.Data;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface TransactionService {
 
     /**
@@ -21,7 +23,7 @@ public interface TransactionService {
     /**
      * Créer un transfert
      */
-    TransactionResponseDTO createTransfer(TransactionRequestDTO request, Long userId, String authHeader);
+    TransactionResponseDTO createTransfer(TransferRequestDTO request, Long userId, String authHeader);
 
     /**
      * Récupérer toutes les transactions (Admin)

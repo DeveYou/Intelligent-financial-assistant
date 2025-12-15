@@ -138,44 +138,33 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionResponseDTO createTransfer(TransactionRequestDTO request, Long userId, String authHeader) {
+    public TransactionResponseDTO createTransfer(TransferRequestDTO request, Long userId, String authHeader) {
         log.info("Creating transfer for user: {}, amount: {}", userId, request.getAmount());
 
-        // Valider le compte source
         AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(), authHeader);
 
         if (!sourceAccount.getIsActive()) {
             throw new InvalidTransactionException("Source account is not active");
         }
 
-        // Vérifier le solde
         if (sourceAccount.getBalance() < request.getAmount().doubleValue()) {
             throw new InsufficientBalanceException("Insufficient balance for transfer");
         }
 
-        // MODIFICATION IMPORTANTE ICI :
-        // Récupérer le destinataire - Utiliser IBAN au lieu de ID
-        RecipientClient.RecipientResponse recipient = null;
-        String recipientIban = null;
+        RecipientClient.RecipientResponse recipient;
+        String recipientIban;
 
         if (request.getRecipientIban() != null) {
-            // Utiliser directement l'IBAN fourni
             recipientIban = request.getRecipientIban();
 
             log.info("Fetching recipient by IBAN: {}", recipientIban);
             RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response =
                     recipientClient.getRecipientByIban(recipientIban, authHeader);
             recipient = response.getData();
-        } else if (request.getRecipientId() != null) {
-            // Si on a un ID, il faut d'abord récupérer l'IBAN
-            // Option 1: Stocker l'IBAN localement
-            // Option 2: Modifier le frontend pour envoyer l'IBAN directement
-            throw new InvalidTransactionException("Recipient by ID not supported. Please provide IBAN directly.");
         } else {
             throw new InvalidTransactionException("Recipient IBAN is required for transfer");
         }
 
-        // Créer la transaction
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);
         transaction.setBankAccountId(request.getBankAccountId());
@@ -184,13 +173,10 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setAmount(request.getAmount());
 
-        // Stocker l'ID du bénéficiaire si disponible, sinon stocker l'IBAN
         if (recipient != null) {
             transaction.setRecipientId(recipient.getId());
         } else {
-            // Stocker une référence à l'IBAN
-            transaction.setRecipientId(null); // ou créer une entrée spéciale
-            // Alternative: ajouter un champ recipientIban dans Transaction
+            transaction.setRecipientId(null);
         }
 
         transaction.setReason(request.getReason());
@@ -199,17 +185,19 @@ public class TransactionServiceImpl implements TransactionService {
         transaction = transactionRepository.save(transaction);
 
         try {
-            // Débiter le compte source
             accountClient.updateBalance(
                     sourceAccount.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
                     authHeader
             );
 
-            // TODO: Créditer le compte destinataire si interne
-            // Pour l'instant, on considère que le transfert est vers un compte externe
+            AccountClient.AccountResponse accountResponse = accountClient.getAccountByIban(request.getRecipientIban(), authHeader);
+            accountClient.updateBalance(
+                    accountResponse.getId(),
+                    new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "ADD"),
+                    authHeader
+            );
 
-            // Marquer comme complétée
             transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
 
@@ -332,7 +320,6 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionResponseDTO mapToResponseDTO(Transaction transaction, RecipientClient.RecipientResponse recipient) {
         TransactionResponseDTO dto = mapToResponseDTO(transaction);
         if (recipient != null) {
-            dto.setRecipientName(recipient.getFullName());
             dto.setRecipientIban(recipient.getIban());
         }
         return dto;
