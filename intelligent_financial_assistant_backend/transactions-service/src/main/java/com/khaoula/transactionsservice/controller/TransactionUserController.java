@@ -1,6 +1,5 @@
 package com.khaoula.transactionsservice.controller;
 
-import com.khaoula.transactionsservice.domain.TransactionType;
 import com.khaoula.transactionsservice.dto.TransactionRequestDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
@@ -43,7 +42,6 @@ public class TransactionUserController {
             @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
             Authentication authentication) {
 
-        // Récupérer le userId depuis le header propagé par le Gateway
         Long userId = getUserIdFromHeader(userIdHeader, authentication);
 
         log.info("User {} initiating deposit of {}", userId, request.getAmount());
@@ -120,7 +118,6 @@ public class TransactionUserController {
             }
         }
 
-        // Fallback: log que le header n'est pas présent
         log.warn("X-Auth-User-Id header not found. Authentication principal: {}",
                 authentication != null ? authentication.getName() : "null");
 

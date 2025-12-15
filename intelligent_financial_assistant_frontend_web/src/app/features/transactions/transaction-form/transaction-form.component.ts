@@ -80,25 +80,25 @@ export class TransactionFormComponent implements OnInit {
 
     switch (this.transactionType) {
       case 'deposit':
-        transactionObservable = this.transactionService.deposit({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
+        //transactionObservable = this.transactionService.deposit({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
         break;
       case 'withdrawal':
-        transactionObservable = this.transactionService.withdraw({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
+        //transactionObservable = this.transactionService.withdraw({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
         break;
       case 'transfer':
-        transactionObservable = this.transactionService.transfer({ sourceBankAccountId: formValue.bankAccountId, destinationBankAccountId: formValue.destinationBankAccountId, amount: formValue.amount, reason: formValue.reason });
+        //transactionObservable = this.transactionService.transfer({ sourceBankAccountId: formValue.bankAccountId, destinationBankAccountId: formValue.destinationBankAccountId, amount: formValue.amount, reason: formValue.reason });
         break;
     }
 
-    transactionObservable.subscribe({
-      next: () => {
+//transactionObservable.subscribe({
+      //next: () => {
         this.snackBar.open('Transaction réussie !', 'Fermer', { duration: 3000 });
         this.router.navigate(['/admin/transactions']);
-      },
-      error: (err) => {
-        this.snackBar.open('Échec de la transaction.', 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
-        console.error(err);
+      //},
+      //error: (err) => {
+        //this.snackBar.open('Échec de la transaction.', 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
+        //console.error(err);
       }
-    });
+    //});
   }
-}
+//}
