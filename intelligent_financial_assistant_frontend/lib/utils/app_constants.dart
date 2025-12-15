@@ -5,7 +5,7 @@ class AppConstants {
   static const String appName = "Intelligent Financial Assistant";
   static const double appVersion = 1.0;
 
-  static const String baseUrl = "http://localhost:8888";
+  static const String baseUrl = "http://localhost:8080";
 
 
   // Application languages
@@ -44,13 +44,25 @@ class AppConstants {
   static const String resetPasswordUri = "/api/v1/auth/reset-password";
   static const String updateTokenUri = "/api/v1/auth/update-token";
   static const String homeUri = "/api/v1/customer/account/data";
+
   static const String accountUri = "/api/v1/customer/account/summary";
   static const String updateAccountUri = "/api/v1/customer/account/update";
   static const String resendCardCodeUri = "/api/v1/auth/resend-card-code";
-  static const String getTransactionsUri = "/api/v1/customer/transactions";
   static const String deleteAccountUri = "/api/v1/customer/account/delete";
+
+  static const String getTransactionsUri = "/api/v1/customer/transactions";
+
   static const String assistantMessageUri = "/api/v1/assistant/message";
   static const String getMessagesUri = "/api/v1/assistant/messages";
 
+
+  static const String markNotificationAsReadUri = '/api/v1/notifications/mark-read';
+  static const String sendNotificationUri = '/api/v1/notifications/send';
+  static const String getNotificationsUri = '/api/v1/notifications';
+
+  static const String addRecipientUri = '/api/v1/recipient/add';
+  static const String updateRecipientUri = '/api/v1/recipients/update/';
+  static const String deleteRecipientUri = '/api/v1/recipients/delete/';
+  static const String getRecipientsUri = '/api/v1/recipients';
 
 }

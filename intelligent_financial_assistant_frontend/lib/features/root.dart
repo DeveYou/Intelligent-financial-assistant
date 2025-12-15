@@ -4,8 +4,8 @@ import 'package:intelligent_financial_assistant_frontend/common/basewidgets/cust
 import 'package:intelligent_financial_assistant_frontend/common/models/navigation_model.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/screens/account_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/assistant/screens/assistant_screen.dart';
-import 'package:intelligent_financial_assistant_frontend/features/dashboard/screens/dashboard_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/transaction/screens/transactions_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/dimensions.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/images.dart';
 
@@ -37,7 +37,7 @@ class _RootState extends State<Root> {
         screen: const HomeScreen(),
       ),
 
-      NavigationModel(name: 'dashboard', icon: Images.dashboardImage, screen: const DashboardScreen()),
+      NavigationModel(name: 'transaction', icon: Images.transaction, screen: const TransactionsScreen()),
       NavigationModel(name: 'account', icon: Images.accountImage, screen:  const AccountScreen()),
       NavigationModel(name: 'assistant', icon: Images.assistantImage, screen:  const AssistantScreen()),
 
@@ -60,7 +60,6 @@ class _RootState extends State<Root> {
       },
       child: Scaffold(
           key: _scaffoldKey,
-
           body: PageStorage(bucket: bucket, child: _screens[_pageIndex].screen),
           bottomNavigationBar: _pageIndex == 3 ? null : Container(height: 68,
               decoration: BoxDecoration(borderRadius: BorderRadius.vertical(

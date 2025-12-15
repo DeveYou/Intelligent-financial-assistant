@@ -5,8 +5,7 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_text_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_password_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_submit_btn_widget.dart';
-import 'package:intelligent_financial_assistant_frontend/features/dashboard/screens/dashboard_screen.dart';
-import 'package:intelligent_financial_assistant_frontend/features/profile/controllers/profile_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
@@ -80,10 +79,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
       }
       else {
-        await Provider.of<ProfileController>(context, listen: false).getUserInfo(context);
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
                 (route) => false
         );
       }

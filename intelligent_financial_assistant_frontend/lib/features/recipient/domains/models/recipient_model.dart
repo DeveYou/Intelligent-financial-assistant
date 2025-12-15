@@ -1,4 +1,5 @@
 class RecipientModel {
+  int? id;
   String? bank;
   String? iban;
   String? fullName;
@@ -7,6 +8,7 @@ class RecipientModel {
   RecipientModel({this.bank, this.iban, this.fullName, this.createdAt});
 
   RecipientModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     bank = json['bank'];
     iban = json['iban'];
     fullName = json['full_name'];
@@ -15,6 +17,7 @@ class RecipientModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
     data['bank'] = bank;
     data['iban'] = iban;
     data['full_name'] = fullName;

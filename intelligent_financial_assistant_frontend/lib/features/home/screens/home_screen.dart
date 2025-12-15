@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/controllers/home_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/widgets/bank_card_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/widgets/quick_access_buttons_widget.dart';
+import 'package:intelligent_financial_assistant_frontend/features/notifications/screens/notifications_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/settings/screens/settings_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
@@ -27,13 +29,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(getTranslated("VoxBank_home", context)!),
-        centerTitle: true,
+        title: Text(
+            getTranslated("VoxBank_home", context)!,
+            style: TextStyle(
+                color: Colors.white
+            )
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
             onPressed: () {
-              // Navigator.pushNamed(context, '/notifications');
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationsScreen()
+                  )
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()
+                  )
+              );
             },
           ),
         ],

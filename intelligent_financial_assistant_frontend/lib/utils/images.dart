@@ -10,5 +10,6 @@ class Images {
   static const String accountImage = "assets/images/account.png";
   static const String assistantImage = "assets/images/assistant.png";
   static const String exitIcon = "assets/images/exit.png";
+  static const String transaction = "assets/images/transfer.png";
 
 }

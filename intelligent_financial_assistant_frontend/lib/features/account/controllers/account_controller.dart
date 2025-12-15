@@ -56,7 +56,7 @@ class AccountController with ChangeNotifier {
   Future<void> toggleSetting(String settingType, bool value, BuildContext context) async {
     if (_accountModel == null) return;
 
-    // 1. Optimistic Update
+    // Optimistic Update
     AccountModel previousModel = _accountModel!;
     AccountModel updatedModel;
 
@@ -83,10 +83,10 @@ class AccountController with ChangeNotifier {
     _accountModel = updatedModel;
     notifyListeners();
 
-    // 2. API Call
+    // API Call
     ApiResponse response = await accountService.updateAccountDetails(updatedModel);
 
-    // 3. Rollback if failed
+    // Rollback if failed
     if (response.response == null || response.response!.statusCode != 200) {
       _accountModel = previousModel;
       notifyListeners();

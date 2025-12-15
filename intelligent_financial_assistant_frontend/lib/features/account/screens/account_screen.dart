@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/controllers/account_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/widgets/transaction_card_widget.dart';
+import 'package:intelligent_financial_assistant_frontend/features/notifications/screens/notifications_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/settings/screens/settings_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +27,38 @@ class _AccountScreenState extends State<AccountScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(getTranslated("my_account", context)!)),
+      appBar: AppBar(
+          title: Text(
+              getTranslated("my_account", context)!,
+              style: TextStyle(
+                  color: Colors.white
+              )
+          ),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationsScreen()
+                  )
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsScreen()
+                  )
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<AccountController>(
         builder: (context, controller, child) {
           if (controller.isLoading) {
@@ -44,11 +77,11 @@ class _AccountScreenState extends State<AccountScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Account Details Header
+                // Account Details Header
                 _buildAccountHeader(account, theme),
                 const SizedBox(height: 24),
 
-                // 2. Global Activation Switch
+                // Global Activation Switch
                 _buildSwitchTile(
                   title: getTranslated("activate_account", context)!,
                   subtitle: getTranslated("activate_account_subtitle", context),
@@ -58,7 +91,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 const Divider(height: 30),
 
-                // 3. Card Settings
+                // Card Settings
                 Text(
                   getTranslated("card_settings", context)!,
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -87,7 +120,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
                 const SizedBox(height: 20),
 
-                // 4. Resend Code Button
+                // Resend Code Button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
@@ -104,7 +137,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
                 const SizedBox(height: 30),
 
-                // 5. Recent Transactions
+                // Recent Transactions
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
