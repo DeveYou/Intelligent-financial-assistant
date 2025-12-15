@@ -39,7 +39,6 @@ class OnboardingScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: () async {
-                    // Mark onboarding as complete
                     await AppStorageService.completeOnboarding();
 
                     if (context.mounted) {

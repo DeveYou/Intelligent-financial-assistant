@@ -44,7 +44,7 @@ class TransactionRepository implements TransactionRepositoryInterface {
   Future<ApiResponse> sendMoney(TransactionModel transaction) async {
     try {
       final response = await dioClient!.post(
-        '${AppConstants.getTransactionsUri}/send',
+        AppConstants.getTransactionsUri,
         data: transaction.toJson(),
       );
       return ApiResponse.withSuccess(response);

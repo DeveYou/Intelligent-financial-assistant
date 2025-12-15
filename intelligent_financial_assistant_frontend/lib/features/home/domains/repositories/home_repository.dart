@@ -11,7 +11,7 @@ class HomeRepository implements HomeRepositoryInterface {
 
   @override
   Future<ApiResponse> getAccountSummary() async {
-    final Response apiResponse = await dioClient!.get(AppConstants.homeUri);
+    final Response apiResponse = await dioClient!.get(AppConstants.getAccountDataUri);
     try {
       return ApiResponse.withSuccess(apiResponse);
     } catch (e) {

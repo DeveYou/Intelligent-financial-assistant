@@ -36,33 +36,36 @@ class AppConstants {
 
 
   // API Endpoints
-  static const String loginUri = "/api/v1/auth/login";
-  static const String registerUri = "/api/v1/auth/register";
-  static const String userInfoUri = "/api/v1/auth/user-info";
-  static const String logoutUri = "/api/v1/auth/logout";
-  static const String forgotPasswordUri = "/api/v1/auth/forgot-password";
-  static const String resetPasswordUri = "/api/v1/auth/reset-password";
-  static const String updateTokenUri = "/api/v1/auth/update-token";
-  static const String homeUri = "/api/v1/customer/account/data";
+  static const String loginUri = "/AUTH-SERVICE/auth/login";
+  static const String registerUri = "/AUTH-SERVICE/auth/register";
+  static const String userInfoUri = "/AUTH-SERVICE/auth/user-info";
+  static const String logoutUri = "/AUTH-SERVICE/auth/logout";
+  static const String forgotPasswordUri = "/AUTH-SERVICE/auth/forgot-password";
+  static const String resetPasswordUri = "/AUTH-SERVICE/auth/reset-password";
+  static const String updateTokenUri = "/AUTH-SERVICE/auth/update-token";
 
-  static const String accountUri = "/api/v1/customer/account/summary";
-  static const String updateAccountUri = "/api/v1/customer/account/update";
-  static const String resendCardCodeUri = "/api/v1/auth/resend-card-code";
-  static const String deleteAccountUri = "/api/v1/customer/account/delete";
+  static const String getAccountDataUri = "/ACCOUNT-SERVICE/api/accounts";
 
-  static const String getTransactionsUri = "/api/v1/customer/transactions";
+  static const String accountUri = "/ACCOUNT-SERVICE/api/accounts";
+  static const String updateAccountUri = "/ACCOUNT-SERVICE/api/accounts";
+  static const String resendCardCodeUri = "/ACCOUNT-SERVICE/api/accounts";
+  static const String deleteAccountUri = "/ACCOUNT-SERVICE/api/accounts";
 
-  static const String assistantMessageUri = "/api/v1/assistant/message";
-  static const String getMessagesUri = "/api/v1/assistant/messages";
+  static const String getTransactionsUri = "/TRANSACTIONS-SERVICE/user/transactions";
+  static const String transferTransactionUri = "/TRANSACTIONS-SERVICE/user/transactions/transfer";
+  static const String getTransactionByReferenceUri = "/TRANSACTIONS-SERVICE/user/transactions/reference";
+
+  static const String assistantMessageUri = "/ASSISTANT-SERVICE/assistant/message";
+  static const String getMessagesUri = "/ASSISTANT-SERVICE/assistant/messages";
 
 
-  static const String markNotificationAsReadUri = '/api/v1/notifications/mark-read';
-  static const String sendNotificationUri = '/api/v1/notifications/send';
-  static const String getNotificationsUri = '/api/v1/notifications';
+  static const String markNotificationAsReadUri = '/NOTIFICATIONS-SERVICE/notifications/mark-read';
+  static const String sendNotificationUri = '/NOTIFICATIONS-SERVICE/notifications/send';
+  static const String getNotificationsUri = '/NOTIFICATIONS-SERVICE/notifications';
 
-  static const String addRecipientUri = '/api/v1/recipient/add';
-  static const String updateRecipientUri = '/api/v1/recipients/update/';
-  static const String deleteRecipientUri = '/api/v1/recipients/delete/';
-  static const String getRecipientsUri = '/api/v1/recipients';
+  static const String addRecipientUri = '/RECIPIENT-SERVICE/api/recipients';
+  static const String updateRecipientUri = '/RECIPIENT-SERVICE/api/recipients';
+  static const String deleteRecipientUri = '/RECIPIENT-SERVICE/api/recipients';
+  static const String getRecipientsUri = '/RECIPIENT-SERVICE/api/recipients';
 
 }
