@@ -4,6 +4,7 @@ import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -42,6 +44,14 @@ public class AccountController {
             System.out.println(headerName + ": " + request.getHeader(headerName));
         }
         return accountService.getAccountsByUserId(userId);
+    }
+
+    @PostMapping("/register")
+    public BankAccountResponseDTO createAccountOnRegister(
+            @RequestBody @Valid BankAccountRequestDTO bankAccountRequestDTO) {
+        log.info("Creating account during registration for user: {}",
+                bankAccountRequestDTO.getUserId());
+        return accountService.addAccount(bankAccountRequestDTO);
     }
 
     @PostMapping
@@ -84,6 +94,20 @@ public class AccountController {
     public ResponseEntity<Long> countUsers(Authentication authentication) {
         log.info("Admin {} retrieving user count", authentication.getName());
         return ResponseEntity.ok(accountService.countUsers());
+    }
+
+    @PostMapping("/{id}/balance")
+    public ResponseEntity<Void> updateBalance(
+            @PathVariable Long id,
+            @RequestBody BalanceUpdateRequest request) {
+        accountService.updateBalance(id, request.getAmount(), request.getOperation());
+        return ResponseEntity.ok().build();
+    }
+
+    @Data
+    public static class BalanceUpdateRequest {
+        private Double amount;
+        private String operation; // "ADD" ou "SUBTRACT"
     }
 }
 

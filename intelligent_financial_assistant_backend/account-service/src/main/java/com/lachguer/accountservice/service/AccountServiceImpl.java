@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import com.lachguer.accountservice.model.User;
 import org.springframework.beans.BeanUtils;
@@ -60,16 +59,16 @@ public class AccountServiceImpl implements AccountService {
             bankAccount = new SavingAccount();
             ((SavingAccount) bankAccount).setInterestRate(bankAccountDTO.getInterestRate());
         }
-        
-        
+
+
         bankAccount.setRib(bankAccountDTO.getIban());
-        
+
         bankAccount.setBalance(0.0);
-        
+
         Date now = new Date();
         bankAccount.setCreatedAt(now);
-        
-        
+
+
         bankAccount.setExpirationDate(bankAccountDTO.getExpirationDate());
 
         bankAccount.setIsPaymentByCard(false);
@@ -78,7 +77,7 @@ public class AccountServiceImpl implements AccountService {
         bankAccount.setIsContactless(false);
         bankAccount.setIsActive(true);
         bankAccount.setUserId(bankAccountDTO.getUserId());
-        
+
         BankAccount savedAccount = bankAccountRepository.save(bankAccount);
         return accountMapper.fromBankAccount(savedAccount);
     }
@@ -87,9 +86,9 @@ public class AccountServiceImpl implements AccountService {
     public BankAccountResponseDTO getAccountById(Long id) {
         BankAccount bankAccount = bankAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found with id=" + id));
-        
-        enrichAccountWithUser(bankAccount);
-        
+
+        //enrichAccountWithUser(bankAccount);
+
         return accountMapper.fromBankAccount(bankAccount);
     }
 
@@ -181,5 +180,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public long countUsers() {
         return bankAccountRepository.count();
+    }
+
+    @Override
+    public void updateBalance(Long accountId, Double amount, String operation) {
+        BankAccount account = bankAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if ("ADD".equals(operation)) {
+            account.setBalance(account.getBalance() + amount);
+        } else if ("SUBTRACT".equals(operation)) {
+            if (account.getBalance() < amount) {
+                throw new RuntimeException("Insufficient balance");
+            }
+            account.setBalance(account.getBalance() - amount);
+        } else {
+            throw new IllegalArgumentException("Invalid operation: " + operation);
+        }
+
+        bankAccountRepository.save(account);
     }
 }

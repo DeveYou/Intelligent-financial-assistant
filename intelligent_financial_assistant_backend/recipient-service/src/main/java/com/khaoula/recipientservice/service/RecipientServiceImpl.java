@@ -5,7 +5,6 @@ import com.khaoula.recipientservice.repository.RecipientRepository;
 import com.khaoula.recipientservice.exception.ResourceNotFoundException;
 import com.khaoula.recipientservice.exception.ForbiddenException;
 import org.springframework.stereotype.Service;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,13 +20,11 @@ public class RecipientServiceImpl implements RecipientService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<Recipient> getRecipientList(Long userId) {
         return recipientRepository.findByUserId(userId);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public Recipient addRecipient(Recipient recipient, Long userId) {
         recipient.setUserId(userId);
         recipient.setCreatedAt(LocalDateTime.now());
@@ -35,7 +32,6 @@ public class RecipientServiceImpl implements RecipientService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public Recipient updateRecipient(Long id, Recipient recipientDetails, Long userId) {
         Recipient recipient = recipientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipient not found with id: " + id));
@@ -49,7 +45,6 @@ public class RecipientServiceImpl implements RecipientService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public void deleteRecipient(Long id, Long userId) {
         Recipient recipient = recipientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipient not found with id: " + id));
@@ -60,7 +55,6 @@ public class RecipientServiceImpl implements RecipientService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public Optional<Recipient> getByIban(String iban) {
         return recipientRepository.findByIban(iban);
     }

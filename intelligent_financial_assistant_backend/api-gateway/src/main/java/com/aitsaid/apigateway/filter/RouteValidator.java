@@ -21,9 +21,17 @@ public class RouteValidator {
                 if (request.getMethod().name().equals("OPTIONS")) {
                     return false;
                 }
+
+                String path = request.getURI().getPath();
+                String method = request.getMethod().name();
+
+                // Si c'est POST /api/accounts, c'est ouvert (pour l'inscription)
+                if (path.equals("/api/accounts/register") && method.equals("POST")) {
+                    return false;
+                }
                 return openApiEndpoints
-                    .stream()
-                    .noneMatch(uri -> request.getURI().getPath().contains(uri));
+                        .stream()
+                        .noneMatch(uri -> request.getURI().getPath().contains(uri));
             };
 
 }
