@@ -186,8 +186,8 @@ public class TransactionServiceImpl implements TransactionService {
                 } catch (Exception ex) {
                     log.error("Failed to auto-create recipient: {}", ex.getMessage());
                     // Throw original exception or new one indicating failure
-                    throw new ResourceNotFoundException(
-                            "Recipient not found with IBAN: " + recipientIban + " and could not be auto-created.");
+                    throw new ResourceNotFoundException("Recipient not found with IBAN: " + recipientIban
+                            + " and could not be auto-created. Reason: " + ex.toString());
                 }
             }
         } else {

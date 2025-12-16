@@ -20,7 +20,12 @@ export class TransactionService {
     // Ajouter tous les paramètres de filtrage
     Object.keys(params).forEach(key => {
       if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
-        httpParams = httpParams.append(key, params[key]);
+        let value = params[key];
+        // Format dates for OffsetDateTime (append :00Z if from datetime-local)
+        if ((key === 'startDate' || key === 'endDate') && typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+          value = value + ':00Z';
+        }
+        httpParams = httpParams.append(key, value);
       }
     });
 
