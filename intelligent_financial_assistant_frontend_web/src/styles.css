@@ -1,0 +1,29 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+/* état par défaut: juste la bordure orange, fond transparent */
+.custom-checkbox .mdc-checkbox__background {
+  border-color: #F44E1E !important;
+  background-color: transparent !important;
+}
+
+/* état COCHÉ: fond orange + coche blanche */
+.custom-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: #F44E1E !important;
+  border-color: #F44E1E !important;
+}
+
+.custom-checkbox .mdc-checkbox__checkmark {
+  color: #ffffff !important;
+}
+
+/* légère onde orange au clic */
+.custom-checkbox .mdc-checkbox__ripple::before,
+.custom-checkbox .mdc-checkbox__ripple::after {
+  background-color: rgba(244, 78, 30, 0.1) !important;
+}
+
+

@@ -1,0 +1,52 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+.env
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backend (Spring Boot / Java)
+**/target/
+**/*.class
+**/mvnw
+**/mvnw.cmd
+**/.mvn/
+**/test-results/
+**/build/
+**/*.iml
+
+# Frontend (Angular / Web)
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+**/.sass-cache/
+**/connect.lock
+**/livereload.js
+**/sitemap.json
+**/npm-debug.log
+**/yarn-error.log
+**/.editorconfig
+
+# Mobile (Flutter)
+**/.dart_tool/
+**/.packages
+**/.pub/
+**/build/
+**/ios/Flutter/App.framework/
+**/ios/Flutter/Flutter.framework/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/android/local.properties
+**/android/.gradle/
+**/android/app/build/
+**/android/key.properties
+
+

@@ -1,0 +1,300 @@
+/* src/app/features/users/user-list/user-list.component.css */
+
+.users-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+  font-weight: 400;
+  color: #333;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Bouton Nouvel Utilisateur avec couleur personnalisée */
+.add-user-button {
+  background-color: #F44E1E !important;
+  color: white !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-user-button:hover {
+  background-color: #d63e10 !important;
+  box-shadow: 0 4px 8px rgba(244, 78, 30, 0.3);
+  transform: translateY(-2px);
+}
+
+.add-user-button mat-icon {
+  margin-right: 8px;
+}
+
+.table-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.search-field {
+  width: 100%;
+  margin-bottom: 0; /* Reset margin as it's now in a flex container */
+}
+
+.filters-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.user-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info .ml-3 {
+  margin-left: 12px;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-xs {
+  font-size: 12px;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+/* Styles pour le spinner de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 20px;
+}
+
+.loading-container p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+/* Styles pour le message d'erreur */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+  border-radius: 4px;
+  color: #c62828;
+}
+
+.error-message mat-icon {
+  color: #f44336;
+}
+
+.error-message button {
+  margin-left: auto;
+  color: #f44336;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th {
+  font-weight: 600;
+  color: #666;
+  background: #f5f5f5;
+}
+
+.table-row {
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  color: #FFBD09;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.user-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #F44E1E;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+/* Style pour les adresses longues */
+.address-text {
+  display: block;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.address-text:hover {
+  white-space: normal;
+  overflow: visible;
+}
+
+.balance {
+  font-weight: 600;
+  color: #4caf50;
+}
+
+/* Chips pour les types de compte */
+.type-premium {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.type-business {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+}
+
+.type-standard {
+  background: #e3f2fd !important;
+  color: #1976d2 !important;
+}
+
+/* Chips pour les statuts */
+.status-active {
+  background: #e8f5e9 !important;
+  color: #4caf50 !important;
+}
+
+.status-active mat-icon {
+  color: #4caf50;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.status-suspended {
+  background: #ffebee !important;
+  color: #f44336 !important;
+}
+
+.status-suspended mat-icon {
+  color: #f44336;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+mat-chip {
+  font-size: 12px;
+  min-height: 28px;
+  padding: 4px 12px;
+}
+
+.delete-action {
+  color: #f44336;
+}
+
+.delete-action mat-icon {
+  color: #f44336;
+}
+
+.no-data {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Pagination */
+mat-paginator {
+  border-top: 1px solid #e0e0e0;
+  margin-top: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .search-field {
+    max-width: 100%;
+  }
+}
