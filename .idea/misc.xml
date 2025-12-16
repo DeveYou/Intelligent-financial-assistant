@@ -1,0 +1,17 @@
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/intelligent_financial_assistant_backend/discovery-service/pom.xml" />
+        <option value="$PROJECT_DIR$/intelligent_financial_assistant_backend/auth-service/pom.xml" />
+        <option value="$PROJECT_DIR$/intelligent_financial_assistant_backend/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/intelligent_financial_assistant_backend/transactions-service/pom.xml" />
+        <option value="$PROJECT_DIR$/intelligent_financial_assistant_backend/common-security/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>
