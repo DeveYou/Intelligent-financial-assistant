@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/data/api/api_checker.dart';
+import 'package:intelligent_financial_assistant_frontend/data/datasource/remote/exception/api_error_handler.dart';
 import 'package:intelligent_financial_assistant_frontend/data/response/api_response.dart';
+import 'package:dio/dio.dart' as import_dio;
+import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
+import 'package:intelligent_financial_assistant_frontend/main.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/models/transaction_model.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/services/transaction_service_interface.dart';
 
@@ -75,17 +79,48 @@ class TransactionController with ChangeNotifier {
   Future<bool> sendMoney(TransactionModel transaction) async {
     _isLoading = true;
     notifyListeners();
+    // Proactive Validation
+    if(transaction.amount! > accountBalance) {
+       _isLoading = false;
+       notifyListeners();
+       ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+          content: Text(getTranslated("insufficient_balance", Get.context!) ?? "Insufficient Balance"),
+          backgroundColor: Colors.red,
+       ));
+       return false;
+    }
 
-    ApiResponse apiResponse = await transactionService.sendMoney(transaction);
-    _isLoading = false;
+    try {
+      ApiResponse apiResponse = await transactionService.sendMoney(transaction);
+      _isLoading = false;
 
-    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
-      await getAccountBalance(); // Refresh balance after sending money
-      await getTransactions(); // Refresh transaction list
-      return true;
-    } else {
-      ApiChecker.checkApi(apiResponse);
+      if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+        await getAccountBalance(); // Refresh balance after sending money
+        await getTransactions(); // Refresh transaction list
+        return true;
+      } else {
+        ApiChecker.checkApi(apiResponse);
+        return false;
+      }
+    } on import_dio.DioException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      if (e.type == import_dio.DioExceptionType.connectionTimeout || 
+          e.type == import_dio.DioExceptionType.sendTimeout ||
+          e.type == import_dio.DioExceptionType.receiveTimeout) {
+         ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
+            content: Text(getTranslated("request_timed_out_check_history", Get.context!)!),
+            backgroundColor: Colors.orange,
+         ));
+         return false;
+      }
+      ApiChecker.checkApi(ApiResponse.withError(ApiErrorHandler.getMessage(e)));
       return false;
+    } catch (e) {
+       _isLoading = false;
+       notifyListeners();
+       ApiChecker.checkApi(ApiResponse.withError(ApiErrorHandler.getMessage(e)));
+       return false;
     }
   }
 

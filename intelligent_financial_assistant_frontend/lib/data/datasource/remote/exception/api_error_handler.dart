@@ -70,6 +70,9 @@ class ApiErrorHandler {
                   if (errorResponse.errors != null && errorResponse.errors!.isNotEmpty) {
                     errorDescription = errorResponse;
                     log("Error Response Object: $errorDescription");
+                  } else if (error.response!.data['message'] != null) {
+                    errorDescription = error.response!.data['message'];
+                    log("Default Error Message: $errorDescription");
                   } else {
                     errorDescription = "Failed to load data - status code: ${error.response!.statusCode}";
                     log("Default Error Message: $errorDescription");

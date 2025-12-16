@@ -4,6 +4,7 @@ import 'package:intelligent_financial_assistant_frontend/features/assistant/doma
 import 'package:intelligent_financial_assistant_frontend/features/assistant/domains/services/assistant_service_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/domains/repositories/account_repository_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/repositories/transaction_repository_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/repositories/recipient_repository_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/domains/models/account_model.dart';
 import 'package:intl/intl.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
@@ -24,8 +25,9 @@ class AssistantController with ChangeNotifier {
   final AssistantServiceInterface assistantService;
   final AccountRepositoryInterface accountRepository;
   final TransactionRepositoryInterface transactionRepository;
+  final RecipientRepositoryInterface recipientRepository;
 
-  AssistantController({required this.assistantService, required this.accountRepository, required this.transactionRepository});
+  AssistantController({required this.assistantService, required this.accountRepository, required this.transactionRepository, required this.recipientRepository});
 
   // State
   List<MessageModel> _messages = [];
@@ -272,28 +274,89 @@ class AssistantController with ChangeNotifier {
           double amount = (data['amount'] as num).toDouble();
           String recipientName = data['recipient'];
 
+          // Get Account Details (for Bank Account ID)
+          ApiResponse accountResponse = await accountRepository.getAccountDetails();
+          int? bankAccountId;
+          
+          if (accountResponse.response != null && accountResponse.response!.statusCode == 200) {
+             var accountData = accountResponse.response!.data;
+             if (accountData is List && accountData.isNotEmpty) {
+                bankAccountId = AccountModel.fromJson(accountData[0]).id;
+             } else if (accountData is Map<String, dynamic>) {
+                bankAccountId = AccountModel.fromJson(accountData).id;
+             }
+          }
+
+          if (bankAccountId == null) {
+              String reply = "I couldn't verify your account information.";
+              _addMessage(reply, sender: "assistant");
+              _speak(reply);
+              break;
+          }
+
+          // Get Recipient Details (for IBAN)
+          ApiResponse recipientResponse = await recipientRepository.getRecipientList();
+          String? recipientIban;
+           int? recipientId;
+
+          if (recipientResponse.response != null && recipientResponse.response!.statusCode == 200) {
+              List<dynamic> list = recipientResponse.response!.data['data'] ?? [];
+               if (recipientResponse.response!.data is List) {
+                  list = recipientResponse.response!.data;
+               }
+
+              for (var json in list) {
+                  RecipientModel recipient = RecipientModel.fromJson(json);
+                  if (recipient.fullName != null && 
+                      recipient.fullName!.toLowerCase().contains(recipientName.toLowerCase())) {
+                      recipientIban = recipient.iban;
+                      recipientId = recipient.id;
+                      // Use the full name from the record to be precise
+                      recipientName = recipient.fullName!;
+                      break;
+                  }
+              }
+          }
+
+          if (recipientIban == null) {
+              String reply = "I couldn't find a recipient named $recipientName in your list.";
+              _addMessage(reply, sender: "assistant");
+              _speak(reply);
+              break;
+          }
+
+          // Create Transaction
           TransactionModel transaction = TransactionModel(
             type: "TRANSFER",
             amount: amount,
-            beneficiary: RecipientModel(fullName: recipientName),
+            beneficiary: RecipientModel(fullName: recipientName, iban: recipientIban, id: recipientId),
+            bankAccountId: bankAccountId,
+            recipientId: recipientId,
+            recipientIban: recipientIban,
             reference: const Uuid().v4(),
             chargeAmount: AppConstants.transactionCharge,
             reason: "AI Assistant Transfer",
             createdAt: DateTime.now(),
           );
 
-          bool success = await transactionController.sendMoney(transaction);
+           ApiResponse transferResponse = await transactionRepository.sendMoney(transaction);
 
-          if (success) {
+          if (transferResponse.response != null && transferResponse.response!.statusCode == 200) {
             String reply = "Transfer successful. \$$amount sent to $recipientName.";
             _addMessage(reply, sender: "assistant");
             _speak(reply);
+
+             await transactionController.getTransactions();
           } else {
-            String reply = "Transfer failed. Please check your balance or try again.";
-            _addMessage(reply, sender: "assistant");
-            _speak(reply);
+            String error = transferResponse.error != null && transferResponse.error.toString().isNotEmpty 
+                           ? transferResponse.error.toString() 
+                           : "Transfer failed. Please check your balance.";
+            debugPrint("Transfer Error Log: $error");
+            _addMessage(error, sender: "assistant");
+            _speak(error);
           }
         } catch (e) {
+           debugPrint("Transfer Exception: $e");
            String reply = "I couldn't complete the transfer details.";
           _addMessage(reply, sender: "assistant");
           _speak(reply);

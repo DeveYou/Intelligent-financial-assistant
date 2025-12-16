@@ -5,7 +5,7 @@ class RecipientModel {
   String? fullName;
   DateTime? createdAt;
 
-  RecipientModel({this.bank, this.iban, this.fullName, this.createdAt});
+  RecipientModel({this.id, this.bank, this.iban, this.fullName, this.createdAt});
 
   RecipientModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

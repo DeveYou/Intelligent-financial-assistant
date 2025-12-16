@@ -28,7 +28,7 @@ class ApiChecker {
     }else if(apiResponse.response?.statusCode == 400){
       log('Bad Request error: 400');
       showCustomSnackBarWidget(
-          getTranslated('bad_request', Get.context!),
+          apiResponse.error ?? getTranslated('bad_request', Get.context!),
           Get.context!
       );
     } else if(apiResponse.response?.statusCode == 500) {
