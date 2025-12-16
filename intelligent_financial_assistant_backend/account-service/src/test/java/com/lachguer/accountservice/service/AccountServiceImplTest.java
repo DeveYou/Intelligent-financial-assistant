@@ -39,8 +39,8 @@ class AccountServiceImplTest {
     void addAccount_shouldSaveCurrentAccount() {
         BankAccountRequestDTO requestDTO = new BankAccountRequestDTO();
         requestDTO.setType(AccountType.CURRENT_ACCOUNT);
-        requestDTO.setBalance(1000.0);
-        requestDTO.setOverDraft(200.0);
+        //requestDTO.setBalance(1000.0);
+        //requestDTO.setOverDraft(200.0);
         requestDTO.setUserId(1L);
 
         CurrentAccount savedAccount = new CurrentAccount();
@@ -69,8 +69,8 @@ class AccountServiceImplTest {
     void addAccount_shouldSaveSavingAccount() {
         BankAccountRequestDTO requestDTO = new BankAccountRequestDTO();
         requestDTO.setType(AccountType.SAVING_ACCOUNT);
-        requestDTO.setBalance(5000.0);
-        requestDTO.setInterestRate(0.05);
+        //requestDTO.setBalance(5000.0);
+        //requestDTO.setInterestRate(0.05);
         requestDTO.setUserId(1L);
 
         SavingAccount savedAccount = new SavingAccount();

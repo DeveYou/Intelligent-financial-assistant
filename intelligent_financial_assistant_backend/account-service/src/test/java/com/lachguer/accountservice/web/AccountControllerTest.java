@@ -82,7 +82,7 @@ class AccountControllerTest {
     void addAccount_shouldCreateAccount() throws Exception {
         BankAccountRequestDTO requestDTO = new BankAccountRequestDTO();
         requestDTO.setType(AccountType.CURRENT_ACCOUNT);
-        requestDTO.setBalance(1000.0);
+        //requestDTO.setBalance(1000.0);
         requestDTO.setUserId(1L);
 
         BankAccountResponseDTO responseDTO = new BankAccountResponseDTO();

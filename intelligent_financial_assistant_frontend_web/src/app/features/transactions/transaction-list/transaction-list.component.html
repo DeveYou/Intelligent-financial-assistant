@@ -50,12 +50,12 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="filter-field" appearance="outline">
+          <mat-form-field class="filter-field" appearance="outline" floatLabel="always">
             <mat-label>Date de début</mat-label>
             <input matInput [(ngModel)]="searchParams.startDate" type="datetime-local">
           </mat-form-field>
 
-          <mat-form-field class="filter-field" appearance="outline">
+          <mat-form-field class="filter-field" appearance="outline" floatLabel="always">
             <mat-label>Date de fin</mat-label>
             <input matInput [(ngModel)]="searchParams.endDate" type="datetime-local">
           </mat-form-field>
@@ -172,8 +172,8 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let transaction">
-                <button mat-icon-button color="primary" (click)="viewDetails(transaction.reference || '')" 
-                        [disabled]="!transaction.reference" matTooltip="Voir les détails">
+                <button mat-icon-button color="primary" (click)="viewDetails(transaction.reference || '')"
+                  [disabled]="!transaction.reference" matTooltip="Voir les détails">
                   <mat-icon>visibility</mat-icon>
                 </button>
               </td>
@@ -190,11 +190,8 @@
           </div>
 
           <!-- Pagination -->
-          <mat-paginator [length]="totalTransactions"
-                         [pageSize]="searchParams.size"
-                         [pageSizeOptions]="[5, 10, 20, 50]"
-                         showFirstLastButtons
-                         aria-label="Sélectionner la page des transactions">
+          <mat-paginator [length]="totalTransactions" [pageSize]="searchParams.size" [pageSizeOptions]="[5, 10, 20, 50]"
+            [pageIndex]="searchParams.page" showFirstLastButtons aria-label="Sélectionner la page des transactions">
           </mat-paginator>
         </div>
       </div>

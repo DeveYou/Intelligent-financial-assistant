@@ -3,6 +3,7 @@ package com.lachguer.accountservice.web;
 import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -36,15 +38,15 @@ public class AccountController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/iban/{iban}")
-    public BankAccountResponseDTO getAccountById(@PathVariable String iban) {
+    public BankAccountResponseDTO getAccountByIban(@PathVariable String iban) {
         return accountService.getAccountByIBAN(iban);
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, jakarta.servlet.http.HttpServletRequest request) {
+    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, HttpServletRequest request) {
         System.out.println("Headers received in getAccountsByUserId:");
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             System.out.println(headerName + ": " + request.getHeader(headerName));
@@ -78,17 +80,16 @@ public class AccountController {
         accountService.deleteAccount(id);
     }
 
-    // Transactions endpoints via TRANSACTION-SERVICE
     @GetMapping("/{id}/transactions")
     public List<TransactionResponseDTO> getAccountTransactions(@PathVariable("id") Long accountId,
-                                                               @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.getTransactionsForAccount(accountId, authorizationHeader);
     }
 
     @PostMapping("/{id}/transactions")
     public TransactionResponseDTO createAccountTransaction(@PathVariable("id") Long accountId,
-                                                           @RequestBody @Valid TransactionRequestDTO request,
-                                                           @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestBody @Valid TransactionRequestDTO request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.createTransactionForAccount(accountId, request, authorizationHeader);
     }
 
@@ -102,6 +103,13 @@ public class AccountController {
         return ResponseEntity.ok(accountService.countUsers());
     }
 
+    @GetMapping("/stats/distribution")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<AccountDistributionDTO>> getAccountDistribution(Authentication authentication) {
+        log.info("Admin {} retrieving account distribution stats", authentication.getName());
+        return ResponseEntity.ok(accountService.getAccountDistribution());
+    }
+
     @PostMapping("/{id}/balance")
     public ResponseEntity<Void> updateBalance(
             @PathVariable Long id,
@@ -110,12 +118,9 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-
-
     @Data
     public static class BalanceUpdateRequest {
         private Double amount;
         private String operation; // "ADD" ou "SUBTRACT"
     }
 }
-

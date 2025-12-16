@@ -13,4 +13,6 @@ abstract class AuthenticationRepositoryInterface{
   Future<ApiResponse> updateToken();
   Future<void> saveUserToken(String token);
   Future<bool> clearSharedData();
+  Future<void> saveUserId(String id);
+  String getUserId();
 }

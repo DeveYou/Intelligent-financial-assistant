@@ -11,4 +11,6 @@ abstract class AuthenticationServiceInterface {
   Future<bool> clearUserEmailAndPassword();
   Future<dynamic> updateToken();
   Future<void> saveUserToken(String token);
+  Future<void> saveUserId(String id);
+  String getUserId();
 }

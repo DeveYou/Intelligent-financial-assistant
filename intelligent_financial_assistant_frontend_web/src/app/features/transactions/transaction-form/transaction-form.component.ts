@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TransactionService } from '../../../services/transaction.service';
+import { AccountService } from '../../../services/account.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -36,14 +37,15 @@ export class TransactionFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private transactionService: TransactionService,
+    private accountService: AccountService,
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar
   ) {
     this.transactionForm = this.fb.group({
       amount: ['', [Validators.required, Validators.min(0.01)]],
-      bankAccountId: ['', Validators.required],
-      destinationBankAccountId: [''],
+      sourceIban: ['', Validators.required],
+      recipientIban: [''],
       reason: ['']
     });
   }
@@ -60,13 +62,13 @@ export class TransactionFormComponent implements OnInit {
   }
 
   updateFormValidators(): void {
-    const destAccountControl = this.transactionForm.get('destinationBankAccountId');
+    const recipientControl = this.transactionForm.get('recipientIban');
     if (this.transactionType === 'transfer') {
-      destAccountControl?.setValidators([Validators.required]);
+      recipientControl?.setValidators([Validators.required]);
     } else {
-      destAccountControl?.clearValidators();
+      recipientControl?.clearValidators();
     }
-    destAccountControl?.updateValueAndValidity();
+    recipientControl?.updateValueAndValidity();
   }
 
   onSubmit(): void {
@@ -76,29 +78,63 @@ export class TransactionFormComponent implements OnInit {
     }
 
     const formValue = this.transactionForm.value;
-    let transactionObservable;
+    const sourceIban = formValue.sourceIban;
 
-    switch (this.transactionType) {
-      case 'deposit':
-        //transactionObservable = this.transactionService.deposit({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
-        break;
-      case 'withdrawal':
-        //transactionObservable = this.transactionService.withdraw({ bankAccountId: formValue.bankAccountId, amount: formValue.amount, reason: formValue.reason });
-        break;
-      case 'transfer':
-        //transactionObservable = this.transactionService.transfer({ sourceBankAccountId: formValue.bankAccountId, destinationBankAccountId: formValue.destinationBankAccountId, amount: formValue.amount, reason: formValue.reason });
-        break;
-    }
+    // 1. Resolve Account ID from IBAN
+    this.accountService.getAccountByIban(sourceIban).subscribe({
+      next: (account) => {
+        if (!account || !account.id) {
+          this.snackBar.open('Compte source introuvable.', 'Fermer', { duration: 3000 });
+          return;
+        }
 
-//transactionObservable.subscribe({
-      //next: () => {
-        this.snackBar.open('Transaction réussie !', 'Fermer', { duration: 3000 });
-        this.router.navigate(['/admin/transactions']);
-      //},
-      //error: (err) => {
-        //this.snackBar.open('Échec de la transaction.', 'Fermer', { duration: 3000, panelClass: ['error-snackbar'] });
-        //console.error(err);
+        const accountId = account.id;
+        let transactionObservable;
+
+        // 2. Execute Transaction based on type
+        switch (this.transactionType) {
+          case 'deposit':
+            transactionObservable = this.transactionService.createDeposit({
+              bankAccountId: accountId,
+              amount: formValue.amount,
+              reason: formValue.reason
+            });
+            break;
+          case 'withdrawal':
+            transactionObservable = this.transactionService.createWithdrawal({
+              bankAccountId: accountId,
+              amount: formValue.amount,
+              reason: formValue.reason
+            });
+            break;
+          case 'transfer':
+            transactionObservable = this.transactionService.createTransfer({
+              bankAccountId: accountId,
+              amount: formValue.amount,
+              recipientIban: formValue.recipientIban,
+              reason: formValue.reason
+            });
+            break;
+        }
+
+        if (transactionObservable) {
+          transactionObservable.subscribe({
+            next: () => {
+              this.snackBar.open('Transaction réussie !', 'Fermer', { duration: 3000 });
+              this.router.navigate(['/admin/transactions']);
+            },
+            error: (err) => {
+              this.snackBar.open('Échec de la transaction. Vérifiez les données.', 'Fermer', { duration: 3000 });
+              console.error(err);
+            }
+          });
+        }
+      },
+      error: (err) => {
+        this.snackBar.open('Impossible de trouver le compte source avec cet IBAN.', 'Fermer', { duration: 3000 });
+        console.error('Account lookup error', err);
       }
-    //});
+    });
   }
+}
 //}

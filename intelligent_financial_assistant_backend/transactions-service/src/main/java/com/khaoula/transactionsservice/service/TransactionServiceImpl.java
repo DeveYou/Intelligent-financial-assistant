@@ -2,6 +2,7 @@ package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AccountClient;
 import com.khaoula.transactionsservice.client.RecipientClient;
+import com.khaoula.transactionsservice.client.UserClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
@@ -32,12 +33,12 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountClient accountClient;
     private final RecipientClient recipientClient;
-
+    private final UserClient userClient;
 
     @Override
     @Transactional
-    public TransactionResponseDTO createDeposit(TransactionRequestDTO request, Long userId, String authHeader) {
-        log.info("Creating deposit for user: {}, amount: {}", userId, request.getAmount());
+    public TransactionResponseDTO createDeposit(TransactionRequestDTO request, String authHeader) {
+        log.info("Creating deposit for account: {}, amount: {}", request.getBankAccountId(), request.getAmount());
 
         // Valider le compte
         AccountClient.AccountResponse account = accountClient.getAccountById(request.getBankAccountId(), authHeader);
@@ -48,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Créer la transaction
         Transaction transaction = new Transaction();
-        transaction.setUserId(userId);
+        transaction.setUserId(account.getUserId());
         transaction.setBankAccountId(request.getBankAccountId());
         transaction.setReference(generateReference());
         transaction.setType(TransactionType.DEPOSIT);
@@ -65,8 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     account.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "ADD"),
-                    authHeader
-            );
+                    authHeader);
 
             // Marquer comme complétée
             transaction.setStatus(TransactionStatus.COMPLETED);
@@ -85,8 +85,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, Long userId, String authHeader) {
-        log.info("Creating withdrawal for user: {}, amount: {}", userId, request.getAmount());
+    public TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, String authHeader) {
+        log.info("Creating withdrawal for account: {}, amount: {}", request.getBankAccountId(), request.getAmount());
 
         // Valider le compte
         AccountClient.AccountResponse account = accountClient.getAccountById(request.getBankAccountId(), authHeader);
@@ -102,7 +102,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Créer la transaction
         Transaction transaction = new Transaction();
-        transaction.setUserId(userId);
+        transaction.setUserId(account.getUserId());
         transaction.setBankAccountId(request.getBankAccountId());
         transaction.setReference(generateReference());
         transaction.setType(TransactionType.WITHDRAWAL);
@@ -118,8 +118,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     account.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
-                    authHeader
-            );
+                    authHeader);
 
             // Marquer comme complétée
             transaction.setStatus(TransactionStatus.COMPLETED);
@@ -138,10 +137,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionResponseDTO createTransfer(TransferRequestDTO request, Long userId, String authHeader) {
-        log.info("Creating transfer for user: {}, amount: {}", userId, request.getAmount());
+    public TransactionResponseDTO createTransfer(TransferRequestDTO request, String authHeader) {
+        log.info("Creating transfer for account: {}, amount: {}", request.getBankAccountId(), request.getAmount());
 
-        AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(), authHeader);
+        AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(),
+                authHeader);
 
         if (!sourceAccount.getIsActive()) {
             throw new InvalidTransactionException("Source account is not active");
@@ -158,15 +158,44 @@ public class TransactionServiceImpl implements TransactionService {
             recipientIban = request.getRecipientIban();
 
             log.info("Fetching recipient by IBAN: {}", recipientIban);
-            RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response =
-                    recipientClient.getRecipientByIban(recipientIban, authHeader);
-            recipient = response.getData();
+            try {
+                RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response = recipientClient
+                        .getRecipientByIban(recipientIban, authHeader);
+                recipient = response.getData();
+            } catch (Exception e) {
+                log.info("Recipient not found for IBAN: {}. Attempting to auto-create.", recipientIban);
+                try {
+                    // Check if it's a valid internal account
+                    AccountClient.AccountResponse accountResponse = accountClient.getAccountByIban(recipientIban,
+                            authHeader);
+
+                    // Fetch user details
+                    UserClient.UserDetails userDetails = userClient.getUserById(accountResponse.getUserId(),
+                            authHeader);
+
+                    // Create new recipient
+                    RecipientRequest recipientRequest = new RecipientRequest(
+                            userDetails.getFirstName() + " " + userDetails.getLastName(),
+                            recipientIban,
+                            "Internal Bank Ent");
+
+                    RecipientClient.ApiResponse<RecipientClient.RecipientResponse> createResponse = recipientClient
+                            .addRecipient(recipientRequest, authHeader);
+                    recipient = createResponse.getData();
+
+                } catch (Exception ex) {
+                    log.error("Failed to auto-create recipient: {}", ex.getMessage());
+                    // Throw original exception or new one indicating failure
+                    throw new ResourceNotFoundException("Recipient not found with IBAN: " + recipientIban
+                            + " and could not be auto-created. Reason: " + ex.toString());
+                }
+            }
         } else {
             throw new InvalidTransactionException("Recipient IBAN is required for transfer");
         }
 
         Transaction transaction = new Transaction();
-        transaction.setUserId(userId);
+        transaction.setUserId(sourceAccount.getUserId());
         transaction.setBankAccountId(request.getBankAccountId());
         transaction.setReference(generateReference());
         transaction.setType(TransactionType.TRANSFER);
@@ -188,15 +217,14 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     sourceAccount.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
-                    authHeader
-            );
+                    authHeader);
 
-            AccountClient.AccountResponse accountResponse = accountClient.getAccountByIban(request.getRecipientIban(), authHeader);
+            AccountClient.AccountResponse accountResponse = accountClient.getAccountByIban(request.getRecipientIban(),
+                    authHeader);
             accountClient.updateBalance(
                     accountResponse.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "ADD"),
-                    authHeader
-            );
+                    authHeader);
 
             transaction.setStatus(TransactionStatus.COMPLETED);
             transaction = transactionRepository.save(transaction);
@@ -219,8 +247,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getPage(),
                 filter.getSize(),
                 Sort.Direction.fromString(filter.getSortDirection()),
-                filter.getSortBy()
-        );
+                filter.getSortBy());
 
         Page<Transaction> transactions = transactionRepository.findByFilters(
                 filter.getUserId(),
@@ -229,8 +256,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getStatus(),
                 filter.getStartDate(),
                 filter.getEndDate(),
-                pageable
-        );
+                pageable);
 
         return transactions.map(this::mapToResponseDTO);
     }
@@ -242,7 +268,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
@@ -294,7 +319,22 @@ public class TransactionServiceImpl implements TransactionService {
         Long completed = transactionRepository.countByStatus(TransactionStatus.COMPLETED);
         Long failed = transactionRepository.countByStatus(TransactionStatus.FAILED);
 
-        return new TransactionStatsDTO(total, pending, completed, failed);
+        Double totalVolume = transactionRepository.sumAmountByStatus(TransactionStatus.COMPLETED);
+        if (totalVolume == null) {
+            totalVolume = 0.0;
+        }
+
+        OffsetDateTime startOfDay = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        OffsetDateTime endOfDay = OffsetDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        Long todayTransactions = transactionRepository.countByDateBetween(startOfDay, endOfDay);
+
+        return new TransactionStatsDTO(total, pending, completed, failed, totalVolume, todayTransactions);
+    }
+
+    @Override
+    public List<DailyTransactionStats> getDailyStats() {
+        OffsetDateTime sevenDaysAgo = OffsetDateTime.now().minusDays(7);
+        return transactionRepository.findDailyStats(sevenDaysAgo);
     }
 
     // Helper methods
@@ -317,7 +357,8 @@ public class TransactionServiceImpl implements TransactionService {
         return dto;
     }
 
-    private TransactionResponseDTO mapToResponseDTO(Transaction transaction, RecipientClient.RecipientResponse recipient) {
+    private TransactionResponseDTO mapToResponseDTO(Transaction transaction,
+            RecipientClient.RecipientResponse recipient) {
         TransactionResponseDTO dto = mapToResponseDTO(transaction);
         if (recipient != null) {
             dto.setRecipientIban(recipient.getIban());

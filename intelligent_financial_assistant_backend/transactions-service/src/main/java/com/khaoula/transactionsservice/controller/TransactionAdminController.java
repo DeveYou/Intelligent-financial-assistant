@@ -1,6 +1,5 @@
 package com.khaoula.transactionsservice.controller;
 
-
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
 import com.khaoula.transactionsservice.dto.TransactionFilterDTO;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/admin/transactions")
@@ -158,18 +156,18 @@ public class TransactionAdminController {
     }
 
     /**
-     * Créer un dépôt (admin peut faire des opérations pour n'importe quel utilisateur)
+     * Créer un dépôt (admin peut faire des opérations pour n'importe quel
+     * utilisateur)
      */
     @PostMapping("/deposit")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createDeposit(
             @Valid @RequestBody TransactionRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating deposit for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createDeposit(request, userId, authHeader);
+        log.info("Admin {} creating deposit for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createDeposit(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -180,12 +178,11 @@ public class TransactionAdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createWithdrawal(
             @Valid @RequestBody TransactionRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating withdrawal for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createWithdrawal(request, userId, authHeader);
+        log.info("Admin {} creating withdrawal for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createWithdrawal(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -196,12 +193,11 @@ public class TransactionAdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createTransfer(
             @Valid @RequestBody TransferRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating transfer for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createTransfer(request, userId, authHeader);
+        log.info("Admin {} creating transfer for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createTransfer(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -218,8 +214,18 @@ public class TransactionAdminController {
         return ResponseEntity.ok(stats);
     }
 
+    @GetMapping("/stats/daily")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<com.khaoula.transactionsservice.dto.DailyTransactionStats>> getDailyStats(
+            Authentication authentication) {
+
+        log.info("Admin {} retrieving daily transaction statistics", authentication.getName());
+        return ResponseEntity.ok(transactionService.getDailyStats());
+    }
+
     /**
-     * Annuler une transaction (admin peut annuler n'importe quelle transaction PENDING)
+     * Annuler une transaction (admin peut annuler n'importe quelle transaction
+     * PENDING)
      */
     @PostMapping("/{id}/cancel")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -234,6 +240,5 @@ public class TransactionAdminController {
         TransactionResponseDTO cancelled = transactionService.cancelTransaction(id, userId);
         return ResponseEntity.ok(cancelled);
     }
-
 
 }

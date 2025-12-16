@@ -13,10 +13,6 @@ class AuthenticationScreen extends StatefulWidget {
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
-  // Color Palette
-  final Color _primaryColor = const Color(0xFFF44E1E);
-  final Color _secondaryColor = const Color(0xFFFFBD09);
-
   // State to toggle between Login (0) and Signup (1)
   int _pageState = 0;
 
@@ -37,13 +33,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   height: 80,
                   width: 80,
                   decoration: BoxDecoration(
-                    color: _secondaryColor.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.account_balance_wallet_rounded,
                     size: 40,
-                    color: _primaryColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -87,10 +83,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: _pageState == 0 ? _primaryColor : Colors.transparent,
+                              color: _pageState == 0 ? Theme.of(context).primaryColor : Colors.transparent,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: _pageState == 0
-                                  ? [BoxShadow(color: _primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
+                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
                                   : [],
                             ),
                             alignment: Alignment.center,
@@ -114,10 +110,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              color: _pageState == 1 ? _primaryColor : Colors.transparent,
+                              color: _pageState == 1 ? Theme.of(context).primaryColor : Colors.transparent,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: _pageState == 1
-                                  ? [BoxShadow(color: _primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
+                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
                                   : [],
                             ),
                             alignment: Alignment.center,
