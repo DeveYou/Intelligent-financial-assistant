@@ -8,7 +8,7 @@ class AppConstants {
   //static const String baseUrl = "http://localhost:8080";
   static const String baseUrl = "https://exhilaratingly-uncompiled-laree.ngrok-free.dev";
 
-  static const String  geminiApiToken = "AIzaSyBgZFA2J_fYfD1VKn8P1s0FCCWircEY7kk";
+  static const String  geminiApiToken = "AIzaSyDat1U-5IqcXz2kRmyEW-1zNMr3FXIg3Po";
   static const String geminiModel = "gemini-flash-latest";
 
 

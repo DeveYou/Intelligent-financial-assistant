@@ -7,10 +7,10 @@ class TransactionItemWidget extends StatelessWidget {
   final Function() onTap;
 
   const TransactionItemWidget({
-    Key? key,
+    super.key,
     required this.transaction,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

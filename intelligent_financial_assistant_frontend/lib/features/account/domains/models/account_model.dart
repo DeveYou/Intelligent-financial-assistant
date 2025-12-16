@@ -48,7 +48,7 @@ class AccountModel {
     isOnlinePayment = json['isOnlinePayment'] ?? false;
     isContactless = json['isContactless'] ?? false;
     if(json['createdAt'] != null){
-      createdAt = DateTime.tryParse(json['createdAt']);
+      createdAt = DateTime.tryParse(json['createdAt'].toString());
     }
     currency = json['currency'] ?? 'MAD';
   }

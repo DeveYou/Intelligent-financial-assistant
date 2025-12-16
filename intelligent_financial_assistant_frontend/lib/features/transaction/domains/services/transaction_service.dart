@@ -25,7 +25,6 @@ class TransactionService implements TransactionServiceInterface {
 
   @override
   Future<ApiResponse> sendMoney(TransactionModel transaction) async {
-    // TODO: Backend performance check required. Transfer endpoint can be slow (>60s) causing timeouts.
     return await transactionRepository.sendMoney(transaction);
   }
 

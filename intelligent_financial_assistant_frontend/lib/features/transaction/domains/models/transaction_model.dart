@@ -59,6 +59,10 @@ class TransactionModel {
           beneficiary = RecipientModel(
            iban: json['recipientIban'],
          );
+      } else if (json['recipient'] != null && json['recipient'] is Map) {
+         beneficiary = RecipientModel.fromJson(json['recipient']);
+      } else if (json['beneficiary'] != null && json['beneficiary'] is Map) {
+         beneficiary = RecipientModel.fromJson(json['beneficiary']);
       }
   }
 

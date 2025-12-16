@@ -2,7 +2,6 @@ package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AccountClient;
 import com.khaoula.transactionsservice.client.RecipientClient;
-import com.khaoula.transactionsservice.client.UserClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
@@ -147,6 +146,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidTransactionException("Source account is not active");
         }
 
+        // Vérifier le solde
         if (sourceAccount.getBalance() < request.getAmount().doubleValue()) {
             throw new InsufficientBalanceException("Insufficient balance for transfer");
         }
@@ -155,6 +155,7 @@ public class TransactionServiceImpl implements TransactionService {
         String recipientIban;
 
         if (request.getRecipientIban() != null) {
+            // Utiliser directement l'IBAN fourni
             recipientIban = request.getRecipientIban();
 
             log.info("Fetching recipient by IBAN: {}", recipientIban);
@@ -194,6 +195,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InvalidTransactionException("Recipient IBAN is required for transfer");
         }
 
+        // Créer la transaction
         Transaction transaction = new Transaction();
         transaction.setUserId(sourceAccount.getUserId());
         transaction.setBankAccountId(request.getBankAccountId());
@@ -202,10 +204,15 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setAmount(request.getAmount());
 
+        // Stocker l'ID du bénéficiaire si disponible, sinon stocker l'IBAN
         if (recipient != null) {
             transaction.setRecipientId(recipient.getId());
+            transaction.setRecipientName(recipient.getFullName());
+            transaction.setRecipientIban(recipient.getIban());
         } else {
             transaction.setRecipientId(null);
+            transaction.setRecipientId(null);
+            transaction.setRecipientIban(request.getRecipientIban());
         }
 
         transaction.setReason(request.getReason());
@@ -247,7 +254,8 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getPage(),
                 filter.getSize(),
                 Sort.Direction.fromString(filter.getSortDirection()),
-                filter.getSortBy());
+                filter.getSortBy()
+        );
 
         Page<Transaction> transactions = transactionRepository.findByFilters(
                 filter.getUserId(),
@@ -256,7 +264,8 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getStatus(),
                 filter.getStartDate(),
                 filter.getEndDate(),
-                pageable);
+                pageable
+        );
 
         return transactions.map(this::mapToResponseDTO);
     }
@@ -268,6 +277,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
@@ -352,6 +362,8 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setStatus(transaction.getStatus());
         dto.setAmount(transaction.getAmount());
         dto.setRecipientId(transaction.getRecipientId());
+        dto.setRecipientName(transaction.getRecipientName());
+        dto.setRecipientIban(transaction.getRecipientIban());
         dto.setReason(transaction.getReason());
         dto.setDate(transaction.getDate());
         return dto;
@@ -361,6 +373,7 @@ public class TransactionServiceImpl implements TransactionService {
             RecipientClient.RecipientResponse recipient) {
         TransactionResponseDTO dto = mapToResponseDTO(transaction);
         if (recipient != null) {
+            dto.setRecipientName(recipient.getFullName());
             dto.setRecipientIban(recipient.getIban());
         }
         return dto;
