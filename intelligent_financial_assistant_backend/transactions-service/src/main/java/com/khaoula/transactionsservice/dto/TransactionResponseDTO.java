@@ -21,7 +21,7 @@ public class TransactionResponseDTO {
     private TransactionStatus status;
     private BigDecimal amount;
     private Long recipientId;
-    private String recipientName; // Enrichi depuis recipient-service
+    private String recipientName;
     private String recipientIban;
     private String reason;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")

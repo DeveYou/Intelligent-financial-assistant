@@ -33,7 +33,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountClient accountClient;
     private final RecipientClient recipientClient;
 
-
     @Override
     @Transactional
     public TransactionResponseDTO createDeposit(TransactionRequestDTO request, Long userId, String authHeader) {
@@ -65,8 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     account.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "ADD"),
-                    authHeader
-            );
+                    authHeader);
 
             // Marquer comme complétée
             transaction.setStatus(TransactionStatus.COMPLETED);
@@ -118,8 +116,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     account.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
-                    authHeader
-            );
+                    authHeader);
 
             // Marquer comme complétée
             transaction.setStatus(TransactionStatus.COMPLETED);
@@ -142,7 +139,8 @@ public class TransactionServiceImpl implements TransactionService {
         log.info("Creating transfer for user: {}, amount: {}", userId, request.getAmount());
 
         // Valider le compte source
-        AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(), authHeader);
+        AccountClient.AccountResponse sourceAccount = accountClient.getAccountById(request.getBankAccountId(),
+                authHeader);
 
         if (!sourceAccount.getIsActive()) {
             throw new InvalidTransactionException("Source account is not active");
@@ -163,8 +161,8 @@ public class TransactionServiceImpl implements TransactionService {
             recipientIban = request.getRecipientIban();
 
             log.info("Fetching recipient by IBAN: {}", recipientIban);
-            RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response =
-                    recipientClient.getRecipientByIban(recipientIban, authHeader);
+            RecipientClient.ApiResponse<RecipientClient.RecipientResponse> response = recipientClient
+                    .getRecipientByIban(recipientIban, authHeader);
             recipient = response.getData();
         } else if (request.getRecipientId() != null) {
             // Si on a un ID, il faut d'abord récupérer l'IBAN
@@ -187,10 +185,14 @@ public class TransactionServiceImpl implements TransactionService {
         // Stocker l'ID du bénéficiaire si disponible, sinon stocker l'IBAN
         if (recipient != null) {
             transaction.setRecipientId(recipient.getId());
+            transaction.setRecipientName(recipient.getFullName());
+            transaction.setRecipientIban(recipient.getIban());
         } else {
             // Stocker une référence à l'IBAN
-            transaction.setRecipientId(null); // ou créer une entrée spéciale
-            // Alternative: ajouter un champ recipientIban dans Transaction
+            transaction.setRecipientId(null);
+            transaction.setRecipientIban(request.getRecipientIban());
+            // Si on n'a pas le nom, on laisse null ou on met "Unknown" ?
+            // On laisse null pour l'instant, le frontend gère "Unknown"
         }
 
         transaction.setReason(request.getReason());
@@ -203,8 +205,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountClient.updateBalance(
                     sourceAccount.getId(),
                     new AccountClient.BalanceUpdateRequest(request.getAmount().doubleValue(), "SUBTRACT"),
-                    authHeader
-            );
+                    authHeader);
 
             // TODO: Créditer le compte destinataire si interne
             // Pour l'instant, on considère que le transfert est vers un compte externe
@@ -231,8 +232,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getPage(),
                 filter.getSize(),
                 Sort.Direction.fromString(filter.getSortDirection()),
-                filter.getSortBy()
-        );
+                filter.getSortBy());
 
         Page<Transaction> transactions = transactionRepository.findByFilters(
                 filter.getUserId(),
@@ -241,8 +241,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getStatus(),
                 filter.getStartDate(),
                 filter.getEndDate(),
-                pageable
-        );
+                pageable);
 
         return transactions.map(this::mapToResponseDTO);
     }
@@ -254,7 +253,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
@@ -324,12 +322,15 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setStatus(transaction.getStatus());
         dto.setAmount(transaction.getAmount());
         dto.setRecipientId(transaction.getRecipientId());
+        dto.setRecipientName(transaction.getRecipientName());
+        dto.setRecipientIban(transaction.getRecipientIban());
         dto.setReason(transaction.getReason());
         dto.setDate(transaction.getDate());
         return dto;
     }
 
-    private TransactionResponseDTO mapToResponseDTO(Transaction transaction, RecipientClient.RecipientResponse recipient) {
+    private TransactionResponseDTO mapToResponseDTO(Transaction transaction,
+            RecipientClient.RecipientResponse recipient) {
         TransactionResponseDTO dto = mapToResponseDTO(transaction);
         if (recipient != null) {
             dto.setRecipientName(recipient.getFullName());

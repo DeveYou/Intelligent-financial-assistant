@@ -14,7 +14,6 @@ public class TransactionRequestDTO {
     @NotNull(message = "Bank account ID is required")
     private Long bankAccountId;
 
-
     private TransactionType type;
 
     @NotNull(message = "Amount is required")
@@ -26,6 +25,7 @@ public class TransactionRequestDTO {
     private String recipientIban;
     private Long recipientId;
 
+    private String recipientName;
 
     @Size(max = 500, message = "Reason cannot exceed 500 characters")
     private String reason;
