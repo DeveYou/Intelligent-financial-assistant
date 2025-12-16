@@ -13,8 +13,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import com.lachguer.accountservice.model.User;
 import org.springframework.beans.BeanUtils;
@@ -31,7 +33,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BankAccountResponseDTO addAccount(BankAccountRequestDTO bankAccountDTO) {
-        // Check existing accounts
         List<BankAccount> existingAccounts = bankAccountRepository.findByUserId(bankAccountDTO.getUserId());
 
         if (existingAccounts.size() >= 2) {
@@ -54,14 +55,19 @@ public class AccountServiceImpl implements AccountService {
         BankAccount bankAccount;
         if (bankAccountDTO.getType() == AccountType.CURRENT_ACCOUNT) {
             bankAccount = new CurrentAccount();
-            ((CurrentAccount) bankAccount).setOverDraft(bankAccountDTO.getOverDraft());
+            ((CurrentAccount) bankAccount).setOverDraft(1000.0);
         } else {
             bankAccount = new SavingAccount();
-            ((SavingAccount) bankAccount).setInterestRate(bankAccountDTO.getInterestRate());
+            ((SavingAccount) bankAccount).setInterestRate(3.5);
         }
+        bankAccount.setAccountType(bankAccountDTO.getType());
 
-
-        bankAccount.setRib(bankAccountDTO.getIban());
+        StringBuilder ribBuilder = new StringBuilder();
+        java.util.Random random = new Random();
+        for (int i = 0; i < 16; i++) {
+            ribBuilder.append(random.nextInt(10));
+        }
+        bankAccount.setRib(ribBuilder.toString());
 
         bankAccount.setBalance(0.0);
 
@@ -69,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
         bankAccount.setCreatedAt(now);
 
 
-        bankAccount.setExpirationDate(bankAccountDTO.getExpirationDate());
+        bankAccount.setExpirationDate(LocalDate.now().plusYears(4));
 
         bankAccount.setIsPaymentByCard(false);
         bankAccount.setIsWithdrawal(false);
