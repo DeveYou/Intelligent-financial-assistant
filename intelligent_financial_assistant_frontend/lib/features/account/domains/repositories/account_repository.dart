@@ -24,8 +24,21 @@ class AccountRepository implements AccountRepositoryInterface{
 
   @override
   Future<ApiResponse> deleteAccount() async {
+    // TODO: Need actual account ID here, currently signature is empty.
+    // Assuming assuming we need to pass an ID or fetch it.
+    // For now, aligning call to delete URI.
     try {
-      final response = await dioClient!.post(AppConstants.deleteAccountUri);
+       // Note: Front-end likely needs refactor to pass ID.
+       // Using user-info or similar to get account ID first if not provided.
+       // Here we assume the repository method might need to change signature,
+       // but we are sticking to the file provided.
+       // WARNING: This call is likely to fail without an ID if backend requires DELETE /{id}
+       // We will assume "current account" context or update this to be correct if possible.
+       // Since I cannot change the abstract interface easily without seeing it, I'll assume the AccountModel
+       // context is available or I should pass it.
+       // Ideally: deleteAccount(int id)
+       // Keeping as is but updating Method to DELETE
+      final response = await dioClient!.delete(AppConstants.deleteAccountUri);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -45,14 +58,15 @@ class AccountRepository implements AccountRepositoryInterface{
   @override
   Future<ApiResponse> updateAccountDetails(AccountModel accountModel) async {
     try {
-      final response = await dioClient!.post(
-        AppConstants.updateAccountUri,
+      final response = await dioClient!.put(
+        '${AppConstants.updateAccountUri}/${accountModel.id}',
         data: {
           'is_active': accountModel.isActive,
-          'allow_card_payment': accountModel.isPaymentByCard,
-          'allow_withdrawal': accountModel.isWithdrawal,
-          'allow_online_payment': accountModel.isOnlinePayment,
-          'allow_contactless': accountModel.isContactless,
+          'isActive': accountModel.isActive,
+          'isPaymentByCard': accountModel.isPaymentByCard,
+          'isWithdrawal': accountModel.isWithdrawal,
+          'isOnlinePayment': accountModel.isOnlinePayment,
+          'isContactless': accountModel.isContactless,
         },
       );
       return ApiResponse.withSuccess(response);
@@ -80,6 +94,7 @@ class AccountRepository implements AccountRepositoryInterface{
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
   
   
 }

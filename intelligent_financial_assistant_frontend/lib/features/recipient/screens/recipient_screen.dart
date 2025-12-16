@@ -3,6 +3,7 @@ import 'package:intelligent_financial_assistant_frontend/localization/language_c
 import 'package:provider/provider.dart';
 import '../controllers/recipient_controller.dart';
 import '../domains/models/recipient_model.dart';
+import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 import '../widgets/recipient_widget_card.dart';
 
 class RecipientScreen extends StatefulWidget {
@@ -41,16 +42,79 @@ class _RecipientScreenState extends State<RecipientScreen> {
       body: Consumer<RecipientController>(
         builder: (context, controller, child) {
           if (controller.isLoading && (controller.recipientList == null)) {
-            return const Center(child: CircularProgressIndicator());
+             return ListView.builder(
+              itemCount: 8,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                       const ShimmerSkeleton.circular(height: 50, width: 50),
+                       const SizedBox(width: 16),
+                       Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           const ShimmerSkeleton.rectangular(height: 16, width: 150),
+                           const SizedBox(height: 8),
+                           const ShimmerSkeleton.rectangular(height: 12, width: 100),
+                         ],
+                       ),
+                       const Spacer(),
+                       const ShimmerSkeleton.rectangular(height: 20, width: 20, borderRadius: 4),
+                       const SizedBox(width: 10),
+                       const ShimmerSkeleton.rectangular(height: 20, width: 20, borderRadius: 4),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+
+          if (controller.recipientState == RecipientState.error) {
+             return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text(controller.error ?? getTranslated("error", context)!, style: const TextStyle(color: Colors.red)),
+                   const SizedBox(height: 10),
+                   ElevatedButton(
+                     onPressed: () => controller.getRecipientList(reload: true),
+                     child: Text(getTranslated("retry", context)!),
+                   )
+                ],
+              ),
+             );
           }
 
           if (controller.recipientList == null || controller.recipientList!.isEmpty) {
             return Center(
-              child: Text(
-                getTranslated("no_recipients_yet", context)!,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).disabledColor,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    getTranslated("no_recipients_yet", context)!,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).disabledColor,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                   const SizedBox(height: 8),
+                   Text(
+                    getTranslated("add_recipient_subtitle", context) ?? "Add your first recipient to start sending money",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey[600]),
+                   )
+                ],
               ),
             );
           }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/screens/recipient_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
+import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 
 class QuickAccessButtonsWidget extends StatelessWidget {
-  const QuickAccessButtonsWidget({Key? key}) : super(key: key);
+  const QuickAccessButtonsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +44,23 @@ class QuickAccessButtonsWidget extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            // Navigate to feature
-            // Navigator.pushNamed(context, feature['route']);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Navigate to ${feature['label']}')),
-            );
+            if (feature['route'] == '/account') {
+              Root.setPage(2);
+            } else if (feature['route'] == '/assistant') {
+              Root.setPage(3);
+            } else if (feature['route'] == '/transaction') {
+              Root.setPage(1);
+            } else {
+              //Navigator.pushNamed(context, feature['route']);
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const RecipientScreen()
+                  )
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Navigate to ${feature['label']}')),
+              );
+            }
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(

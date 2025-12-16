@@ -105,8 +105,23 @@ class AuthenticationRepository implements AuthenticationRepositoryInterface{
   }
 
   @override
+  Future<void> saveUserId(String id) async {
+    try {
+      await sharedPreferences!.setString(AppConstants.userId, id);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  String getUserId() {
+    return sharedPreferences!.getString(AppConstants.userId) ?? "";
+  }
+
+  @override
   Future<bool> clearSharedData() async {
     sharedPreferences?.remove(AppConstants.userLoginToken);
+    sharedPreferences?.remove(AppConstants.userId);
     return true;
   }
 

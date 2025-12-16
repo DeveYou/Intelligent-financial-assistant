@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 import 'package:intelligent_financial_assistant_frontend/features/notifications/screens/notifications_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/screens/settings_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/controllers/transaction_controller.dart';
@@ -61,7 +62,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       appBar: AppBar(
         title: Text(
           getTranslated('transactions', context)!,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white
           )
         ),
@@ -93,12 +94,58 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       body: Consumer<TransactionController>(
         builder: (context, transactionController, child) {
           if (transactionController.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              itemCount: 8,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      const ShimmerSkeleton.circular(height: 50, width: 50),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const ShimmerSkeleton.rectangular(height: 16, width: 120),
+                            const SizedBox(height: 8),
+                            const ShimmerSkeleton.rectangular(height: 12, width: 80),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const ShimmerSkeleton.rectangular(height: 16, width: 60),
+                    ],
+                  ),
+                );
+              },
+            );
           } else if (transactionController.transactions.isEmpty) {
             return Center(
-              child: Text(
-                getTranslated('no_transactions_found', context) ?? 'No transactions found',
-                style: const TextStyle(fontSize: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey[400]),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    getTranslated('no_transactions_found', context) ?? 'No transactions found',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    getTranslated('no_transactions_subtitle', context) ?? 'Your recent transactions will appear here',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
           }

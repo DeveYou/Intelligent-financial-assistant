@@ -6,6 +6,8 @@ import 'package:intelligent_financial_assistant_frontend/features/settings/scree
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
+import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
+
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
 
@@ -61,8 +63,38 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
       body: Consumer<AccountController>(
         builder: (context, controller, child) {
-          if (controller.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+          if (controller.accountState == AccountState.loading) {
+             return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   const ShimmerSkeleton.rectangular(height: 200, width: double.infinity),
+                   const SizedBox(height: 24),
+                   const ShimmerSkeleton.rectangular(height: 60, width: double.infinity),
+                   const SizedBox(height: 10),
+                   const ShimmerSkeleton.rectangular(height: 60, width: double.infinity),
+                   const SizedBox(height: 10),
+                   const ShimmerSkeleton.rectangular(height: 60, width: double.infinity),
+                ],
+              ),
+            );
+          }
+
+          if (controller.accountState == AccountState.error) {
+             return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text(controller.error.isNotEmpty ? controller.error : getTranslated("error", context)!, style: const TextStyle(color: Colors.red)),
+                   const SizedBox(height: 10),
+                   ElevatedButton(
+                     onPressed: () => controller.initAccountData(),
+                     child: Text(getTranslated("retry", context)!),
+                   )
+                ],
+              ),
+             );
           }
 
           if (controller.accountModel == null) {

@@ -38,9 +38,14 @@ class ApiChecker {
           Get.context!
       );
     } else {
-      String errorMessage = apiResponse.error ?? getTranslated('an_unexpected_error_occurred_Please_try_again_later', Get.context!);
-      log('General API error: $errorMessage');
-      showCustomSnackBarWidget(errorMessage, Get.context!);
+      String errorMessage = apiResponse.error ?? 'An unexpected error occurred';
+      if (Get.context != null) {
+        errorMessage = apiResponse.error ?? getTranslated('an_unexpected_error_occurred_Please_try_again_later', Get.context!) ?? 'An unexpected error occurred';
+        log('General API error: $errorMessage');
+        showCustomSnackBarWidget(errorMessage, Get.context!);
+      } else {
+        log('General API error (No Context): $errorMessage');
+      }
     }
   }
 }

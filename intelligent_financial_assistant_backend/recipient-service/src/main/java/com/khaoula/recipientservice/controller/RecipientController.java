@@ -5,6 +5,7 @@ import com.khaoula.recipientservice.dto.RecipientResponse;
 import com.khaoula.recipientservice.exception.ResourceNotFoundException;
 import com.khaoula.recipientservice.model.ApiResponse;
 import com.khaoula.recipientservice.model.Recipient;
+import com.khaoula.recipientservice.repository.RecipientRepository;
 import com.khaoula.recipientservice.service.RecipientService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 public class RecipientController {
 
     private final RecipientService recipientService;
+    private final RecipientRepository recipientRepository;
 
-    public RecipientController(RecipientService recipientService) {
+    public RecipientController(RecipientService recipientService, RecipientRepository recipientRepository) {
         this.recipientService = recipientService;
+        this.recipientRepository = recipientRepository;
     }
 
     /**

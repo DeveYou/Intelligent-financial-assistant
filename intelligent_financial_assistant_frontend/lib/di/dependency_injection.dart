@@ -27,6 +27,11 @@ import 'package:intelligent_financial_assistant_frontend/features/notifications/
 import 'package:intelligent_financial_assistant_frontend/features/notifications/domains/repositories/notifications_repository_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/notifications/domains/services/notifications_service.dart';
 import 'package:intelligent_financial_assistant_frontend/features/notifications/domains/services/notifications_service_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/controllers/recipient_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/repositories/recipient_repository.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/repositories/recipient_repository_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/services/recipient_service.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/services/recipient_service_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/controllers/settings_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/domains/services/settings_service.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/controllers/transaction_controller.dart';
@@ -56,7 +61,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AssistantRepository(dioClient: sl()));
   sl.registerLazySingleton(() => NotificationsRepository(dioClient: sl()));
   sl.registerLazySingleton(() => TransactionRepository(dioClient: sl()));
-  
+  sl.registerLazySingleton(() => RecipientRepository(dioClient: sl()));
+
 
   // Interfaces
   sl.registerLazySingleton<AuthenticationRepositoryInterface>(() => sl<AuthenticationRepository>());
@@ -65,6 +71,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AssistantRepositoryInterface>(() => sl<AssistantRepository>());
   sl.registerLazySingleton<NotificationsRepositoryInterface>(() => sl<NotificationsRepository>());
   sl.registerLazySingleton<TransactionRepositoryInterface>(() => sl<TransactionRepository>());
+  sl.registerLazySingleton<RecipientRepositoryInterface>(() => sl<RecipientRepository>());
 
   // Services
   sl.registerLazySingleton(() => AuthenticationService(authenticationRepository: sl()));
@@ -74,6 +81,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => NotificationsService(notificationsRepository: sl()));
   sl.registerLazySingleton(() => SettingsService());
   sl.registerLazySingleton(() => TransactionService(transactionRepository: sl()));
+  sl.registerLazySingleton(() => RecipientService(recipientRepository: sl()));
 
   // Interface binding for Service
   sl.registerLazySingleton<AuthenticationServiceInterface>(() => sl<AuthenticationService>());
@@ -82,6 +90,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AssistantServiceInterface>(() => sl<AssistantService>());
   sl.registerLazySingleton<NotificationsServiceInterface>(() => sl<NotificationsService>());
   sl.registerLazySingleton<TransactionServiceInterface>(() => sl<TransactionService>());
+  sl.registerLazySingleton<RecipientServiceInterface>(() => sl<RecipientService>());
 
   // Providers / Controllers
   sl.registerFactory(() => LocalizationController(sharedPreferences: sl(), dioClient: sl()));
@@ -93,5 +102,6 @@ Future<void> init() async {
   sl.registerFactory(() => NotificationsController(notificationService: sl()));
   sl.registerFactory(() => SettingsController(settingsService: sl()));
   sl.registerFactory(() => TransactionController(transactionService: sl()));
+  sl.registerFactory(() => RecipientController(recipientService: sl()));
 
 }

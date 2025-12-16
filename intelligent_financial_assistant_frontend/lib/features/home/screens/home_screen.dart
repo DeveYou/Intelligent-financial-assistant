@@ -6,6 +6,7 @@ import 'package:intelligent_financial_assistant_frontend/features/notifications/
 import 'package:intelligent_financial_assistant_frontend/features/settings/screens/settings_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
+import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
             getTranslated("VoxBank_home", context)!,
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.white
             )
         ),
@@ -62,16 +63,33 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Consumer<HomeController>(
         builder: (context, controller, child) {
-          if (controller.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+          if (controller.homeState == HomeState.loading) {
+             return SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   const ShimmerSkeleton.rectangular(height: 20, width: 150),
+                   const SizedBox(height: 20),
+                   const ShimmerSkeleton.rectangular(height: 200, width: double.infinity),
+                   const SizedBox(height: 30),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: List.generate(4, (index) => const ShimmerSkeleton.circular(height: 60, width: 60)),
+                   ),
+                   const SizedBox(height: 20),
+                   const ShimmerSkeleton.rectangular(height: 100, width: double.infinity),
+                ],
+              ),
+            );
           }
 
-          if (controller.errorMessage.isNotEmpty) {
+          if (controller.homeState == HomeState.error) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(controller.errorMessage, style: const TextStyle(color: Colors.red)),
+                  Text(controller.errorMessage.isEmpty ? getTranslated("error", context)! : controller.errorMessage, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => controller.getAccountSummary(),
@@ -82,11 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          if (controller.accountDetails == null) {
+           if (controller.accountDetails == null) {
             return Center(child: Text(
                 getTranslated("no_account_data_available", context)!)
             );
           }
+
 
           return RefreshIndicator(
             onRefresh: () async => await controller.getAccountSummary(),
@@ -98,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     getTranslated("welcome_back", context)!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,

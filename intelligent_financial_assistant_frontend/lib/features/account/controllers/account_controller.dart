@@ -6,33 +6,45 @@ import 'package:intelligent_financial_assistant_frontend/features/transaction/do
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/main.dart';
 
+enum AccountState { loading, success, error }
+
 class AccountController with ChangeNotifier {
   final AccountServiceInterface accountService;
 
   AccountController({required this.accountService});
 
-  bool _isLoading = false;
+  AccountState _accountState = AccountState.loading;
   AccountModel? _accountModel;
   List<TransactionModel>? _recentTransactions;
   String _error = '';
 
-  bool get isLoading => _isLoading;
+  AccountState get accountState => _accountState;
+  bool get isLoading => _accountState == AccountState.loading;
   AccountModel? get accountModel => _accountModel;
   List<TransactionModel>? get recentTransactions => _recentTransactions;
   String get error => _error;
 
   Future<void> initAccountData() async {
-    _isLoading = true;
+    _accountState = AccountState.loading;
     _error = '';
     notifyListeners();
 
-    await Future.wait([
-      _getAccountDetails(),
-      _getRecentTransactions(),
-    ]);
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      await Future.wait([
+        _getAccountDetails(),
+        _getRecentTransactions(),
+      ]);
+      if (_error.isNotEmpty) {
+        _accountState = AccountState.error;
+      } else {
+        _accountState = AccountState.success;
+      }
+    } catch (e) {
+      _error = 'Unexpected error: $e';
+      _accountState = AccountState.error;
+    } finally {
+      notifyListeners();
+    }
   }
 
   Future<void> _getAccountDetails() async {

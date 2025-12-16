@@ -150,6 +150,27 @@ public class TransactionUserController {
     }
 
     /**
+     * Récupérer une transaction par ID
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<TransactionResponseDTO> getById(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
+            Authentication authentication) {
+
+        Long userId = getUserIdFromHeader(userIdHeader, authentication);
+        log.info("User {} retrieving transaction by ID {}", userId, id);
+
+        List<TransactionResponseDTO> all = transactionService.getUserTransactions(userId);
+        return all.stream()
+                .filter(t -> t.getId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
      * Annuler une transaction (seulement si PENDING)
      */
     @PostMapping("/{id}/cancel")

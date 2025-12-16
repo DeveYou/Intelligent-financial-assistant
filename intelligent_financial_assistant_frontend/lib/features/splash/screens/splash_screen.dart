@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/onboarding/screens/onboarding_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 import 'package:intelligent_financial_assistant_frontend/helpers/app_storage_service.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -44,31 +45,31 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkNavigationLogic() async {
-    // 1. Wait for animation + minimum splash time
+    // Wait for animation + minimum splash time
     await Future.delayed(const Duration(seconds: 3));
 
-    // 2. Check Logic
+    // Check Logic
     final bool isLoggedIn = await AppStorageService.isLoggedIn();
     final bool isFirstTime = await AppStorageService.isFirstTime();
 
     if (!mounted) return;
 
     if (isLoggedIn) {
-      // Logic A: User already authenticated -> Go directly to home
+      // User already authenticated -> Go directly to home
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => Root()),
       );
     } else {
       if (isFirstTime) {
-        // Logic B: Not auth + First time -> Go to Onboarding
+        // Not auth + First time -> Go to Onboarding
         // Note: The Onboarding screen should navigate to AuthenticationScreen when done
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const OnboardingScreen()),
         );
       } else {
-        // Logic C: Not auth + Not first time -> Go to Authentication
+        // Not auth + Not first time -> Go to Authentication
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const AuthenticationScreen()),

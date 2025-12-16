@@ -13,6 +13,7 @@ class TransactionRepository implements TransactionRepositoryInterface {
   @override
   Future<ApiResponse> getTransactions({int limit = 20}) async {
     try {
+      // Backend: GET /user/transactions/my-transactions
       final response = await dioClient!.get('${AppConstants.getTransactionsUri}?limit=$limit');
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -23,7 +24,10 @@ class TransactionRepository implements TransactionRepositoryInterface {
   @override
   Future<ApiResponse> getTransactionDetails(String transactionId) async {
     try {
-      final response = await dioClient!.get('${AppConstants.getTransactionsUri}/$transactionId');
+      // Backend: GET /{id} (Needs to be added to Backend)
+      // Or use GET /reference
+      // Assuming I add GET /{id} to the backend as per instructions.
+      final response = await dioClient!.get('${AppConstants.transactionBaseUri}/$transactionId');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -32,8 +36,15 @@ class TransactionRepository implements TransactionRepositoryInterface {
 
   @override
   Future<ApiResponse> getAccountBalance() async {
+     // TODO: Backend does not have a direct "get balance" endpoint that is not the account details one.
+     // Account details returns balance.
+     // Using accountUri to get details and parse balance?
+     // Or assuming the backend won't change.
+     // Previous code called: accountUri + '/balance' which didn't exist in my audit (only POST).
+     // I will change this to getAccountDetails behavior or remove if unused, 
+     // but since it returns ApiResponse, I'll redirect to getAccountDetails endpoint which returns DTO with balance.
     try {
-      final response = await dioClient!.get('${AppConstants.accountUri}/balance');
+      final response = await dioClient!.get(AppConstants.accountUri);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -43,8 +54,20 @@ class TransactionRepository implements TransactionRepositoryInterface {
   @override
   Future<ApiResponse> sendMoney(TransactionModel transaction) async {
     try {
+      // Backend: POST /transfer (Check TransactionType)
+      String uri;
+      if (transaction.type == 'TRANSFER') {
+        uri = AppConstants.transferTransactionUri;
+      } else if (transaction.type == 'DEPOSIT') {
+         uri = AppConstants.depositTransactionUri;
+      } else if (transaction.type == 'WITHDRAWAL') {
+         uri = AppConstants.withdrawalTransactionUri;
+      } else {
+        uri = AppConstants.transferTransactionUri; // Default
+      }
+      
       final response = await dioClient!.post(
-        AppConstants.getTransactionsUri,
+        uri,
         data: transaction.toJson(),
       );
       return ApiResponse.withSuccess(response);
@@ -56,7 +79,7 @@ class TransactionRepository implements TransactionRepositoryInterface {
   @override
   Future<ApiResponse> getLastTransaction() async {
     try {
-      final response = await dioClient!.get('${AppConstants.getTransactionsUri}/last');
+      final response = await dioClient!.get('${AppConstants.getTransactionsUri}?limit=1');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

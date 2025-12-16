@@ -15,6 +15,7 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 import 'package:intelligent_financial_assistant_frontend/features/home/controllers/home_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/notifications/controllers/notifications_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/controllers/recipient_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/controllers/settings_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
@@ -54,7 +55,8 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (context) => di.sl<AssistantController>()),
     ChangeNotifierProvider(create: (context) => di.sl<NotificationsController>()),
     ChangeNotifierProvider(create: (context) => di.sl<SettingsController>()),
-    ChangeNotifierProvider(create: (context) => di.sl<TransactionController>())
+    ChangeNotifierProvider(create: (context) => di.sl<TransactionController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<RecipientController>())
   ];
 
   flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
@@ -114,7 +116,7 @@ class MyApp extends StatelessWidget {
         );
       },
       supportedLocales: locales,
-      home: Root(),
+      home: SplashScreen(),
     );
   }
 }

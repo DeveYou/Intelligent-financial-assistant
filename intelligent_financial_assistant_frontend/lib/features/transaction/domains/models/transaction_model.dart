@@ -1,50 +1,82 @@
 import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/models/recipient_model.dart';
 
 class TransactionModel {
+  int? id;
   String? type;
   double? amount;
   String? reference;
   String? reason;
   double? chargeAmount;
   RecipientModel? beneficiary;
+
+  int? userId;
+  int? bankAccountId;
+  int? recipientId;
+  String? recipientIban;
+  String? status; // TransactionStatus: PENDING, EXECUTED, REJECTED
   DateTime? createdAt;
 
   TransactionModel({
+    this.id,
     this.type,
     this.amount,
     this.reference,
     this.reason,
     this.chargeAmount,
     this.beneficiary,
+    this.userId,
+    this.bankAccountId,
+    this.recipientId,
+    this.recipientIban,
+    this.status,
     this.createdAt,
   });
 
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
+      id = json['id'];
       type = json['type'];
-      amount = (json['amount'] as num).toDouble();
+      amount = json['amount'] != null ? (json['amount'] as num).toDouble() : 0.0;
       reference = json['reference'];
       reason = json['reason'];
-      chargeAmount = (json['chargeAmount'] as num).toDouble();
-      beneficiary = json['beneficiary'] != null
-          ? RecipientModel.fromJson(json['beneficiary'])
-          : null;
-      createdAt = DateTime.parse(json['createdAt']);
+      status = json['status'];
+      userId = json['userId'];
+      bankAccountId = json['bankAccountId'];
+      recipientId = json['recipientId'];
+      recipientIban = json['recipientIban'];
+      if(json['date'] != null){
+        createdAt = DateTime.tryParse(json['date'].toString());
+      } else if (json['createdAt'] != null) {
+        createdAt = DateTime.tryParse(json['createdAt']);
+      }
+
+      if (json['recipientName'] != null || json['recipientIban'] != null) {
+         beneficiary = RecipientModel(
+           fullName: json['recipientName'],
+           iban: json['recipientIban'],
+         );
+      }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['type'] = type;
+    data['bankAccountId'] = bankAccountId;
     data['amount'] = amount;
-    data['reference'] = reference;
+    data['type'] = type;
     data['reason'] = reason;
-    data['chargeAmount'] = chargeAmount;
+    
     if (beneficiary != null) {
-      data['beneficiary'] = beneficiary!.toJson();
+      if (beneficiary!.id != null) {
+         data['recipientId'] = beneficiary!.id;
+      }
+      if (beneficiary!.iban != null) {
+         data['recipientIban'] = beneficiary!.iban;
+      }
+    } else {
+       data['recipientId'] = recipientId;
+       data['recipientIban'] = recipientIban;
     }
-    data['createdAt'] = createdAt?.toIso8601String();
+    
     return data;
   }
-
-
 }

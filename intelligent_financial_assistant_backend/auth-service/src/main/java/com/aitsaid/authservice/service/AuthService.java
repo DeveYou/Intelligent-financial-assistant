@@ -60,22 +60,28 @@ public class AuthService {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
 
-        if (userRepository.findByCin(request.getCin()).isPresent()) {
-            throw new CinAlreadyExistsException(request.getCin());
+        if (request.getCin() != null) {
+            if (userRepository.findByCin(request.getCin()).isPresent()) {
+                throw new CinAlreadyExistsException(request.getCin());
+            }
         }
-
+        
         User user = UserMapper.registerRequestToUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String accountType = request.getType();
+        if(accountType == null){
+            accountType = "CURRENT_ACCOUNT";
+        }
 
         User savedUser = userRepository.save(user);
 
         BankAccountRequestDTO accountDTO = new BankAccountRequestDTO();
         accountDTO.setUserId(savedUser.getId());
-        accountDTO.setType(request.getType());
+        accountDTO.setType(accountType);
         
-        if ("CURRENT_ACCOUNT".equals(request.getType())) {
+        if ("CURRENT_ACCOUNT".equals(accountType)) {
             accountDTO.setOverDraft(1000.0); // Default overdraft
-        } else if ("SAVING_ACCOUNT".equals(request.getType())) {
+        } else if ("SAVING_ACCOUNT".equals(accountType)) {
             accountDTO.setInterestRate(3.5); // Default interest rate
         }
         

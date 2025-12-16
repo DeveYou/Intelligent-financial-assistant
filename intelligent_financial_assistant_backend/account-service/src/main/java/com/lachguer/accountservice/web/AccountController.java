@@ -36,7 +36,8 @@ public class AccountController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, jakarta.servlet.http.HttpServletRequest request) {
+    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId,
+            jakarta.servlet.http.HttpServletRequest request) {
         System.out.println("Headers received in getAccountsByUserId:");
         java.util.Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -75,14 +76,14 @@ public class AccountController {
     // Transactions endpoints via TRANSACTION-SERVICE
     @GetMapping("/{id}/transactions")
     public List<TransactionResponseDTO> getAccountTransactions(@PathVariable("id") Long accountId,
-                                                               @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.getTransactionsForAccount(accountId, authorizationHeader);
     }
 
     @PostMapping("/{id}/transactions")
     public TransactionResponseDTO createAccountTransaction(@PathVariable("id") Long accountId,
-                                                           @RequestBody @Valid TransactionRequestDTO request,
-                                                           @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestBody @Valid TransactionRequestDTO request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.createTransactionForAccount(accountId, request, authorizationHeader);
     }
 
@@ -104,10 +105,16 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/resend-code")
+    public ResponseEntity<Void> resendCode() {
+        // Mock implementation for app compatibility
+        log.info("Resend code requested (Mock)");
+        return ResponseEntity.ok().build();
+    }
+
     @Data
     public static class BalanceUpdateRequest {
         private Double amount;
         private String operation; // "ADD" ou "SUBTRACT"
     }
 }
-
