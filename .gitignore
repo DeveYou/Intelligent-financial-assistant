@@ -49,21 +49,6 @@ Thumbs.db
 **/android/app/build/
 **/android/key.properties
 
-# Media & Demo (Screenshots/Videos)
-screenshots/
-videos/
-demo/
-*.mp4
-*.mov
-*.avi
-*.png
-*.jpg
-*.jpeg
-*.gif
-!src/assets/**/*.png
-!src/assets/**/*.jpg
-!src/assets/**/*.jpeg
-!src/assets/**/*.gif
 
 # Local Screenshots
 Screans/
