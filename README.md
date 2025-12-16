@@ -28,8 +28,17 @@ A responsive and modern web dashboard for users to manage their finances.
 
 ### 3. Mobile App (Flutter)
 A cross-platform mobile application for on-the-go access.
-*   **Tech Stack:** Flutter / Dart.
-*   **Features:** (In progress) Mobile access to dashboard and key transaction features.
+*   **Tech Stack:** Flutter / Dart, Firebase (Push Notifications).
+*   **Features:**
+    *   **Authentication:** Secure login and splash screen.
+    *   **Onboarding:** Introduction to the app features.
+    *   **Dashboard:** Home screen with summary views.
+    *   **Accounts:** Manage bank accounts.
+    *   **Transactions:** View history and perform transactions.
+    *   **Assistant:** Intelligent financial assistant.
+    *   **Recipients:** Manage transfer beneficiaries.
+    *   **Notifications:** Real-time push notifications.
+    *   **Settings:** App configuration.
 
 ---
 
