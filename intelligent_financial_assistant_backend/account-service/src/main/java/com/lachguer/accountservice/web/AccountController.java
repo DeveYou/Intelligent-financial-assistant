@@ -82,14 +82,14 @@ public class AccountController {
 
     @GetMapping("/{id}/transactions")
     public List<TransactionResponseDTO> getAccountTransactions(@PathVariable("id") Long accountId,
-                                                               @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.getTransactionsForAccount(accountId, authorizationHeader);
     }
 
     @PostMapping("/{id}/transactions")
     public TransactionResponseDTO createAccountTransaction(@PathVariable("id") Long accountId,
-                                                           @RequestBody @Valid TransactionRequestDTO request,
-                                                           @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+            @RequestBody @Valid TransactionRequestDTO request,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
         return accountService.createTransactionForAccount(accountId, request, authorizationHeader);
     }
 
@@ -101,6 +101,13 @@ public class AccountController {
     public ResponseEntity<Long> countUsers(Authentication authentication) {
         log.info("Admin {} retrieving user count", authentication.getName());
         return ResponseEntity.ok(accountService.countUsers());
+    }
+
+    @GetMapping("/stats/distribution")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<AccountDistributionDTO>> getAccountDistribution(Authentication authentication) {
+        log.info("Admin {} retrieving account distribution stats", authentication.getName());
+        return ResponseEntity.ok(accountService.getAccountDistribution());
     }
 
     @PostMapping("/{id}/balance")
@@ -117,4 +124,3 @@ public class AccountController {
         private String operation; // "ADD" ou "SUBTRACT"
     }
 }
-

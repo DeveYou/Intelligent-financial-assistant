@@ -33,16 +33,25 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "(cast(:startDate as timestamp) IS NULL OR t.date >= :startDate) AND " +
             "(cast(:endDate as timestamp) IS NULL OR t.date <= :endDate)")
     Page<Transaction> findByFilters(@Param("userId") Long userId,
-                                    @Param("bankAccountId") Long bankAccountId,
-                                    @Param("type") TransactionType type,
-                                    @Param("status") TransactionStatus status,
-                                    @Param("startDate") OffsetDateTime startDate,
-                                    @Param("endDate") OffsetDateTime endDate,
-                                    Pageable pageable);
+            @Param("bankAccountId") Long bankAccountId,
+            @Param("type") TransactionType type,
+            @Param("status") TransactionStatus status,
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate,
+            Pageable pageable);
 
     List<Transaction> findByUserIdAndDateBetween(Long userId, OffsetDateTime startDate, OffsetDateTime endDate);
 
     Long countByUserId(Long userId);
 
     Long countByStatus(TransactionStatus status);
+
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.status = :status")
+    Double sumAmountByStatus(@Param("status") TransactionStatus status);
+
+    @Query("SELECT new com.khaoula.transactionsservice.dto.DailyTransactionStats(cast(t.date as date), COUNT(t)) FROM Transaction t WHERE t.date >= :startDate GROUP BY cast(t.date as date)")
+    List<com.khaoula.transactionsservice.dto.DailyTransactionStats> findDailyStats(
+            @Param("startDate") OffsetDateTime startDate);
+
+    Long countByDateBetween(OffsetDateTime startDate, OffsetDateTime endDate);
 }

@@ -74,7 +74,6 @@ public class AccountServiceImpl implements AccountService {
         Date now = new Date();
         bankAccount.setCreatedAt(now);
 
-
         bankAccount.setExpirationDate(LocalDate.now().plusYears(4));
 
         bankAccount.setIsPaymentByCard(false);
@@ -93,7 +92,7 @@ public class AccountServiceImpl implements AccountService {
         BankAccount bankAccount = bankAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found with id=" + id));
 
-        //enrichAccountWithUser(bankAccount);
+        // enrichAccountWithUser(bankAccount);
 
         return accountMapper.fromBankAccount(bankAccount);
     }
@@ -102,7 +101,7 @@ public class AccountServiceImpl implements AccountService {
     public BankAccountResponseDTO getAccountByIBAN(String iban) {
         BankAccount bankAccount = bankAccountRepository.findByRib(iban);
 
-        //enrichAccountWithUser(bankAccount);
+        // enrichAccountWithUser(bankAccount);
 
         return accountMapper.fromBankAccount(bankAccount);
     }
@@ -143,13 +142,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BankAccount updateAccount(Long id, BankAccountUpdateDTO updateDTO) {
-        BankAccount accountToUpdate = bankAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
-        if (updateDTO.getBalance() != null) accountToUpdate.setBalance(updateDTO.getBalance());
-        if (updateDTO.getIsActive() != null) accountToUpdate.setIsActive(updateDTO.getIsActive());
-        if (updateDTO.getIsContactless() != null) accountToUpdate.setIsContactless(updateDTO.getIsContactless());
-        if (updateDTO.getIsWithdrawal() != null) accountToUpdate.setIsWithdrawal(updateDTO.getIsWithdrawal());
-        if (updateDTO.getIsPaymentByCard() != null) accountToUpdate.setIsPaymentByCard(updateDTO.getIsPaymentByCard());
-        if (updateDTO.getIsOnlinePayment() != null) accountToUpdate.setIsOnlinePayment(updateDTO.getIsOnlinePayment());
+        BankAccount accountToUpdate = bankAccountRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        if (updateDTO.getBalance() != null)
+            accountToUpdate.setBalance(updateDTO.getBalance());
+        if (updateDTO.getIsActive() != null)
+            accountToUpdate.setIsActive(updateDTO.getIsActive());
+        if (updateDTO.getIsContactless() != null)
+            accountToUpdate.setIsContactless(updateDTO.getIsContactless());
+        if (updateDTO.getIsWithdrawal() != null)
+            accountToUpdate.setIsWithdrawal(updateDTO.getIsWithdrawal());
+        if (updateDTO.getIsPaymentByCard() != null)
+            accountToUpdate.setIsPaymentByCard(updateDTO.getIsPaymentByCard());
+        if (updateDTO.getIsOnlinePayment() != null)
+            accountToUpdate.setIsOnlinePayment(updateDTO.getIsOnlinePayment());
 
         if (accountToUpdate instanceof CurrentAccount && updateDTO.getOverDraft() != null) {
             ((CurrentAccount) accountToUpdate).setOverDraft(updateDTO.getOverDraft());
@@ -184,9 +190,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TransactionResponseDTO createTransactionForAccount(Long accountId, TransactionRequestDTO request, String authorizationHeader) {
+    public TransactionResponseDTO createTransactionForAccount(Long accountId, TransactionRequestDTO request,
+            String authorizationHeader) {
         validateToken(authorizationHeader); // Valider le token
-        BankAccount account = bankAccountRepository.findById(accountId).orElseThrow(() -> new RuntimeException("Account not found"));
+        BankAccount account = bankAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
         request.setAccountId(accountId);
         request.setUserId(account.getUserId());
         return transactionRestClient.createTransaction(request, authorizationHeader);
@@ -195,6 +203,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public long countUsers() {
         return bankAccountRepository.count();
+    }
+
+    @Override
+    public List<AccountDistributionDTO> getAccountDistribution() {
+        List<Object[]> results = bankAccountRepository.countTotalAccountsByType();
+        return results.stream()
+                .map(result -> new AccountDistributionDTO((AccountType) result[0], (Long) result[1]))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Override

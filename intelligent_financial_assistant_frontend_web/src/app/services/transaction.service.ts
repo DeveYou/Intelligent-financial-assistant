@@ -30,8 +30,8 @@ export class TransactionService {
     });
 
     // Ajouter la pagination par défaut si non spécifiée
-    if (!params.page) httpParams = httpParams.append('page', '0');
-    if (!params.size) httpParams = httpParams.append('size', '10');
+    if (params.page === undefined || params.page === null) httpParams = httpParams.append('page', '0');
+    if (params.size === undefined || params.size === null) httpParams = httpParams.append('size', '10');
 
     return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
@@ -50,5 +50,13 @@ export class TransactionService {
 
   createTransfer(data: { bankAccountId: number, amount: number, recipientIban: string, reason: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/transfer`, data);
+  }
+
+  getTransactionStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats`);
+  }
+
+  getDailyTransactionStats(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/stats/daily`);
   }
 }

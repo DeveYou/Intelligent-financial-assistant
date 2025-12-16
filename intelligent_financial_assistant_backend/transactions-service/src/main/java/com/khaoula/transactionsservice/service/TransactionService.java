@@ -58,7 +58,15 @@ public interface TransactionService {
     /**
      * Statistiques (Admin)
      */
+    /**
+     * Statistiques (Admin)
+     */
     TransactionStatsDTO getTransactionStats();
+
+    /**
+     * Statistiques journalières (7 derniers jours)
+     */
+    List<DailyTransactionStats> getDailyStats();
 
     @Data
     class TransactionStatsDTO {
@@ -66,12 +74,17 @@ public interface TransactionService {
         private Long pendingTransactions;
         private Long completedTransactions;
         private Long failedTransactions;
+        private Double totalVolume;
+        private Long todayTransactions;
 
-        public TransactionStatsDTO(Long total, Long pending, Long completed, Long failed) {
+        public TransactionStatsDTO(Long total, Long pending, Long completed, Long failed, Double totalVolume,
+                Long todayTransactions) {
             this.totalTransactions = total;
             this.pendingTransactions = pending;
             this.completedTransactions = completed;
             this.failedTransactions = failed;
+            this.totalVolume = totalVolume;
+            this.todayTransactions = todayTransactions;
         }
 
     }

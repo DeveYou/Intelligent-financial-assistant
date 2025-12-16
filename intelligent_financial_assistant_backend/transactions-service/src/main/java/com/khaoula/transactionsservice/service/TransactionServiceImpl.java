@@ -319,7 +319,22 @@ public class TransactionServiceImpl implements TransactionService {
         Long completed = transactionRepository.countByStatus(TransactionStatus.COMPLETED);
         Long failed = transactionRepository.countByStatus(TransactionStatus.FAILED);
 
-        return new TransactionStatsDTO(total, pending, completed, failed);
+        Double totalVolume = transactionRepository.sumAmountByStatus(TransactionStatus.COMPLETED);
+        if (totalVolume == null) {
+            totalVolume = 0.0;
+        }
+
+        OffsetDateTime startOfDay = OffsetDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        OffsetDateTime endOfDay = OffsetDateTime.now().withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        Long todayTransactions = transactionRepository.countByDateBetween(startOfDay, endOfDay);
+
+        return new TransactionStatsDTO(total, pending, completed, failed, totalVolume, todayTransactions);
+    }
+
+    @Override
+    public List<DailyTransactionStats> getDailyStats() {
+        OffsetDateTime sevenDaysAgo = OffsetDateTime.now().minusDays(7);
+        return transactionRepository.findDailyStats(sevenDaysAgo);
     }
 
     // Helper methods

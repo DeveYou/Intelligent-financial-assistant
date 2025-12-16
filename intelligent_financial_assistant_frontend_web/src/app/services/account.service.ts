@@ -24,6 +24,10 @@ export class AccountService {
     return this.http.get<number>(`${this.API_URL}/count`);
   }
 
+  getAccountDistribution(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/stats/distribution`);
+  }
+
   createAccount(account: any): Observable<BankAccount> {
     return this.http.post<BankAccount>(this.API_URL, account);
   }
