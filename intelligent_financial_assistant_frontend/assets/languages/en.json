@@ -162,5 +162,6 @@
   "home": "Home",
   "transaction": "Transaction",
   "account": "Account",
-  "assistant": "Assistant"
+  "assistant": "Assistant",
+  "transaction_details": "Transaction details"
 }

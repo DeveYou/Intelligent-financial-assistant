@@ -162,5 +162,6 @@
   "home": "الرئيسية",
   "transaction": "معاملة",
   "account": "الحساب",
-  "assistant": "المساعد"
+  "assistant": "المساعد",
+  "transaction_details": "تفاصيل المعاملة"
 }

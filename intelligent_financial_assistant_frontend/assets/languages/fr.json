@@ -162,5 +162,6 @@
   "home": "Accueil",
   "transaction": "Transaction",
   "account": "Compte",
-  "assistant": "Assistant"
+  "assistant": "Assistant",
+  "transaction_details": "Détails de la transaction"
 }
