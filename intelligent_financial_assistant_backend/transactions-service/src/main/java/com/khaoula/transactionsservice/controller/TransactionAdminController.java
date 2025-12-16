@@ -164,12 +164,11 @@ public class TransactionAdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createDeposit(
             @Valid @RequestBody TransactionRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating deposit for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createDeposit(request, userId, authHeader);
+        log.info("Admin {} creating deposit for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createDeposit(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -180,12 +179,11 @@ public class TransactionAdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createWithdrawal(
             @Valid @RequestBody TransactionRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating withdrawal for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createWithdrawal(request, userId, authHeader);
+        log.info("Admin {} creating withdrawal for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createWithdrawal(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -196,12 +194,11 @@ public class TransactionAdminController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TransactionResponseDTO> createTransfer(
             @Valid @RequestBody TransferRequestDTO request,
-            @RequestParam Long userId,
             @RequestHeader("Authorization") String authHeader,
             Authentication authentication) {
 
-        log.info("Admin {} creating transfer for user {}", authentication.getName(), userId);
-        TransactionResponseDTO response = transactionService.createTransfer(request, userId, authHeader);
+        log.info("Admin {} creating transfer for account {}", authentication.getName(), request.getBankAccountId());
+        TransactionResponseDTO response = transactionService.createTransfer(request, authHeader);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

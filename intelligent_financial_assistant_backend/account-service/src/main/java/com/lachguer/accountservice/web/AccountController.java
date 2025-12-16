@@ -3,6 +3,7 @@ package com.lachguer.accountservice.web;
 import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -36,16 +38,15 @@ public class AccountController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/iban/{iban}")
-    public BankAccountResponseDTO getAccountById(@PathVariable String iban) {
+    public BankAccountResponseDTO getAccountByIban(@PathVariable String iban) {
         return accountService.getAccountByIBAN(iban);
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId,
-            jakarta.servlet.http.HttpServletRequest request) {
+    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, HttpServletRequest request) {
         System.out.println("Headers received in getAccountsByUserId:");
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             System.out.println(headerName + ": " + request.getHeader(headerName));
@@ -79,7 +80,6 @@ public class AccountController {
         accountService.deleteAccount(id);
     }
 
-    // Transactions endpoints via TRANSACTION-SERVICE
     @GetMapping("/{id}/transactions")
     public List<TransactionResponseDTO> getAccountTransactions(@PathVariable("id") Long accountId,
                                                                @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {

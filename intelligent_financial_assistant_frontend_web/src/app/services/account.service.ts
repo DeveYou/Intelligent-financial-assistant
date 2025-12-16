@@ -35,4 +35,8 @@ export class AccountService {
   deleteAccount(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
+
+  getAccountByIban(iban: string): Observable<BankAccount> {
+    return this.http.get<BankAccount>(`${this.API_URL}/iban/${iban}`);
+  }
 }

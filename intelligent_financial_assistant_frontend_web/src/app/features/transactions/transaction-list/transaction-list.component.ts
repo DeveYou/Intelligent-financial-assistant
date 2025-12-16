@@ -48,8 +48,26 @@ export class TransactionListComponent implements OnInit, AfterViewInit {
   error: string | null = null;
   totalTransactions = 0;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    if (this.paginator) {
+      this.paginator.page.subscribe(() => {
+        this.searchParams.page = this.paginator.pageIndex;
+        this.searchParams.size = this.paginator.pageSize;
+        this.loadTransactions();
+      });
+      // IMPORTANT: Do NOT assign this.dataSource.paginator = this.paginator
+      // because we are doing server-side pagination manually.
+    }
+  }
+
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    this.sort = ms;
+    this.dataSource.sort = this.sort;
+  }
+
+  paginator!: MatPaginator;
+  sort!: MatSort;
 
   // Paramètres de recherche étendus
   searchParams = {
@@ -83,7 +101,7 @@ export class TransactionListComponent implements OnInit, AfterViewInit {
   ];
 
   constructor(
-    private readonly transactionService: TransactionService, 
+    private readonly transactionService: TransactionService,
     private readonly router: Router
   ) { }
 
@@ -92,27 +110,19 @@ export class TransactionListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    
-    // Écouter les événements de pagination
-    this.paginator.page.subscribe(() => {
-      this.searchParams.page = this.paginator.pageIndex;
-      this.searchParams.size = this.paginator.pageSize;
-      this.loadTransactions();
-    });
+    // Logic moved to setters
   }
 
   loadTransactions(): void {
     this.loading = true;
     this.error = null;
-    
+
     this.transactionService.getAllTransactions(this.searchParams).subscribe({
       next: (response: any) => {
         if (response && response.content) {
           this.dataSource.data = response.content;
           this.totalTransactions = response.totalElements || response.content.length;
-          
+
           // Mettre à jour le paginator si nécessaire
           if (this.paginator) {
             this.paginator.length = this.totalTransactions;
@@ -123,7 +133,7 @@ export class TransactionListComponent implements OnInit, AfterViewInit {
           this.dataSource.data = response;
           this.totalTransactions = response.length;
         }
-        
+
         this.dataSource.sort = this.sort;
         this.loading = false;
       },
@@ -158,11 +168,11 @@ export class TransactionListComponent implements OnInit, AfterViewInit {
       sortBy: 'date',
       sortDirection: 'DESC'
     };
-    
+
     if (this.paginator) {
       this.paginator.pageIndex = 0;
     }
-    
+
     this.loadTransactions();
   }
 

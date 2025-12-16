@@ -14,24 +14,36 @@ export class TransactionService {
   constructor(private http: HttpClient) { }
 
   // Pour admin - Récupérer toutes les transactions avec pagination
- getAllTransactions(params: any): Observable<any> {
+  getAllTransactions(params: any): Observable<any> {
     let httpParams = new HttpParams();
-    
+
     // Ajouter tous les paramètres de filtrage
     Object.keys(params).forEach(key => {
       if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
         httpParams = httpParams.append(key, params[key]);
       }
     });
-    
+
     // Ajouter la pagination par défaut si non spécifiée
     if (!params.page) httpParams = httpParams.append('page', '0');
     if (!params.size) httpParams = httpParams.append('size', '10');
-    
+
     return this.http.get<any>(this.apiUrl, { params: httpParams });
   }
 
   getByReference(reference: string): Observable<Transaction> {
-  return this.http.get<Transaction>(`${this.apiUrl}/reference/${reference}`);
-}
+    return this.http.get<Transaction>(`${this.apiUrl}/reference/${reference}`);
+  }
+
+  createDeposit(data: { bankAccountId: number, amount: number, reason: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/deposit`, data);
+  }
+
+  createWithdrawal(data: { bankAccountId: number, amount: number, reason: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/withdrawal`, data);
+  }
+
+  createTransfer(data: { bankAccountId: number, amount: number, recipientIban: string, reason: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/transfer`, data);
+  }
 }

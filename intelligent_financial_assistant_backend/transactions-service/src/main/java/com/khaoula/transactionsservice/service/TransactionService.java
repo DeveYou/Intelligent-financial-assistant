@@ -13,17 +13,17 @@ public interface TransactionService {
     /**
      * Créer un dépôt
      */
-    TransactionResponseDTO createDeposit(TransactionRequestDTO request, Long userId, String authHeader);
+    TransactionResponseDTO createDeposit(TransactionRequestDTO request, String authHeader);
 
     /**
      * Créer un retrait
      */
-    TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, Long userId, String authHeader);
+    TransactionResponseDTO createWithdrawal(TransactionRequestDTO request, String authHeader);
 
     /**
      * Créer un transfert
      */
-    TransactionResponseDTO createTransfer(TransferRequestDTO request, Long userId, String authHeader);
+    TransactionResponseDTO createTransfer(TransferRequestDTO request, String authHeader);
 
     /**
      * Récupérer toutes les transactions (Admin)

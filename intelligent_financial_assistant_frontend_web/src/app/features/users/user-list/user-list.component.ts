@@ -51,20 +51,33 @@ export class UserListComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    this.sort = ms;
+    this.dataSource.sort = this.sort;
+  }
+
+  paginator!: MatPaginator;
+  sort!: MatSort;
 
   users: User[] = [];
-  
+
   // Filters
   filterStatus: string = 'all';
   searchText: string = '';
 
   constructor(
-    private userService: UserService, 
+    private userService: UserService,
     private dialog: MatDialog,
     private router: Router
-  ) { }
+  ) {
+    // Initialize dataSource here to ensure it exists for the setters
+    this.dataSource = new MatTableDataSource<User>([]);
+  }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -77,31 +90,33 @@ export class UserListComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (users) => {
         this.users = users;
-        this.dataSource = new MatTableDataSource(this.users);
-        
+        this.dataSource.data = this.users;
+
         // Custom filter predicate
         this.dataSource.filterPredicate = (data: User, filter: string) => {
           const filterObj = JSON.parse(filter);
           const searchStr = filterObj.search.toLowerCase();
           const statusFilter = filterObj.status;
 
-          const matchesSearch = 
+          const matchesSearch =
             data.firstName.toLowerCase().includes(searchStr) ||
             data.lastName.toLowerCase().includes(searchStr) ||
             data.email.toLowerCase().includes(searchStr) ||
             (!!data.phoneNumber && data.phoneNumber.includes(searchStr));
 
-          const matchesStatus = statusFilter === 'all' || 
+          const matchesStatus = statusFilter === 'all' ||
             (statusFilter === 'active' ? data.enabled : !data.enabled);
-            
+
           return matchesSearch && matchesStatus;
         };
 
-        // Assigner paginator et sort après initialisation du dataSource
-        if (this.paginator && this.sort) {
+        if (this.paginator) {
           this.dataSource.paginator = this.paginator;
+        }
+        if (this.sort) {
           this.dataSource.sort = this.sort;
         }
+
         this.loading = false;
       },
       error: (error) => {
@@ -113,23 +128,19 @@ export class UserListComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    // Si le dataSource existe déjà, assigner paginator et sort
-    if (this.dataSource) {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
+    // Logic moved to setters
   }
 
   applyFilter(event?: Event) {
     if (event) {
       this.searchText = (event.target as HTMLInputElement).value;
     }
-    
+
     const filterValue = JSON.stringify({
       search: this.searchText.trim(),
       status: this.filterStatus
     });
-    
+
     this.dataSource.filter = filterValue;
 
     if (this.dataSource.paginator) {

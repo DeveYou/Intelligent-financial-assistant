@@ -32,57 +32,14 @@ public class TransactionUserController {
     private final TransactionService transactionService;
 
     /**
-     * Effectuer un dépôt
-     */
-    @PostMapping("/deposit")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<TransactionResponseDTO> deposit(
-            @Valid @RequestBody TransactionRequestDTO request,
-            @RequestHeader("Authorization") String authHeader,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-
-        log.info("User {} initiating deposit of {}", userId, request.getAmount());
-        TransactionResponseDTO response = transactionService.createDeposit(request, userId, authHeader);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    /**
-     * Effectuer un retrait
-     */
-    @PostMapping("/withdrawal")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-    public ResponseEntity<TransactionResponseDTO> withdrawal(
-            @Valid @RequestBody TransactionRequestDTO request,
-            @RequestHeader("Authorization") String authHeader,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-
-        log.info("User {} initiating withdrawal of {}", userId, request.getAmount());
-        TransactionResponseDTO response = transactionService.createWithdrawal(request, userId, authHeader);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    /**
      * Effectuer un transfert
      */
     @PostMapping("/transfer")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<TransactionResponseDTO> transfer(
             @Valid @RequestBody TransferRequestDTO request,
-            @RequestHeader("Authorization") String authHeader,
-            @RequestHeader(value = "X-Auth-User-Id", required = false) String userIdHeader,
-            Authentication authentication) {
-
-        Long userId = getUserIdFromHeader(userIdHeader, authentication);
-
-        TransactionResponseDTO response = transactionService.createTransfer(request, userId, authHeader);
+            @RequestHeader("Authorization") String authHeader) {
+        TransactionResponseDTO response = transactionService.createTransfer(request, authHeader);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
