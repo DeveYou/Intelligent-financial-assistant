@@ -1,65 +1,23 @@
 package com.khaoula.transactionsservice.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * @author radouane
+ **/
+@Data
 public class TransferRequestDTO {
-
-    @NotNull
-    private Long userId;
-
-    @NotBlank
-    private String sourceAccountId;
-
-    @NotBlank
-    private String targetAccountId;
-
-    @NotNull
-    @Positive
+    @NotNull(message = "Bank account ID is required")
+    private Long bankAccountId;
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
+    @Digits(integer = 15, fraction = 4, message = "Invalid amount format")
     private BigDecimal amount;
-
+    @NotBlank(message = "Recipient IBAN is required for transfer")
+    private String recipientIban;
+    @Size(max = 500, message = "Reason cannot exceed 500 characters")
     private String reason;
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getSourceAccountId() {
-        return sourceAccountId;
-    }
-
-    public void setSourceAccountId(String sourceAccountId) {
-        this.sourceAccountId = sourceAccountId;
-    }
-
-    public String getTargetAccountId() {
-        return targetAccountId;
-    }
-
-    public void setTargetAccountId(String targetAccountId) {
-        this.targetAccountId = targetAccountId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
 }

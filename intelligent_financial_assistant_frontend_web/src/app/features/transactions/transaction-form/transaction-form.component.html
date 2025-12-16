@@ -16,13 +16,13 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ transactionType === 'transfer' ? 'Compte Source' : 'Compte Bancaire' }}</mat-label>
-          <input matInput formControlName="bankAccountId" placeholder="FR76...">
+          <mat-label>{{ transactionType === 'transfer' ? 'IBAN Compte Source' : 'IBAN Compte Bancaire' }}</mat-label>
+          <input matInput formControlName="sourceIban" placeholder="FR76...">
         </mat-form-field>
 
         <mat-form-field *ngIf="transactionType === 'transfer'" appearance="outline" class="full-width">
-          <mat-label>Compte Destination</mat-label>
-          <input matInput formControlName="destinationBankAccountId" placeholder="FR76...">
+          <mat-label>IBAN Compte Destination</mat-label>
+          <input matInput formControlName="recipientIban" placeholder="FR76...">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -40,4 +40,3 @@
     </mat-card-content>
   </mat-card>
 </div>
-

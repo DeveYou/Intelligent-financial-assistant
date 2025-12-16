@@ -1,5 +1,6 @@
 package com.aitsaid.authservice.security;
 
+import com.aitsaid.authservice.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -95,6 +96,15 @@ public class JwtUtil {
                 .map(GrantedAuthority::getAuthority)
                 .toList());
         userDetails.getAuthorities().forEach(authority -> claims.put("role", authority.getAuthority()));
+
+        // ✅ AJOUTER : Cast vers User pour accéder aux propriétés spécifiques
+        if (userDetails instanceof User) {
+            User user = (User) userDetails;
+            claims.put("userId", user.getId());
+            claims.put("email", user.getEmail());
+            claims.put("firstName", user.getFirstName());
+            claims.put("lastName", user.getLastName());
+        }
         return createToken(claims, userDetails.getUsername());
     }
 

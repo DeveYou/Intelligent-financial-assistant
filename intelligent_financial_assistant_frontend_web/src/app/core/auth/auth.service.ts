@@ -139,8 +139,4 @@ export class AuthService {
     }
   }
 
-  hasRole(role: string): boolean {
-    const roles = this.getUserRoles();
-    return roles.includes(role);
-  }
 }

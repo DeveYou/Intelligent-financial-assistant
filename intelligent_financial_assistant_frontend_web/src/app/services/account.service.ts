@@ -24,6 +24,10 @@ export class AccountService {
     return this.http.get<number>(`${this.API_URL}/count`);
   }
 
+  getAccountDistribution(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/stats/distribution`);
+  }
+
   createAccount(account: any): Observable<BankAccount> {
     return this.http.post<BankAccount>(this.API_URL, account);
   }
@@ -34,5 +38,9 @@ export class AccountService {
 
   deleteAccount(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
+  }
+
+  getAccountByIban(iban: string): Observable<BankAccount> {
+    return this.http.get<BankAccount>(`${this.API_URL}/iban/${iban}`);
   }
 }

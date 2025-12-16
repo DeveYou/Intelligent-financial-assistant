@@ -10,7 +10,6 @@ class AuthSubmitBtnWidget extends StatelessWidget {
     required this.onTap,
   });
 
-  final Color _primaryColor = const Color(0xFFF44E1E);
   final Color _secondaryColor = const Color(0xFFFFBD09);
 
   @override
@@ -21,11 +20,11 @@ class AuthSubmitBtnWidget extends StatelessWidget {
         width: double.infinity,
         height: 56,
         decoration: BoxDecoration(
-          color: _primaryColor,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: _primaryColor.withOpacity(0.4),
+              color: Theme.of(context).primaryColor.withOpacity(0.4),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),

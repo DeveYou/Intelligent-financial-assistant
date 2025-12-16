@@ -50,8 +50,6 @@ export class UserFormComponent implements OnInit {
             cin: ['', Validators.required],
             phoneNumber: [''],
             address: [''],
-            type: ['CURRENT_ACCOUNT', Validators.required],
-            role: ['ROLE_USER']
         });
     }
 

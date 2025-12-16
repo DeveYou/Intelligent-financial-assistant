@@ -60,10 +60,6 @@ public class AuthService {
             throw new EmailAlreadyExistsException(request.getEmail());
         }
 
-        if (userRepository.findByCin(request.getCin()).isPresent()) {
-            throw new CinAlreadyExistsException(request.getCin());
-        }
-
         User user = UserMapper.registerRequestToUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -71,24 +67,8 @@ public class AuthService {
 
         BankAccountRequestDTO accountDTO = new BankAccountRequestDTO();
         accountDTO.setUserId(savedUser.getId());
-        accountDTO.setType(request.getType());
-        
-        if ("CURRENT_ACCOUNT".equals(request.getType())) {
-            accountDTO.setOverDraft(1000.0); // Default overdraft
-        } else if ("SAVING_ACCOUNT".equals(request.getType())) {
-            accountDTO.setInterestRate(3.5); // Default interest rate
-        }
-        
-        // Generate 16 digit RIB
-        StringBuilder ribBuilder = new StringBuilder();
-        java.util.Random random = new java.util.Random();
-        for (int i = 0; i < 16; i++) {
-            ribBuilder.append(random.nextInt(10));
-        }
-        accountDTO.setIban(ribBuilder.toString());
-        
-        accountDTO.setExpirationDate(LocalDate.now().plusYears(4));
-        
+        accountDTO.setType("CURRENT_ACCOUNT");
+
         accountRestClient.createAccount(accountDTO);
 
         return new RegisterResponse(savedUser.getEmail(), savedUser.getFirstName(), savedUser.getLastName(),  "Registration successful");
