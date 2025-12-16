@@ -136,12 +136,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    getTranslated('no_transactions_found', context) ?? 'No transactions found',
+                    getTranslated('no_transactions_found', context)!,
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    getTranslated('no_transactions_subtitle', context) ?? 'Your recent transactions will appear here',
+                    getTranslated('no_transactions_subtitle', context)!,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),

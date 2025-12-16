@@ -35,7 +35,8 @@ class AssistantService implements AssistantServiceInterface{
 
         if (response.text != null) {
           try {
-            final jsonResponse = jsonDecode(response.text!);
+            String rawText = response.text!.replaceAll(RegExp(r'```json|```'), '').trim();
+            final jsonResponse = jsonDecode(rawText);
             return ApiResponse.withSuccess(Response(
                 requestOptions: RequestOptions(path: AppConstants.assistantMessageUri),
                 data: jsonResponse,

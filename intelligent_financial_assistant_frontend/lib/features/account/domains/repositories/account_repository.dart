@@ -48,7 +48,8 @@ class AccountRepository implements AccountRepositoryInterface{
   @override
   Future<ApiResponse> getAccountDetails() async {
     try {
-      final response = await dioClient!.get(AppConstants.accountUri);
+      String userId = dioClient!.sharedPreferences.getString(AppConstants.userId) ?? "";
+      final response = await dioClient!.get('${AppConstants.getAccountDataUri}/$userId');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

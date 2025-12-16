@@ -12,7 +12,7 @@ class RecipientModel {
     bank = json['bank'];
     iban = json['iban'];
     fullName = json['full_name'];
-    createdAt = json['created_at'];
+    createdAt = json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -20,8 +20,8 @@ class RecipientModel {
     data['id'] = id;
     data['bank'] = bank;
     data['iban'] = iban;
-    data['full_name'] = fullName;
-    data['created_at'] = createdAt;
+    data['fullName'] = fullName;
+    data['createdAt'] = createdAt?.toIso8601String();
     return data;
   }
 }

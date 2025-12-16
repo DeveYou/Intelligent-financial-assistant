@@ -147,5 +147,20 @@
   "what_is_my_current_balance": "What is my current balance?",
   "send_money_example": "Send 500 dollars to Sarah",
   "transfer_money_example": "Transfer money to John",
-  "check_last_transaction": "Check my last transaction"
+  "check_last_transaction": "Check my last transaction",
+  "no_transactions_found": "No transactions found",
+  "no_transactions_subtitle": "You don’t have any transactions yet",
+  "beneficiary_details": "Beneficiary details",
+  "unknown_date": "Unknown date",
+  "type": "Type",
+  "reference": "Reference",
+  "reason": "Reason",
+  "charge_amount": "Charge amount",
+  "name": "Name",
+  "iban": "IBAN",
+  "bank": "Bank",
+  "home": "Home",
+  "transaction": "Transaction",
+  "account": "Account",
+  "assistant": "Assistant"
 }

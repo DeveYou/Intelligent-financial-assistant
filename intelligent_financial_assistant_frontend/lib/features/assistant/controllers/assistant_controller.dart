@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/data/response/api_response.dart';
 import 'package:intelligent_financial_assistant_frontend/features/assistant/domains/models/message_model.dart';
 import 'package:intelligent_financial_assistant_frontend/features/assistant/domains/services/assistant_service_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/account/domains/repositories/account_repository_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/account/domains/models/account_model.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/main.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -18,8 +20,9 @@ enum AssistantState { idle, listening, processing, speaking }
 
 class AssistantController with ChangeNotifier {
   final AssistantServiceInterface assistantService;
+  final AccountRepositoryInterface accountRepository;
 
-  AssistantController({required this.assistantService});
+  AssistantController({required this.assistantService, required this.accountRepository});
 
   // State
   List<MessageModel> _messages = [];
@@ -175,13 +178,16 @@ class AssistantController with ChangeNotifier {
         await handleAssistantAction(data);
       } catch (e) {
         String errorMsg = "Error processing assistant response.";
+         debugPrint("Assistant Parsing Error: $e");
         _addMessage(errorMsg, sender: "assistant");
         _speak(errorMsg);
       }
     } else {
-      String errorMsg = getTranslated("i_am_sorry_i_could_not_process_that_right_now", Get.context!)!;
-      _addMessage(errorMsg, sender: "assistant");
-      _speak(errorMsg);
+      String errorMessage = response.error != null ? response.error.toString() : getTranslated("i_am_sorry_i_could_not_process_that_right_now", Get.context!)!;
+      debugPrint("Assistant API Error: $errorMessage");
+      
+      _addMessage(errorMessage, sender: "assistant");
+      _speak(errorMessage);
     }
   }
 
@@ -192,11 +198,41 @@ class AssistantController with ChangeNotifier {
 
     switch (action) {
       case "getBalance":
-        await transactionController.getAccountBalance();
-        double balance = transactionController.accountBalance;
-        String reply = "Your current balance is \$${balance.toStringAsFixed(2)}";
-        _addMessage(reply, sender: "assistant");
-        _speak(reply);
+        try {
+           ApiResponse apiResponse = await accountRepository.getAccountDetails();
+           if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+              var responseData = apiResponse.response!.data;
+              AccountModel? account;
+              
+              if (responseData is List) {
+                 if(responseData.isNotEmpty) {
+                    account = AccountModel.fromJson(responseData[0]);
+                 }
+              } else {
+                 account = AccountModel.fromJson(responseData);
+              }
+
+              if (account != null) {
+                  double balance = account.balance ?? 0.0;
+                  String currency = account.currency ?? "MAD";
+                  String reply = "Your current balance is $currency ${balance.toStringAsFixed(2)}";
+                  _addMessage(reply, sender: "assistant");
+                  _speak(reply);
+              } else {
+                  String reply = "I couldn't find any account information.";
+                  _addMessage(reply, sender: "assistant");
+                  _speak(reply);
+              }
+           } else {
+              String reply = "I had trouble accessing your account details.";
+              _addMessage(reply, sender: "assistant");
+              _speak(reply);
+           }
+        } catch (e) {
+           String reply = "Sorry, something went wrong while fetching your balance.";
+           _addMessage(reply, sender: "assistant");
+           _speak(reply);
+        }
         break;
 
       case "getLastTransaction":
@@ -231,7 +267,7 @@ class AssistantController with ChangeNotifier {
           bool success = await transactionController.sendMoney(transaction);
 
           if (success) {
-            String reply = "Transfer successful. \$${amount} sent to $recipientName.";
+            String reply = "Transfer successful. \$$amount sent to $recipientName.";
             _addMessage(reply, sender: "assistant");
             _speak(reply);
           } else {

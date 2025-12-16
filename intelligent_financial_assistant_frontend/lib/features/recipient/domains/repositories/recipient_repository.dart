@@ -25,7 +25,7 @@ class RecipientRepository implements RecipientRepositoryInterface {
     try {
       final response = await dioClient.post(
         AppConstants.addRecipientUri,
-        data: {'full_name': fullName, 'iban': iban},
+        data: {'fullName': fullName, 'iban': iban},
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -37,8 +37,8 @@ class RecipientRepository implements RecipientRepositoryInterface {
   Future<ApiResponse> updateRecipient(int id, String fullName, String iban) async {
     try {
       final response = await dioClient.put(
-        '${AppConstants.updateRecipientUri}$id',
-        data: {'full_name': fullName, 'iban': iban},
+        '${AppConstants.updateRecipientUri}/$id',
+        data: {'fullName': fullName, 'iban': iban},
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -50,7 +50,7 @@ class RecipientRepository implements RecipientRepositoryInterface {
   Future<ApiResponse> deleteRecipient(int id) async {
     try {
       final response = await dioClient.delete(
-        '${AppConstants.deleteRecipientUri}$id',
+        '${AppConstants.deleteRecipientUri}/$id',
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {

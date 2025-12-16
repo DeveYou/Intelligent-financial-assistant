@@ -50,7 +50,16 @@ class AccountController with ChangeNotifier {
   Future<void> _getAccountDetails() async {
     ApiResponse response = await accountService.getAccountDetails();
     if (response.response != null && response.response!.statusCode == 200) {
-      _accountModel = AccountModel.fromJson(response.response!.data);
+      var data = response.response!.data;
+      if (data is List) {
+        if(data.isNotEmpty) {
+           _accountModel = AccountModel.fromJson(data[0]);
+        } else {
+           _accountModel = null; // Handle no account case
+        }
+      } else {
+        _accountModel = AccountModel.fromJson(data);
+      }
     } else {
       _error = response.error.toString();
     }

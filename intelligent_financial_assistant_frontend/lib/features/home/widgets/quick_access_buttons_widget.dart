@@ -9,10 +9,10 @@ class QuickAccessButtonsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> features = [
-      {'icon': Icons.account_balance_wallet, 'label': 'Account', 'route': '/account'},
-      {'icon': Icons.smart_toy, 'label': 'Assistant', 'route': '/assistant'},
-      {'icon': Icons.people, 'label': 'Recipients', 'route': '/recipient'},
-      {'icon': Icons.swap_horiz, 'label': 'Transactions', 'route': '/transaction'},
+      {'icon': Icons.account_balance_wallet, 'label': getTranslated('account', context)!, 'route': '/account'},
+      {'icon': Icons.smart_toy, 'label': getTranslated('assistant', context)!, 'route': '/assistant'},
+      {'icon': Icons.people, 'label': getTranslated('recipients', context)!, 'route': '/recipient'},
+      {'icon': Icons.swap_horiz, 'label': getTranslated('transactions', context)!, 'route': '/transaction'},
     ];
 
     return Padding(
@@ -51,14 +51,10 @@ class QuickAccessButtonsWidget extends StatelessWidget {
             } else if (feature['route'] == '/transaction') {
               Root.setPage(1);
             } else {
-              //Navigator.pushNamed(context, feature['route']);
               Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => const RecipientScreen()
                   )
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Navigate to ${feature['label']}')),
               );
             }
           },

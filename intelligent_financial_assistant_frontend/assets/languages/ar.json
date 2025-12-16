@@ -147,5 +147,20 @@
   "what_is_my_current_balance": "ما هو رصيدي الحالي؟",
   "send_money_example": "أرسل 500 دولار إلى سارة",
   "transfer_money_example": "حوّل المال إلى جون",
-  "check_last_transaction": "تحقق من آخر معاملة"
+  "check_last_transaction": "تحقق من آخر معاملة",
+  "no_transactions_found": "لم يتم العثور على أي معاملات",
+  "no_transactions_subtitle": "لا توجد معاملات حتى الآن",
+  "beneficiary_details": "تفاصيل المستفيد",
+  "unknown_date": "تاريخ غير معروف",
+  "type": "النوع",
+  "reference": "المرجع",
+  "reason": "السبب",
+  "charge_amount": "مبلغ الخصم",
+  "name": "الاسم",
+  "iban": "رقم IBAN",
+  "bank": "البنك",
+  "home": "الرئيسية",
+  "transaction": "معاملة",
+  "account": "الحساب",
+  "assistant": "المساعد"
 }

@@ -7,6 +7,7 @@ import 'package:intelligent_financial_assistant_frontend/localization/controller
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/theme/controllers/theme_controller.dart';
 import 'package:provider/provider.dart';
+import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -36,6 +37,7 @@ class SettingsScreen extends StatelessWidget {
                   trailing: Switch(
                     value: themeController.isDarkMode,
                     activeColor: Theme.of(context).primaryColor,
+                    inactiveTrackColor: Colors.grey[300],
                     onChanged: (val) {
                       themeController.toggleThemeMode();
                     },
@@ -52,7 +54,7 @@ class SettingsScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        getTranslated("french", context)!,
+                        AppConstants.languages.firstWhere((l) => l.languageCode == localController.locale.languageCode).languageName!,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).hintColor),
                       ),
                       const SizedBox(width: 8),
@@ -152,45 +154,37 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(getTranslated("select_language", context)!, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 20),
-              ListTile(
-                title: Text(getTranslated("french", context)!),
-                // Logic to check if selected
-                trailing: const Icon(Icons.check, color: Colors.green),
-                onTap: () {
-                  Provider.of<LocalizationController>(context, listen: false).setLanguage(Locale('fr'));
-                  Navigator.pop(context);
-                },
+        return Consumer<LocalizationController>(
+          builder: (context, localizationController, child) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(getTranslated("select_language", context)!, style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 20),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: AppConstants.languages.length,
+                    itemBuilder: (context, index) {
+                      final language = AppConstants.languages[index];
+                      bool isSelected = localizationController.locale.languageCode == language.languageCode;
+                      
+                      return ListTile(
+                        title: Text(language.languageName!),
+                        trailing: isSelected ? const Icon(Icons.check, color: Colors.green) : null,
+                        onTap: () {
+                          localizationController.setLanguage(Locale(language.languageCode!, language.countryCode));
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
-              ListTile(
-                title: Text(getTranslated("english", context)!),
-                onTap: () {
-                  Provider.of<LocalizationController>(context, listen: false).setLanguage(Locale('en'));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text(getTranslated("arabic", context)!),
-                onTap: () {
-                  Provider.of<LocalizationController>(context, listen: false).setLanguage(Locale('ar'));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text(getTranslated("spanish", context)!),
-                onTap: () {
-                  Provider.of<LocalizationController>(context, listen: false).setLanguage(Locale('es'));
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+            );
+          }
         );
       },
     );

@@ -21,7 +21,6 @@ public class RegisterRequest {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank(message = "CIN is required")
     private String cin;
 
     @NotBlank(message = "Email is required")
@@ -33,6 +32,5 @@ public class RegisterRequest {
     private String password;
     private String phoneNumber;
     private String address;
-    @NotNull(message = "Type cannot be null")
     private String type;
 }

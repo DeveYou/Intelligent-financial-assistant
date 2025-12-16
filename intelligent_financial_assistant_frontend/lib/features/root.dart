@@ -6,6 +6,7 @@ import 'package:intelligent_financial_assistant_frontend/features/account/screen
 import 'package:intelligent_financial_assistant_frontend/features/assistant/screens/assistant_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/screens/transactions_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/dimensions.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/images.dart';
 
@@ -32,14 +33,14 @@ class _RootState extends State<Root> {
 
     _screens = [
       NavigationModel(
-        name: 'home',
+        name: getTranslated('home', context)!,
         icon: Images.homeImage,
         screen: const HomeScreen(),
       ),
 
-      NavigationModel(name: 'transaction', icon: Images.transaction, screen: const TransactionsScreen()),
-      NavigationModel(name: 'account', icon: Images.accountImage, screen:  const AccountScreen()),
-      NavigationModel(name: 'assistant', icon: Images.assistantImage, screen:  const AssistantScreen()),
+      NavigationModel(name: getTranslated('transaction', context)!, icon: Images.transaction, screen: const TransactionsScreen()),
+      NavigationModel(name: getTranslated('account', context)!, icon: Images.accountImage, screen:  const AccountScreen()),
+      NavigationModel(name: getTranslated('assistant', context)!, icon: Images.assistantImage, screen:  const AssistantScreen()),
 
     ];
 

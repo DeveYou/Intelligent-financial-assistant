@@ -13,7 +13,6 @@ class TransactionRepository implements TransactionRepositoryInterface {
   @override
   Future<ApiResponse> getTransactions({int limit = 20}) async {
     try {
-      // Backend: GET /user/transactions/my-transactions
       final response = await dioClient!.get('${AppConstants.getTransactionsUri}?limit=$limit');
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -36,15 +35,8 @@ class TransactionRepository implements TransactionRepositoryInterface {
 
   @override
   Future<ApiResponse> getAccountBalance() async {
-     // TODO: Backend does not have a direct "get balance" endpoint that is not the account details one.
-     // Account details returns balance.
-     // Using accountUri to get details and parse balance?
-     // Or assuming the backend won't change.
-     // Previous code called: accountUri + '/balance' which didn't exist in my audit (only POST).
-     // I will change this to getAccountDetails behavior or remove if unused, 
-     // but since it returns ApiResponse, I'll redirect to getAccountDetails endpoint which returns DTO with balance.
     try {
-      final response = await dioClient!.get(AppConstants.accountUri);
+      final response = await dioClient!.get(AppConstants.getAccountDataUri);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

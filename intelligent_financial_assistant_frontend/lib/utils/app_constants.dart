@@ -9,7 +9,7 @@ class AppConstants {
   static const String baseUrl = "https://exhilaratingly-uncompiled-laree.ngrok-free.dev";
 
   static const String  geminiApiToken = "AIzaSyBgZFA2J_fYfD1VKn8P1s0FCCWircEY7kk";
-  static const String geminiModel = "gemini-2.0-flash";
+  static const String geminiModel = "gemini-flash-latest";
 
 
   // Application languages
@@ -50,7 +50,7 @@ class AppConstants {
   static const String updateTokenUri = "/auth-service/auth/update-token"; 
   static const String getAccountDataUri = "/account-service/api/accounts/user";
 
-  static const String accountUri = "/account-service/api/accounts";
+
   static const String updateAccountUri = "/account-service/api/accounts"; 
   static const String resendCardCodeUri = "/account-service/api/accounts/resend-code";
   static const String deleteAccountUri = "/account-service/api/accounts"; 

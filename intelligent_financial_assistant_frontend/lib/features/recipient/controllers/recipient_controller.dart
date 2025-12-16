@@ -31,9 +31,15 @@ class RecipientController with ChangeNotifier {
       ApiResponse apiResponse = await recipientService.getRecipientList();
       if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
         _recipientList = [];
-        (apiResponse.response!.data as List).forEach((recipient) {
-          _recipientList!.add(RecipientModel.fromJson(recipient));
-        });
+        var responseData = apiResponse.response!.data;
+        if(responseData is Map && responseData.containsKey('data')) {
+          responseData = responseData['data'];
+        }
+        if (responseData is List) {
+          responseData.forEach((recipient) {
+            _recipientList!.add(RecipientModel.fromJson(recipient));
+          });
+        }
         _recipientState = RecipientState.success;
       } else {
         _error = apiResponse.error.toString();

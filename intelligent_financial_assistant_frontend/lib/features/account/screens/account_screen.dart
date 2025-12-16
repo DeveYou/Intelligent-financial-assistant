@@ -234,19 +234,34 @@ class _AccountScreenState extends State<AccountScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(getTranslated("account_holder", context)!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  Text(account.accountHolder, style: const TextStyle(fontWeight: FontWeight.w600)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(getTranslated("account_holder", context)!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(
+                      account.accountHolder ?? '',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(getTranslated("account_number", context)!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  Text(account.accountNumber, style: const TextStyle(fontWeight: FontWeight.w600)),
-                ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(getTranslated("account_number", context)!, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(
+                      account.accountNumber,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
               ),
             ],
           )
@@ -268,6 +283,7 @@ class _AccountScreenState extends State<AccountScreen> {
       value: value,
       onChanged: onChanged,
       activeColor: activeColor ?? Theme.of(context).primaryColor,
+      inactiveTrackColor: Colors.grey[300],
       contentPadding: EdgeInsets.zero,
     );
   }

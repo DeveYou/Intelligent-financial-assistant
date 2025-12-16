@@ -12,7 +12,10 @@ class AccountModel {
   bool? isOnlinePayment;
   bool? isContactless;
   DateTime? createdAt;
-  String? accountHolder; 
+  String? accountHolder;
+  String? currency;
+
+  String get accountNumber => iban ?? ''; 
 
   AccountModel({
     this.id,
@@ -28,6 +31,7 @@ class AccountModel {
     this.isOnlinePayment,
     this.isContactless,
     this.createdAt,
+    this.currency,
   });
 
   AccountModel.fromJson(Map<String, dynamic> json) {
@@ -38,14 +42,15 @@ class AccountModel {
     iban = json['iban'];
     balance = json['balance'] != null ? double.tryParse(json['balance'].toString()) : null;
     expirationDate = json['expirationDate']?.toString();
-    isActive = json['isActive'];
-    isPaymentByCard = json['isPaymentByCard'];
-    isWithdrawal = json['isWithdrawal'];
-    isOnlinePayment = json['isOnlinePayment'];
-    isContactless = json['isContactless'];
+    isActive = json['isActive'] ?? false;
+    isPaymentByCard = json['isPaymentByCard'] ?? false;
+    isWithdrawal = json['isWithdrawal'] ?? false;
+    isOnlinePayment = json['isOnlinePayment'] ?? false;
+    isContactless = json['isContactless'] ?? false;
     if(json['createdAt'] != null){
       createdAt = DateTime.tryParse(json['createdAt']);
     }
+    currency = json['currency'] ?? 'MAD';
   }
 
   Map<String, dynamic> toJson() {
@@ -62,6 +67,7 @@ class AccountModel {
     data['isOnlinePayment'] = isOnlinePayment;
     data['isContactless'] = isContactless;
     data['createdAt'] = createdAt?.toIso8601String();
+    data['currency'] = currency;
     return data;
   }
 
@@ -86,6 +92,7 @@ class AccountModel {
       type: type ?? '',
       expirationDate: expirationDate ?? '',
       createdAt: createdAt,
+      currency: currency ?? this.currency,
     );
   }
 }

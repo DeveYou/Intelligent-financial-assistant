@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/models/transaction_model.dart';
+import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intl/intl.dart';
 
 class TransactionDetailsWidget extends StatelessWidget {
   final TransactionModel transaction;
 
   const TransactionDetailsWidget({
-    Key? key,
+    super.key,
     required this.transaction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class TransactionDetailsWidget extends StatelessWidget {
                 Text(
                   transaction.createdAt != null
                       ? '${dateFormat.format(transaction.createdAt!)} at ${timeFormat.format(transaction.createdAt!)}'
-                      : 'Unknown date',
+                      : getTranslated('unknown_date', context)!,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 14,
@@ -64,8 +65,8 @@ class TransactionDetailsWidget extends StatelessWidget {
           const SizedBox(height: 32),
 
           // Transaction details
-          const Text(
-            'Transaction Details',
+          Text(
+            getTranslated('transaction_details', context)!,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -73,17 +74,17 @@ class TransactionDetailsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          _buildDetailRow('Type', transaction.type ?? 'Unknown'),
-          _buildDetailRow('Reference', transaction.reference ?? 'N/A'),
-          _buildDetailRow('Reason', transaction.reason ?? 'No reason provided'),
-          _buildDetailRow('Charge Amount', '\$${transaction.chargeAmount?.toStringAsFixed(2) ?? '0.00'}'),
+          _buildDetailRow(getTranslated('type', context)!, transaction.type ?? getTranslated('unknown', context)!),
+          _buildDetailRow(getTranslated('reference', context)!, transaction.reference ?? 'N/A'),
+          _buildDetailRow(getTranslated('reason', context)!, transaction.reason ?? getTranslated('no_reason_provided', context)!),
+          _buildDetailRow(getTranslated('charge_amount', context)!, '\$${transaction.chargeAmount?.toStringAsFixed(2) ?? '0.00'}'),
 
           const SizedBox(height: 32),
 
           // Beneficiary details if available
           if (transaction.beneficiary != null) ...[
-            const Text(
-              'Beneficiary Details',
+            Text(
+              getTranslated('beneficiary_details', context)!,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
@@ -91,9 +92,9 @@ class TransactionDetailsWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            _buildDetailRow('Name', transaction.beneficiary?.fullName ?? 'Unknown'),
-            _buildDetailRow('IBAN', transaction.beneficiary?.iban ?? 'N/A'),
-            _buildDetailRow('Bank', transaction.beneficiary?.bank ?? 'N/A'),
+            _buildDetailRow(getTranslated('name', context)!, transaction.beneficiary?.fullName ?? getTranslated('unknown', context)!),
+            _buildDetailRow(getTranslated('iban', context)!, transaction.beneficiary?.iban ?? 'N/A'),
+            _buildDetailRow(getTranslated('bank', context)!, transaction.beneficiary?.bank ?? 'N/A'),
           ],
         ],
       ),
