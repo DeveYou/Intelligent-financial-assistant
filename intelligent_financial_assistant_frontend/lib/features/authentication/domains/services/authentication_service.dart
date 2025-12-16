@@ -62,6 +62,16 @@ class AuthenticationService implements AuthenticationServiceInterface{
   }
 
   @override
+  Future<void> saveUserId(String id) {
+    return authenticationRepository.saveUserId(id);
+  }
+
+  @override
+  String getUserId() {
+    return authenticationRepository.getUserId();
+  }
+
+  @override
   Future<dynamic> registerUser(Map<String, dynamic> data) {
     return authenticationRepository.registerUser(data);
   }

@@ -5,8 +5,7 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_text_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_password_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_submit_btn_widget.dart';
-import 'package:intelligent_financial_assistant_frontend/features/dashboard/screens/dashboard_screen.dart';
-import 'package:intelligent_financial_assistant_frontend/features/profile/controllers/profile_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +22,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-
-  final Color _primaryColor = const Color(0xFFF44E1E);
 
   @override
   void dispose() {
@@ -75,10 +72,9 @@ class _LoginWidgetState extends State<LoginWidget> {
 
       }
       else {
-        await Provider.of<ProfileController>(context, listen: false).getUserInfo(context);
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            MaterialPageRoute(builder: (_) => Root()),
                 (route) => false
         );
       }
@@ -119,7 +115,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               child: Text(
                 getTranslated("forgot_password", context)!,
                 style: TextStyle(
-                  color: _primaryColor,
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -6,10 +6,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/error_boundary.dart';
 import 'package:intelligent_financial_assistant_frontend/di/dependency_injection.dart' as di;
+import 'package:intelligent_financial_assistant_frontend/features/account/controllers/account_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/account/screens/account_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/assistant/controllers/assistant_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/assistant/screens/assistant_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/home/controllers/home_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
+import 'package:intelligent_financial_assistant_frontend/features/notifications/controllers/notifications_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/recipient/controllers/recipient_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/root.dart';
+import 'package:intelligent_financial_assistant_frontend/features/settings/controllers/settings_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/splash/screens/splash_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intelligent_financial_assistant_frontend/features/transaction/controllers/transaction_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/firebase_options.dart';
 import 'package:intelligent_financial_assistant_frontend/helpers/fallback_localization_delegate.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/app_localization.dart';
@@ -37,6 +49,14 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (context) => di.sl<LocalizationController>()),
     ChangeNotifierProvider(create: (context) => di.sl<ThemeController>()),
     ChangeNotifierProvider(create: (context) => di.sl<AuthenticationController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<HomeController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<SplashController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<AccountController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<AssistantController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<NotificationsController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<SettingsController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<TransactionController>()),
+    ChangeNotifierProvider(create: (context) => di.sl<RecipientController>())
   ];
 
   flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
@@ -48,7 +68,7 @@ Future<void> main() async {
       notificationBody = NotificationHelper.convertNotification(initialMessage.data);
     }
     await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
-    FirebaseMessaging.onBackgroundMessage(NotificationHelper.backgroundMessageHandler);
+    FirebaseMessaging.onBackgroundMessage(NotificationHelper.backgroundMessageHandler as BackgroundMessageHandler);
   } catch (e) {
     debugPrint('Error during initialize notifications : $e');
   }
@@ -96,7 +116,7 @@ class MyApp extends StatelessWidget {
         );
       },
       supportedLocales: locales,
-      home: const  AuthenticationScreen(),
+      home: SplashScreen(),
     );
   }
 }

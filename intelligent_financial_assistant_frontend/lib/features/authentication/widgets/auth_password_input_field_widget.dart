@@ -17,7 +17,6 @@ class AuthPasswordInputFieldWidget extends StatefulWidget {
 
 class _AuthPasswordInputFieldWidgetState extends State<AuthPasswordInputFieldWidget> {
   bool _isObscured = true;
-  final Color _primaryColor = const Color(0xFFF44E1E);
   final Color _secondaryColor = const Color(0xFFFFBD09);
 
   @override
@@ -60,7 +59,7 @@ class _AuthPasswordInputFieldWidgetState extends State<AuthPasswordInputFieldWid
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: _primaryColor, width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),

@@ -22,7 +22,6 @@ class AuthTextInputFieldWidget extends StatefulWidget {
 }
 
 class _AuthTextInputFieldWidgetState extends State<AuthTextInputFieldWidget> {
-  final Color _primaryColor = const Color(0xFFF44E1E);
 
   final Color _secondaryColor = const Color(0xFFFFBD09);
 
@@ -56,7 +55,7 @@ class _AuthTextInputFieldWidgetState extends State<AuthTextInputFieldWidget> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: _primaryColor, width: 1.5),
+            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),

@@ -1,3 +1,2 @@
-.idea/
-uploads/
-.vscode/
+.idea/*
+node_modules/

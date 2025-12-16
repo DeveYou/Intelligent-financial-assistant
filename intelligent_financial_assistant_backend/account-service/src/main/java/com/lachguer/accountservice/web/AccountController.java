@@ -42,7 +42,8 @@ public class AccountController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId, jakarta.servlet.http.HttpServletRequest request) {
+    public List<BankAccountResponseDTO> getAccountsByUserId(@PathVariable Long userId,
+            jakarta.servlet.http.HttpServletRequest request) {
         System.out.println("Headers received in getAccountsByUserId:");
         java.util.Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
@@ -109,8 +110,6 @@ public class AccountController {
         accountService.updateBalance(id, request.getAmount(), request.getOperation());
         return ResponseEntity.ok().build();
     }
-
-
 
     @Data
     public static class BalanceUpdateRequest {

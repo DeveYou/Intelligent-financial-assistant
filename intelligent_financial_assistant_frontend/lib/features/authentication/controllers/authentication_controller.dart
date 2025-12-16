@@ -71,6 +71,9 @@ class AuthenticationController with ChangeNotifier{
         authenticationService.saveUserToken(token);
         await authenticationService.updateToken();
       }
+      if(map['id'] != null){
+        authenticationService.saveUserId(map['id'].toString());
+      }
       callback(true, token, temporaryToken, message);
       notifyListeners();
     }else{
@@ -99,7 +102,9 @@ class AuthenticationController with ChangeNotifier{
       if(token != null && token.isNotEmpty){
         authenticationService.saveUserToken(token);
         await authenticationService.updateToken();
-
+      }
+      if(map['id'] != null){
+        authenticationService.saveUserId(map['id'].toString());
       }
       callback(true, token, temporaryToken, message);
       notifyListeners();
