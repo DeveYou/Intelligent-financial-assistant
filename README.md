@@ -44,13 +44,42 @@ A cross-platform mobile application for on-the-go access.
 
 ## 📷 Screenshots
 
-<!-- Add screenshots of the Web Dashboard here -->
-<!-- Example: ![Dashboard](screenshots/dashboard.png) -->
-### Web Dashboard
-*Placeholer for Dashboard Screenshot*
+### Web Dashboard (Angular)
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="Screans/Angular/1.png" width="45%" alt="Dashboard" />
+  <img src="Screans/Angular/3.png" width="45%" alt="Stats" />
+  <img src="Screans/Angular/4.png" width="45%" alt="Details" />
+  <img src="Screans/Angular/5.png" width="45%" alt="Screen 5" />
+  <img src="Screans/Angular/6.png" width="45%" alt="Screen 6" />
+  <img src="Screans/Angular/7.png" width="45%" alt="Screen 7" />
+  <img src="Screans/Angular/8.png" width="45%" alt="Screen 8" />
+  <img src="Screans/Angular/9.png" width="45%" alt="Screen 9" />
+  <img src="Screans/Angular/10.png" width="45%" alt="Screen 10" />
+  <img src="Screans/Angular/11.png" width="45%" alt="Screen 11" />
+  <img src="Screans/Angular/12.png" width="45%" alt="Screen 12" />
+  <img src="Screans/Angular/13.png" width="45%" alt="Screen 13" />
+  <img src="Screans/Angular/14.png" width="45%" alt="Screen 14" />
+</div>
 
-### Transaction List
-*Placeholder for Transaction List Screenshot*
+### Mobile App (Flutter)
+<div style="display: flex; flex-wrap: wrap; gap: 10px;">
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.10_d30c82be.jpg" width="30%" alt="Mobile 1" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_1f4d9ca2.jpg" width="30%" alt="Mobile 2" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_29b950f9.jpg" width="30%" alt="Mobile 3" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_d9d017ac.jpg" width="30%" alt="Mobile 4" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.12_687b9db1.jpg" width="30%" alt="Mobile 5" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.12_ff06cbc3.jpg" width="30%" alt="Mobile 6" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_2fa28424.jpg" width="30%" alt="Mobile 7" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_76c3e4db.jpg" width="30%" alt="Mobile 8" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_8360d48f.jpg" width="30%" alt="Mobile 9" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_a4eaa7e4.jpg" width="30%" alt="Mobile 10" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.14_32c429b7.jpg" width="30%" alt="Mobile 11" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.14_c53a8fa1.jpg" width="30%" alt="Mobile 12" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.00_7d982c05.jpg" width="30%" alt="Mobile 13" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_ae2dbbbc.jpg" width="30%" alt="Mobile 14" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_b31b1196.jpg" width="30%" alt="Mobile 15" />
+  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_d31ed893.jpg" width="30%" alt="Mobile 16" />
+</div>
 
 ---
 
