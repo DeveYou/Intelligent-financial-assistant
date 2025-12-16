@@ -9,7 +9,6 @@ import { User } from '../models/user.model';
 export class UserService {
 
   private readonly API_URL = 'http://localhost:8080/auth-service/admin/users';
-  private readonly API_URL_files = 'http://localhost:8080/auth-service/files';
 
   constructor(private http: HttpClient) { }
 

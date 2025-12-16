@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class RecipientController {
 
     private final RecipientService recipientService;
-    private final RecipientRepository recipientRepository;
+    private final RecipientRepository  recipientRepository;
 
     public RecipientController(RecipientService recipientService, RecipientRepository recipientRepository) {
         this.recipientService = recipientService;
