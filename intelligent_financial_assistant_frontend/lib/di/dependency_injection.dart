@@ -98,7 +98,7 @@ Future<void> init() async {
   sl.registerFactory(() => AuthenticationController(authenticationService: sl()));
   sl.registerFactory(() => HomeController(homeService: sl()));
   sl.registerFactory(() => AccountController(accountService: sl()));
-  sl.registerFactory(() => AssistantController(assistantService: sl(), accountRepository: sl()));
+  sl.registerFactory(() => AssistantController(assistantService: sl(), accountRepository: sl(), transactionRepository: sl()));
   sl.registerFactory(() => NotificationsController(notificationService: sl()));
   sl.registerFactory(() => SettingsController(settingsService: sl()));
   sl.registerFactory(() => TransactionController(transactionService: sl()));

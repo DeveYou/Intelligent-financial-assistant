@@ -3,7 +3,9 @@ import 'package:intelligent_financial_assistant_frontend/data/response/api_respo
 import 'package:intelligent_financial_assistant_frontend/features/assistant/domains/models/message_model.dart';
 import 'package:intelligent_financial_assistant_frontend/features/assistant/domains/services/assistant_service_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/domains/repositories/account_repository_interface.dart';
+import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/repositories/transaction_repository_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/domains/models/account_model.dart';
+import 'package:intl/intl.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/main.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -21,8 +23,9 @@ enum AssistantState { idle, listening, processing, speaking }
 class AssistantController with ChangeNotifier {
   final AssistantServiceInterface assistantService;
   final AccountRepositoryInterface accountRepository;
+  final TransactionRepositoryInterface transactionRepository;
 
-  AssistantController({required this.assistantService, required this.accountRepository});
+  AssistantController({required this.assistantService, required this.accountRepository, required this.transactionRepository});
 
   // State
   List<MessageModel> _messages = [];
@@ -51,8 +54,6 @@ class AssistantController with ChangeNotifier {
           onStatus: (status) {
             if (status == 'done' || status == 'notListening') {
               if (_state == AssistantState.listening) {
-                // Determine if we should stop based on silence or explicitly driven by UI
-                // For now, if it stops listening automatically (silence), we process.
                  _stopListeningAndSend();
               }
             }
@@ -236,16 +237,33 @@ class AssistantController with ChangeNotifier {
         break;
 
       case "getLastTransaction":
-        await transactionController.getLastTransaction();
-        final lastTrx = transactionController.lastTransaction;
-        if (lastTrx != null) {
-          String reply = "Your last transaction was a ${lastTrx.type} of \$${lastTrx.amount} to ${lastTrx.beneficiary?.fullName ?? 'Unknown'}";
-          _addMessage(reply, sender: "assistant");
-          _speak(reply);
+        ApiResponse apiResponse = await transactionRepository.getLastTransaction();
+        if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+           var responseData = apiResponse.response!.data;
+           TransactionModel? lastTrx;
+           
+           if (responseData is List && responseData.isNotEmpty) {
+               lastTrx = TransactionModel.fromJson(responseData[0]);
+           } else if (responseData is Map<String, dynamic>) {
+               lastTrx = TransactionModel.fromJson(responseData);
+           }
+
+            if (lastTrx != null) {
+              String date = lastTrx.createdAt != null 
+                  ? DateFormat('yyyy-MM-dd HH:mm').format(lastTrx.createdAt!) 
+                  : "recently";
+              String reply = "Your last transaction was a ${lastTrx.type ?? 'transaction'} of \$${lastTrx.amount} to ${lastTrx.beneficiary?.fullName ?? 'Unknown'} on $date";
+              _addMessage(reply, sender: "assistant");
+              _speak(reply);
+            } else {
+              String reply = "No recent transactions found.";
+              _addMessage(reply, sender: "assistant");
+              _speak(reply);
+            }
         } else {
-          String reply = "No recent transactions found.";
-          _addMessage(reply, sender: "assistant");
-          _speak(reply);
+            String reply = "I couldn't fetch your transaction history.";
+            _addMessage(reply, sender: "assistant");
+            _speak(reply);
         }
         break;
 
@@ -255,7 +273,7 @@ class AssistantController with ChangeNotifier {
           String recipientName = data['recipient'];
 
           TransactionModel transaction = TransactionModel(
-            type: "transfer",
+            type: "TRANSFER",
             amount: amount,
             beneficiary: RecipientModel(fullName: recipientName),
             reference: const Uuid().v4(),

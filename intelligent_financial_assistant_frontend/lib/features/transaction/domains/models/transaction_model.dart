@@ -44,15 +44,19 @@ class TransactionModel {
       bankAccountId = json['bankAccountId'];
       recipientId = json['recipientId'];
       recipientIban = json['recipientIban'];
-      if(json['date'] != null){
-        createdAt = DateTime.tryParse(json['date'].toString());
+      if (json['date'] != null) {
+          createdAt = DateTime.tryParse(json['date'].toString());
       } else if (json['createdAt'] != null) {
-        createdAt = DateTime.tryParse(json['createdAt']);
+          createdAt = DateTime.tryParse(json['createdAt'].toString());
       }
 
-      if (json['recipientName'] != null || json['recipientIban'] != null) {
+      if (json['recipientName'] != null) {
          beneficiary = RecipientModel(
            fullName: json['recipientName'],
+           iban: json['recipientIban'],
+         );
+      } else if (json['recipientIban'] != null) {
+          beneficiary = RecipientModel(
            iban: json['recipientIban'],
          );
       }
@@ -62,7 +66,7 @@ class TransactionModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['bankAccountId'] = bankAccountId;
     data['amount'] = amount;
-    data['type'] = type;
+    data['type'] = type?.toUpperCase();
     data['reason'] = reason;
     
     if (beneficiary != null) {
