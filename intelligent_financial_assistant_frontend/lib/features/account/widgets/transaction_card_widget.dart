@@ -12,7 +12,7 @@ class TransactionCardWidget extends StatelessWidget {
     // Basic formatting
     final isCredit = transaction.type == 'credit' || transaction.type == 'deposit';
     final color = isCredit ? Colors.green : Colors.red;
-    final formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(transaction.createdAt as String));
+    final formattedDate = transaction.createdAt != null ? DateFormat('MMM dd, yyyy').format(transaction.createdAt!) : '';
 
     return Card(
       elevation: 0,
