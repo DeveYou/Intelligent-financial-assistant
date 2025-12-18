@@ -13,6 +13,9 @@ public interface UserClient {
     UserDetails getUserById(@PathVariable("userId") Long userId,
             @RequestHeader("Authorization") String authorization);
 
+    @GetMapping("/user/users/me")
+    UserDetails getUserProfile(@RequestHeader("Authorization") String authorization);
+
     @Data
     class UserDetails {
         private Long id;

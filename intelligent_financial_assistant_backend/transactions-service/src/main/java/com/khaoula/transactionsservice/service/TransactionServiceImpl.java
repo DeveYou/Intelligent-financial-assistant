@@ -2,7 +2,9 @@ package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AccountClient;
 import com.khaoula.transactionsservice.client.UserClient;
+
 import com.khaoula.transactionsservice.client.RecipientClient;
+import com.khaoula.transactionsservice.client.NotificationClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
@@ -33,7 +35,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountClient accountClient;
     private final RecipientClient recipientClient;
+
     private final UserClient userClient;
+    private final NotificationClient notificationClient;
 
     @Override
     @Transactional
@@ -239,6 +243,30 @@ public class TransactionServiceImpl implements TransactionService {
 
             log.info("Transfer completed successfully: {} to IBAN: {}",
                     transaction.getReference(), recipientIban);
+
+            // Send notification
+            try {
+                UserClient.UserDetails sender = userClient.getUserProfile(authHeader);
+                String senderName = sender.getFirstName() + " " + sender.getLastName();
+
+                String title = "Transfer Received";
+                String message = String.format("You have received %.2f from %s", request.getAmount(), senderName);
+
+                NotificationRequestDTO notificationRequest = NotificationRequestDTO.builder()
+                        .userId(recipient.getId())
+                        .title(title)
+                        .message(message)
+                        .build();
+
+                // Sending notification asynchronously or synchronously based on Feign client
+                // configuration
+                notificationClient.sendNotification(notificationRequest);
+                log.info("Notification sent successfully to user: {}", recipient.getId());
+
+            } catch (Exception e) {
+                log.error("Failed to send notification: {}", e.getMessage());
+                // We do not rollback transaction if notification fails
+            }
         } catch (Exception e) {
             log.error("Failed to complete transfer: {}", e.getMessage());
             transaction.setStatus(TransactionStatus.FAILED);
@@ -255,8 +283,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getPage(),
                 filter.getSize(),
                 Sort.Direction.fromString(filter.getSortDirection()),
-                filter.getSortBy()
-        );
+                filter.getSortBy());
 
         Page<Transaction> transactions = transactionRepository.findByFilters(
                 filter.getUserId(),
@@ -265,8 +292,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getStatus(),
                 filter.getStartDate(),
                 filter.getEndDate(),
-                pageable
-        );
+                pageable);
 
         return transactions.map(this::mapToResponseDTO);
     }
@@ -278,7 +304,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {

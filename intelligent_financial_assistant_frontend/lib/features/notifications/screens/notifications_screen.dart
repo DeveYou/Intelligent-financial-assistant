@@ -46,9 +46,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             },
             child: notificationController.notificationList != null &&
                 notificationController.notificationList!.isNotEmpty
-                ? ListView.builder(
+                ? ListView.separated(
               itemCount: notificationController.notificationList!.length,
               padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
+              separatorBuilder: (BuildContext context, int index) => SizedBox(height: Dimensions.paddingSizeExtraSmall),
               itemBuilder: (context, index) {
                 return NotificationCardWidget(
                   notification: notificationController.notificationList![index],
