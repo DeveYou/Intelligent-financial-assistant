@@ -1,5 +1,6 @@
 import 'package:intelligent_financial_assistant_frontend/localization/models/language_model.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/images.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AppConstants {
 
   static const String appName = "Intelligent Financial Assistant";
@@ -7,8 +8,14 @@ class AppConstants {
 
   //static const String baseUrl = "http://localhost:8080";
   static const String baseUrl = "https://exhilaratingly-uncompiled-laree.ngrok-free.dev";
-
-  static const String  geminiApiToken = "AIzaSyDat1U-5IqcXz2kRmyEW-1zNMr3FXIg3Po";
+  
+  static String get geminiApiToken {
+    final key = dotenv.env['GEMINI_API_KEY'];
+    if (key == null || key.isEmpty) {
+      throw Exception('GEMINI_API_KEY is missing in .env');
+    }
+    return key;
+  }
   static const String geminiModel = "gemini-flash-latest";
 
 

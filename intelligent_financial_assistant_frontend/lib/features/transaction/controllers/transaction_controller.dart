@@ -25,8 +25,26 @@ class TransactionController with ChangeNotifier {
   double _accountBalance = 0.0;
   double get accountBalance => _accountBalance;
 
+  set accountBalance(double value) => _accountBalance = value;
+
   TransactionModel? _lastTransaction;
   TransactionModel? get lastTransaction => _lastTransaction;
+
+  String _getSafeText(String key, String fallback) {
+    if (Get.context != null) {
+      return getTranslated(key, Get.context!) ?? fallback;
+    }
+    return fallback;
+  }
+
+  void _showSnackBar(String message, Color color) {
+    final context = Get.context;
+    if (context == null) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: color),
+    );
+  }
 
   Future<void> getTransactions({int limit = 20}) async {
     _isLoading = true;
@@ -79,14 +97,14 @@ class TransactionController with ChangeNotifier {
   Future<bool> sendMoney(TransactionModel transaction) async {
     _isLoading = true;
     notifyListeners();
+
+    final amount = transaction.amount ?? 0.0;
+
     // Proactive Validation
-    if(transaction.amount! > accountBalance) {
+    if(amount > accountBalance) {
        _isLoading = false;
        notifyListeners();
-       ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
-          content: Text(getTranslated("insufficient_balance", Get.context!) ?? "Insufficient Balance"),
-          backgroundColor: Colors.red,
-       ));
+       _showSnackBar(_getSafeText("insufficient_balance", "Insufficient Balance") , Colors.red);
        return false;
     }
 
@@ -108,10 +126,7 @@ class TransactionController with ChangeNotifier {
       if (e.type == import_dio.DioExceptionType.connectionTimeout || 
           e.type == import_dio.DioExceptionType.sendTimeout ||
           e.type == import_dio.DioExceptionType.receiveTimeout) {
-         ScaffoldMessenger.of(Get.context!).showSnackBar(SnackBar(
-            content: Text(getTranslated("request_timed_out_check_history", Get.context!)!),
-            backgroundColor: Colors.orange,
-         ));
+        _showSnackBar(_getSafeText("request_timed_out_check_history", "Request timed out"), Colors.orange);
          return false;
       }
       ApiChecker.checkApi(ApiResponse.withError(ApiErrorHandler.getMessage(e)));
