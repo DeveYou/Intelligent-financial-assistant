@@ -19,14 +19,40 @@ import 'package:intelligent_financial_assistant_frontend/features/recipient/doma
 import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-enum AssistantState { idle, listening, processing, speaking }
+/// Represents the state of the AI assistant.
+enum AssistantState { 
+  /// The assistant is idle and ready for input.
+  idle, 
+  
+  /// The assistant is actively listening for voice input.
+  listening, 
+  
+  /// The assistant is processing a request.
+  processing, 
+  
+  /// The assistant is speaking a response.
+  speaking 
+}
 
+/// Manages the AI voice and text assistant feature.
+///
+/// This controller handles speech-to-text input, text-to-speech output,
+/// AI processing via Gemini API, and execution of banking actions
+/// (get balance, check transactions, send money) based on user intents.
 class AssistantController with ChangeNotifier {
+  /// The service for AI assistant operations.
   final AssistantServiceInterface assistantService;
+  
+  /// Repository for account operations.
   final AccountRepositoryInterface accountRepository;
+  
+  /// Repository for transaction operations.
   final TransactionRepositoryInterface transactionRepository;
+  
+  /// Repository for recipient operations.
   final RecipientRepositoryInterface recipientRepository;
 
+  /// Creates an [AssistantController] with required services and repositories.
   AssistantController({required this.assistantService, required this.accountRepository, required this.transactionRepository, required this.recipientRepository});
 
   // State
@@ -40,12 +66,24 @@ class AssistantController with ChangeNotifier {
   late FlutterTts _flutterTts;
   bool _isSpeechAvailable = false;
 
+  /// Gets the message history.
   List<MessageModel> get messages => _messages;
+  
+  /// Gets the current assistant state.
   AssistantState get state => _state;
+  
+  /// Returns true if voice mode is active.
   bool get isVoiceMode => _isVoiceMode;
+  
+  /// Gets the current voice transcript being captured.
   String get currentTranscript => _currentTranscript;
+  
+  /// Returns true if speech-to-text is available.
   bool get isSpeechAvailable => _isSpeechAvailable;
 
+  /// Initializes the AI assistant, speech recognition, and text-to-speech.
+  ///
+  /// Requests microphone permissions and sets up STT/TTS engines.
   Future<void> initAssistant() async {
     _speech = stt.SpeechToText();
     _flutterTts = FlutterTts();
@@ -53,10 +91,10 @@ class AssistantController with ChangeNotifier {
     await _checkPermissions();
     if (await Permission.microphone.isGranted) {
         _isSpeechAvailable = await _speech.initialize(
-          onStatus: (status) {
+          onStatus: (status) async {
             if (status == 'done' || status == 'notListening') {
               if (_state == AssistantState.listening) {
-                 _stopListeningAndSend();
+                 await _stopListeningAndSend();
               }
             }
           },
@@ -89,16 +127,22 @@ class AssistantController with ChangeNotifier {
     }
   }
 
-  void toggleViewMode() {
+  /// Toggles between voice and text input modes.
+  ///
+  /// Stops any active speaking or listening when switching modes.
+  Future<void> toggleViewMode() async {
     _isVoiceMode = !_isVoiceMode;
     // Stop any active audio when switching views
-    if (_state == AssistantState.speaking) _flutterTts.stop();
-    if (_state == AssistantState.listening) _speech.stop();
+    if (_state == AssistantState.speaking) await _flutterTts.stop();
+    if (_state == AssistantState.listening) await _speech.stop();
     _state = AssistantState.idle;
     notifyListeners();
   }
 
 
+  /// Starts listening for voice input.
+  ///
+  /// Requests microphone permissions if needed and begins speech recognition.
   Future<void> startListening() async {
     var status = await Permission.microphone.status;
     if (!status.isGranted) {
@@ -112,10 +156,10 @@ class AssistantController with ChangeNotifier {
     if (!_isSpeechAvailable) {
        // Try initializing again if it failed before but now we might have perms
        _isSpeechAvailable = await _speech.initialize(
-          onStatus: (status) {
+          onStatus: (status) async {
             if (status == 'done' || status == 'notListening') {
               if (_state == AssistantState.listening) {
-                 _stopListeningAndSend();
+                 await _stopListeningAndSend();
               }
             }
           },
@@ -136,7 +180,7 @@ class AssistantController with ChangeNotifier {
     _currentTranscript = "";
     notifyListeners();
 
-    _speech.listen(
+    await _speech.listen(
       onResult: (result) {
         _currentTranscript = result.recognizedWords;
         notifyListeners();
@@ -163,6 +207,9 @@ class AssistantController with ChangeNotifier {
     }
   }
 
+  /// Sends a text message to the AI assistant.
+  ///
+  /// [text] is the user's message.
   Future<void> sendTextMessage(String text) async {
     if (text.trim().isEmpty) return;
     _addMessage(text, sender: "user", isVoice: false);
@@ -183,17 +230,25 @@ class AssistantController with ChangeNotifier {
         String errorMsg = "Error processing assistant response.";
          debugPrint("Assistant Parsing Error: $e");
         _addMessage(errorMsg, sender: "assistant");
-        _speak(errorMsg);
+        await _speak(errorMsg);
       }
     } else {
-      String errorMessage = response.error != null ? response.error.toString() : getTranslated("i_am_sorry_i_could_not_process_that_right_now", Get.context!)!;
+      final String errorMessage = response.error != null ? response.error.toString() : getTranslated("i_am_sorry_i_could_not_process_that_right_now", Get.context!)!;
       debugPrint("Assistant API Error: $errorMessage");
       
       _addMessage(errorMessage, sender: "assistant");
-      _speak(errorMessage);
+      await _speak(errorMessage);
     }
   }
 
+  /// Handles assistant actions based on AI response.
+  ///
+  /// Supported actions:
+  /// - `getBalance`: Retrieves and speaks the account balance
+  /// - `getLastTransaction`: Retrieves and describes the last transaction
+  /// - `sendMoney`: Executes a money transfer to a recognized recipient
+  ///
+  /// [data] contains the action type and parameters from the AI.
   Future<void> handleAssistantAction(Map<String, dynamic> data) async {
     String action = data['action'];
     final context = Get.context!; 
@@ -220,21 +275,21 @@ class AssistantController with ChangeNotifier {
                   String currency = account.currency ?? "MAD";
                   String reply = "Your current balance is $currency ${balance.toStringAsFixed(2)}";
                   _addMessage(reply, sender: "assistant");
-                  _speak(reply);
+                  await _speak(reply);
               } else {
                   String reply = "I couldn't find any account information.";
                   _addMessage(reply, sender: "assistant");
-                  _speak(reply);
+                  await _speak(reply);
               }
            } else {
               String reply = "I had trouble accessing your account details.";
               _addMessage(reply, sender: "assistant");
-              _speak(reply);
+              await _speak(reply);
            }
         } catch (e) {
            String reply = "Sorry, something went wrong while fetching your balance.";
            _addMessage(reply, sender: "assistant");
-           _speak(reply);
+           await _speak(reply);
         }
         break;
 
@@ -256,16 +311,16 @@ class AssistantController with ChangeNotifier {
                   : "recently";
               String reply = "Your last transaction was a ${lastTrx.type ?? 'transaction'} of \$${lastTrx.amount} to ${lastTrx.beneficiary?.fullName ?? 'Unknown'} on $date";
               _addMessage(reply, sender: "assistant");
-              _speak(reply);
+              await _speak(reply);
             } else {
               String reply = "No recent transactions found.";
               _addMessage(reply, sender: "assistant");
-              _speak(reply);
+              await _speak(reply);
             }
         } else {
             String reply = "I couldn't fetch your transaction history.";
             _addMessage(reply, sender: "assistant");
-            _speak(reply);
+            await _speak(reply);
         }
         break;
 
@@ -290,7 +345,7 @@ class AssistantController with ChangeNotifier {
           if (bankAccountId == null) {
               String reply = "I couldn't verify your account information.";
               _addMessage(reply, sender: "assistant");
-              _speak(reply);
+              await _speak(reply);
               break;
           }
 
@@ -321,7 +376,7 @@ class AssistantController with ChangeNotifier {
           if (recipientIban == null) {
               String reply = "I couldn't find a recipient named $recipientName in your list.";
               _addMessage(reply, sender: "assistant");
-              _speak(reply);
+              await _speak(reply);
               break;
           }
 
@@ -341,10 +396,10 @@ class AssistantController with ChangeNotifier {
 
            ApiResponse transferResponse = await transactionRepository.sendMoney(transaction);
 
-          if (transferResponse.response != null && transferResponse.response!.statusCode == 200) {
-            String reply = "Transfer successful. \$$amount sent to $recipientName.";
+          if (transferResponse.response != null && (transferResponse.response!.statusCode == 200 || transferResponse.response!.statusCode == 201)) {
+            String reply = "Transfer completed successfully. Your new balance is being updated.";
             _addMessage(reply, sender: "assistant");
-            _speak(reply);
+            await _speak(reply);
 
              await transactionController.getTransactions();
           } else {
@@ -353,20 +408,20 @@ class AssistantController with ChangeNotifier {
                            : "Transfer failed. Please check your balance.";
             debugPrint("Transfer Error Log: $error");
             _addMessage(error, sender: "assistant");
-            _speak(error);
+            await _speak(error);
           }
         } catch (e) {
            debugPrint("Transfer Exception: $e");
            String reply = "I couldn't complete the transfer details.";
           _addMessage(reply, sender: "assistant");
-          _speak(reply);
+          await _speak(reply);
         }
         break;
 
       default:
         String reply = "I'm not sure how to do that yet.";
         _addMessage(reply, sender: "assistant");
-        _speak(reply);
+        await _speak(reply);
     }
   }
 

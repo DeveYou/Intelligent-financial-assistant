@@ -1,6 +1,7 @@
 package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AccountClient;
+import com.khaoula.transactionsservice.client.UserClient;
 import com.khaoula.transactionsservice.client.RecipientClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;

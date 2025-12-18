@@ -62,7 +62,7 @@ class DocumentationScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor.withOpacity(0.7)],
+          colors: [Theme.of(context).primaryColor, Theme.of(context).primaryColor.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -73,7 +73,7 @@ class DocumentationScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.mic, color: Colors.white, size: 30),
@@ -90,7 +90,7 @@ class DocumentationScreen extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(
                   getTranslated("voice_assistant_description", context)!,
-                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 14),
                 ),
               ],
             ),
@@ -106,7 +106,7 @@ class DocumentationScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.5)),
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
       ),
       child: Column(
         children: [

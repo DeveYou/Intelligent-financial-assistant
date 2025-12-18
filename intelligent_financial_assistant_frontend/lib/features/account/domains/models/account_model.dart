@@ -1,22 +1,54 @@
-
+/// Represents a bank account in the financial assistant application.
+///
+/// An account contains information about the user's bank account including
+/// balance, IBAN, account type, and various card permissions.
 class AccountModel {
+  /// Unique identifier for the account.
   int? id;
+  
+  /// ID of the user who owns this account.
   int? userId;
+  
+  /// Type of account (e.g., CHECKING, SAVINGS).
   String? type;
+  
+  /// International Bank Account Number.
   String? iban;
+  
+  /// Current account balance.
   double? balance;
+  
+  /// Card expiration date.
   String? expirationDate;
-  bool? isActive; 
+  
+  /// Whether the account is currently active.
+  bool? isActive;
+  
+  /// Permission for payment by card.
   bool? isPaymentByCard;
+  
+  /// Permission for ATM withdrawals.
   bool? isWithdrawal;
+  
+  /// Permission for online payments.
   bool? isOnlinePayment;
+  
+  /// Permission for contactless payments.
   bool? isContactless;
+  
+  /// When the account was created.
   DateTime? createdAt;
+  
+  /// Name of the account holder.
   String? accountHolder;
+  
+  /// Account currency (default: MAD).
   String? currency;
 
-  String get accountNumber => iban ?? ''; 
+  /// Gets the account number (IBAN).
+  String get accountNumber => iban ?? '';
 
+  /// Creates a new [AccountModel] instance.
   AccountModel({
     this.id,
     this.userId,
@@ -34,10 +66,11 @@ class AccountModel {
     this.currency,
   });
 
+  /// Creates an [AccountModel] from JSON data.
   AccountModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     userId = json['userId'];
-    accountHolder = json['userId'].toString(); 
+    accountHolder = json['userId'].toString();
     type = json['type'];
     iban = json['iban'];
     balance = json['balance'] != null ? double.tryParse(json['balance'].toString()) : null;
@@ -53,6 +86,7 @@ class AccountModel {
     currency = json['currency'] ?? 'MAD';
   }
 
+  /// Converts this [AccountModel] to a JSON map.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
@@ -71,6 +105,9 @@ class AccountModel {
     return data;
   }
 
+  /// Creates a copy of this [AccountModel] with specified fields updated.
+  ///
+  /// Useful for updating account permissions while preserving other properties.
   AccountModel copyWith({
     bool? isActive,
     bool? isPaymentByCard,

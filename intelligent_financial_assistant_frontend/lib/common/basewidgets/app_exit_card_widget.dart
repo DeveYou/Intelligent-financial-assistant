@@ -15,7 +15,7 @@ class AppExitCard extends StatelessWidget {
       decoration: BoxDecoration(color: Theme.of(context).cardColor,
           borderRadius:  BorderRadius.vertical(top: Radius.circular(Dimensions.paddingSizeDefault))),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Container(width: 40,height: 4,decoration: BoxDecoration(color: Theme.of(context).hintColor.withOpacity(.5),
+        Container(width: 40,height: 4,decoration: BoxDecoration(color: Theme.of(context).hintColor.withValues(alpha: .5),
             borderRadius: BorderRadius.circular(20)),),
 
         const SizedBox(height: 30,),
@@ -32,7 +32,7 @@ class AppExitCard extends StatelessWidget {
         Padding(padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeOverLarge),
             child: Row(mainAxisAlignment: MainAxisAlignment.center,children: [
               Expanded(child: SizedBox(width: 120, child: CustomButton(buttonText: '${getTranslated('cancel', context)}',
-                backgroundColor: Theme.of(context).colorScheme.tertiaryContainer.withOpacity(.5),
+                backgroundColor: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: .5),
                 textColor: Theme.of(context).textTheme.bodyLarge?.color,
                 onTap: ()=> Navigator.pop(context),))),
 

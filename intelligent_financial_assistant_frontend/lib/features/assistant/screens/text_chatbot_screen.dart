@@ -51,7 +51,7 @@ class _TextChatbotScreenState extends State<TextChatbotScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5, offset: const Offset(0,-2))]
+              boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), blurRadius: 5, offset: const Offset(0,-2))]
           ),
           child: Row(
             children: [

@@ -49,7 +49,8 @@ class _RootState extends State<Root> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (val) async {
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
           if(_pageIndex != 0) {
             _setPage(0);
             return;
@@ -67,7 +68,7 @@ class _RootState extends State<Root> {
                   top: Radius.circular(Dimensions.paddingSizeLarge)),
                 color: Theme.of(context).cardColor,
                 boxShadow: [BoxShadow(offset: const Offset(1,1), blurRadius: 2, spreadRadius: 1,
-                    color: Theme.of(context).primaryColor.withOpacity(.125))],),
+                    color: Theme.of(context).primaryColor.withValues(alpha: .125))],),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: _getBottomWidget()))
       ),

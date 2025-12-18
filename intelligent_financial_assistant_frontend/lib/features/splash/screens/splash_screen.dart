@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
-import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
+
 import 'package:intelligent_financial_assistant_frontend/features/onboarding/screens/onboarding_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 import 'package:intelligent_financial_assistant_frontend/helpers/app_storage_service.dart';
 
+/// Splash screen with animated logo and loading indicator.
+///
+/// Displays the app logo with scale/opacity animations while checking navigation logic.
+/// Routes to onboarding (first launch), authentication (not logged in), or home (logged in).
 class SplashScreen extends StatefulWidget {
+  /// Creates a [SplashScreen].
   const SplashScreen({super.key});
 
   @override
@@ -13,8 +18,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  final Color _primaryColor = const Color(0xFFF44E1E);
-  final Color _secondaryColor = const Color(0xFFFFBD09);
+
 
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -104,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       height: 120,
                       width: 120,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.15),
+                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(

@@ -9,7 +9,12 @@ import 'package:intelligent_financial_assistant_frontend/theme/controllers/theme
 import 'package:provider/provider.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 
+/// Settings screen for app preferences and account management.
+///
+/// Provides controls for dark mode, language selection, PDF export,
+/// password changes, PIN reset, help documentation, and logout.
 class SettingsScreen extends StatelessWidget {
+  /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
 
   @override
@@ -36,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.dark_mode_outlined,
                   trailing: Switch(
                     value: themeController.isDarkMode,
-                    activeColor: Theme.of(context).primaryColor,
+                    thumbColor: WidgetStateProperty.all(Theme.of(context).primaryColor),
                     inactiveTrackColor: Colors.grey[300],
                     onChanged: (val) {
                       themeController.toggleThemeMode();

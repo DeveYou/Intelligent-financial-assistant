@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/show_custom_snackbar_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/domains/models/register_model.dart';
+import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_text_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_password_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_submit_btn_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/root.dart';
-import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
@@ -39,8 +39,15 @@ class _RegisterWidgetState extends State<RegisterWidget> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      String firstName = _nameController.text.trim().split(" ")[0];
-      String LastName = _nameController.text.trim().split(" ")[1];
+      String firstName = '';
+      String lastName = '';
+      List<String> nameParts = _nameController.text.trim().split(" ");
+      if (nameParts.isNotEmpty) {
+        firstName = nameParts[0];
+        if (nameParts.length > 1) {
+          lastName = nameParts.sublist(1).join(" ");
+        }
+      }
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
@@ -55,12 +62,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       }
 
       registerBody.firstName = firstName;
-      registerBody.lastName = LastName;
+      registerBody.lastName = lastName;
       registerBody.email = email;
       registerBody.password = password;
 
-      if (email.isEmpty) {
+      if (firstName.isEmpty) {
         showCustomSnackBarWidget(getTranslated('user_name_is_required', context), context);
+      } else if (email.isEmpty) {
+        showCustomSnackBarWidget(getTranslated('email_is_required', context), context);
       } else if (password.isEmpty) {
         showCustomSnackBarWidget(getTranslated('password_is_required', context), context);
       } else if (password.length < 8) {
@@ -72,13 +81,22 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   }
 
   // The route callback handles the response from the API
-  route(bool isRoute, String? token, String? temporaryToken, String? errorMessage) async {
+  Future<void> route(bool isRoute, String? token, String? temporaryToken, String? errorMessage) async {
     if (isRoute) {
-      if (token == null || token.isEmpty) {
-        final splashController = Provider.of<SplashController>(context, listen: false);
+      final effectiveToken = token?.isNotEmpty == true
+          ? token
+          : (temporaryToken?.isNotEmpty == true ? temporaryToken : null);
 
-      }
-      else {
+      if (effectiveToken == null) {
+        // Show success message and navigate to Login screen.
+         showCustomSnackBarWidget(errorMessage ?? 'Registration successful', context, isError: false);
+         
+         // Navigate to the AuthenticationScreen which defaults to Login
+         Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const AuthenticationScreen()),
+         );
+      } else {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => Root()),
@@ -86,8 +104,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
         );
       }
     } else {
-      // Register failed
-      showCustomSnackBarWidget(errorMessage, context);
+      // Registered failed
+      showCustomSnackBarWidget(errorMessage ?? 'Register failed', context);
     }
   }
 

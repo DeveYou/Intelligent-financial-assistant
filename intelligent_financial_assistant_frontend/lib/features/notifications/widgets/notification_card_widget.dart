@@ -17,7 +17,7 @@ class NotificationCardWidget extends StatelessWidget {
         padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
         color: notification.isRead == true
             ? Theme.of(context).cardColor
-            : Theme.of(context).primaryColor.withOpacity(0.05),
+            : Theme.of(context).primaryColor.withValues(alpha: 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -30,13 +30,14 @@ class NotificationCardWidget extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  formatDate(
-                    notification.timestamp!,
-                    [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn],
-                  ) ?? '',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+                if (notification.timestamp != null)
+                  Text(
+                    formatDate(
+                      notification.timestamp!,
+                      [dd, '/', mm, '/', yyyy, ' ', HH, ':', nn],
+                    ),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               ],
             ),
             SizedBox(height: Dimensions.paddingSizeExtraSmall),

@@ -10,10 +10,13 @@ class NotificationsRepository implements NotificationsRepositoryInterface {
   NotificationsRepository({required this.dioClient});
 
   @override
-  Future<ApiResponse> fetchNotifications() async {
+  Future<ApiResponse> fetchNotifications(int userId) async {
     try {
       // Replace with your actual endpoint URI defined in AppConstants
-      Response response = await dioClient.get(AppConstants.getNotificationsUri);
+      Response response = await dioClient.get(
+          AppConstants.getNotificationsUri,
+          queryParameters: {'userId': userId}
+      );
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(e);
@@ -39,6 +42,18 @@ class NotificationsRepository implements NotificationsRepositoryInterface {
       Response response = await dioClient.post(
           AppConstants.sendNotificationUri,
           data: data
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(e);
+    }
+  }
+
+  @override
+  Future<ApiResponse> registerToken(String token, int userId) async {
+    try {
+      Response response = await dioClient.post(
+          '${AppConstants.registerTokenUri}?token=$token&userId=$userId',
       );
       return ApiResponse.withSuccess(response);
     } catch (e) {

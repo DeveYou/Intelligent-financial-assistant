@@ -45,7 +45,7 @@ class _VoiceVisualizerWidgetState extends State<VoiceVisualizerWidget> with Sing
                 width: 10,
                 height: 40 + (_controller.value * 40 * (index % 2 == 0 ? 1 : 0.5)),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.8),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(15),
                 ),
               );

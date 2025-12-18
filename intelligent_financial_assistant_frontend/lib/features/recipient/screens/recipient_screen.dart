@@ -6,7 +6,12 @@ import '../domains/models/recipient_model.dart';
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 import '../widgets/recipient_widget_card.dart';
 
+/// Recipient management screen for adding, editing, and deleting recipients.
+///
+/// Displays a list of recipients with loading states, empty states, and pull-to-refresh.
+/// Includes floating action button for adding new recipients and modal forms for editing.
 class RecipientScreen extends StatefulWidget {
+  /// Creates a [RecipientScreen].
   const RecipientScreen({super.key});
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/show_custom_snackbar_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/data/response/api_response.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
@@ -9,7 +10,11 @@ import 'package:intelligent_financial_assistant_frontend/localization/language_c
 import 'package:provider/provider.dart';
 
 
+/// Helper class to check and handle API responses.
 class ApiChecker {
+  /// Checks the [apiResponse] status code and performs appropriate actions (e.g., handling 401, 403 errors).
+  ///
+  /// Logs the response details and shows snackbars for errors if context is available.
   static void checkApi(ApiResponse apiResponse) {
     log('API Response Status Code: ${apiResponse.response?.statusCode}');
     log('API Response Data: ${apiResponse.response?.data}');

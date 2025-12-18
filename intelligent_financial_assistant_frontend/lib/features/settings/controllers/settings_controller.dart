@@ -5,15 +5,25 @@ import 'package:intelligent_financial_assistant_frontend/localization/language_c
 
 import '../../../main.dart';
 
-
+/// Manages application settings and help documentation.
+///
+/// This controller handles settings-related operations including
+/// exporting bank details and providing assistant command documentation.
 class SettingsController with ChangeNotifier {
+  /// The service for settings-related operations.
   final SettingsService settingsService;
 
+  /// Creates a [SettingsController] with the required service.
   SettingsController({required this.settingsService});
 
   bool _isExporting = false;
+  
+  /// Returns true if a bank details export is in progress.
   bool get isExporting => _isExporting;
 
+  /// List of available voice assistant commands grouped by category.
+  ///
+  /// Each entry contains a category name, icon, and list of example commands.
   final List<Map<String, dynamic>> assistantCommands = [
     {
       "category": getTranslated("balance_and_account", Get.context!)!,
@@ -35,6 +45,11 @@ class SettingsController with ChangeNotifier {
     },
   ];
 
+  /// Exports the user's bank account details to a PDF file.
+  ///
+  /// Shows a success or error snackbar based on the result.
+  ///
+  /// [context] is used to display snackbar messages.
   Future<void> exportBankDetails(BuildContext context) async {
     _isExporting = true;
     notifyListeners();

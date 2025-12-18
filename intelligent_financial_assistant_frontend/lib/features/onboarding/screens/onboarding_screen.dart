@@ -3,7 +3,11 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 import 'package:intelligent_financial_assistant_frontend/helpers/app_storage_service.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 
+/// Onboarding screen shown on first app launch.
+///
+/// Displays app introduction and navigates to authentication screen after completion.
 class OnboardingScreen extends StatelessWidget {
+  /// Creates an [OnboardingScreen].
   const OnboardingScreen({super.key});
 
   @override

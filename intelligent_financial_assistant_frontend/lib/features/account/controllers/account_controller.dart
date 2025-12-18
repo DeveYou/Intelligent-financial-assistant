@@ -6,11 +6,28 @@ import 'package:intelligent_financial_assistant_frontend/features/transaction/do
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:intelligent_financial_assistant_frontend/main.dart';
 
-enum AccountState { loading, success, error }
+/// Represents the loading state of account operations.
+enum AccountState { 
+  /// Data is being loaded from the API.
+  loading, 
+  
+  /// Data has been successfully loaded.
+  success, 
+  
+  /// An error occurred during the operation.
+  error 
+}
 
+/// Manages account data and settings.
+///
+/// This controller handles account information retrieval, recent transactions,
+/// and account permission toggles (card payments, withdrawals, etc.).
+/// Uses optimistic updates for better UX with automatic rollback on failure.
 class AccountController with ChangeNotifier {
+  /// The service interface for account operations.
   final AccountServiceInterface accountService;
 
+  /// Creates an [AccountController] with the required service.
   AccountController({required this.accountService});
 
   AccountState _accountState = AccountState.loading;
@@ -18,12 +35,25 @@ class AccountController with ChangeNotifier {
   List<TransactionModel>? _recentTransactions;
   String _error = '';
 
+  /// Gets the current account state.
   AccountState get accountState => _accountState;
+  
+  /// Returns true if data is currently being loaded.
   bool get isLoading => _accountState == AccountState.loading;
+  
+  /// Gets the account model data.
   AccountModel? get accountModel => _accountModel;
+  
+  /// Gets the list of recent transactions.
   List<TransactionModel>? get recentTransactions => _recentTransactions;
+  
+  /// Gets the error message if an error occurred.
   String get error => _error;
 
+  /// Initializes account data by fetching account details and recent transactions concurrently.
+  ///
+  /// This method loads both account information and recent transactions in parallel
+  /// for better performance. Updates the state to success or error based on the results.
   Future<void> initAccountData() async {
     _accountState = AccountState.loading;
     _error = '';
@@ -47,6 +77,9 @@ class AccountController with ChangeNotifier {
     }
   }
 
+  /// Fetches account details from the API.
+  ///
+  /// Handles both single object and array responses from the backend.
   Future<void> _getAccountDetails() async {
     ApiResponse response = await accountService.getAccountDetails();
     if (response.response != null && response.response!.statusCode == 200) {
@@ -65,6 +98,7 @@ class AccountController with ChangeNotifier {
     }
   }
 
+  /// Fetches recent transactions for the account.
   Future<void> _getRecentTransactions() async {
     ApiResponse response = await accountService.getRecentTransactions();
     if (response.response != null && response.response!.statusCode == 200) {
@@ -73,7 +107,21 @@ class AccountController with ChangeNotifier {
     }
   }
 
-  // Method to toggle specific settings
+  /// Toggles a specific account setting/permission.
+  ///
+  /// Uses optimistic update pattern: updates UI immediately, then syncs with server.
+  /// Automatically rolls back the change if the API request fails.
+  ///
+  /// Supported setting types:
+  /// - 'activate_account': Enable/disable the account
+  /// - 'card_payment': Enable/disable card payments
+  /// - 'withdrawal': Enable/disable ATM withdrawals
+  /// - 'online_payment': Enable/disable online payments
+  /// - 'contactless': Enable/disable contactless payments
+  ///
+  /// [settingType] specifies which setting to toggle.
+  /// [value] is the new value for the setting.
+  /// [context] is used to show success/error snackbars.
   Future<void> toggleSetting(String settingType, bool value, BuildContext context) async {
     if (_accountModel == null) return;
 
@@ -117,6 +165,9 @@ class AccountController with ChangeNotifier {
     }
   }
 
+  /// Requests a new verification code to be sent to the user's bank card.
+  ///
+  /// Shows a success or error snackbar based on the result.
   Future<void> resendBankCardCode(BuildContext context) async {
     ApiResponse response = await accountService.resendBankCardCode();
     if (response.response != null && response.response!.statusCode == 200) {

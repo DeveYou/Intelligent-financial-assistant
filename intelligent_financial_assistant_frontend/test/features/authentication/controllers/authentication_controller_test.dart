@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:intelligent_financial_assistant_frontend/features/notifications/domains/repositories/notifications_repository_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
@@ -12,11 +12,13 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 
 class MockAuthenticationService extends Mock implements AuthenticationService {}
 class MockResponse extends Mock implements dio.Response {}
+class MockNotificationRepository extends Mock implements NotificationsRepositoryInterface {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late AuthenticationController authController;
   late MockAuthenticationService mockAuthService;
+  final MockNotificationRepository mockNotificationRepository = MockNotificationRepository();
 
   tearDown(() {
     Get.reset();
@@ -26,7 +28,7 @@ void main() {
     setUp(() {
        Get.testMode = true;
        mockAuthService = MockAuthenticationService();
-       authController = AuthenticationController(authenticationService: mockAuthService);
+       authController = AuthenticationController(authenticationService: mockAuthService, notificationRepository: mockNotificationRepository);
     });
 
     testWidgets('signIn - success', (WidgetTester tester) async {

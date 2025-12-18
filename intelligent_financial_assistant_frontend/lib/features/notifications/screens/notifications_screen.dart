@@ -5,7 +5,12 @@ import 'package:intelligent_financial_assistant_frontend/localization/language_c
 import 'package:intelligent_financial_assistant_frontend/utils/dimensions.dart';
 import 'package:provider/provider.dart';// Assuming generic app bar exists
 
+/// Notifications screen displaying user notifications.
+///
+/// Shows a list of notifications with pull-to-refresh functionality.
+/// Allows marking notifications as read by tapping on them.
 class NotificationsScreen extends StatefulWidget {
+  /// Creates a [NotificationsScreen].
   const NotificationsScreen({super.key});
 
   @override

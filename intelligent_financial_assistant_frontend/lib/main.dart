@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,18 +6,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/error_boundary.dart';
 import 'package:intelligent_financial_assistant_frontend/di/dependency_injection.dart' as di;
 import 'package:intelligent_financial_assistant_frontend/features/account/controllers/account_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/account/screens/account_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/assistant/controllers/assistant_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/assistant/screens/assistant_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/home/controllers/home_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/home/screens/home_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/notifications/controllers/notifications_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/recipient/controllers/recipient_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/root.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/controllers/settings_controller.dart';
-import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/splash/screens/splash_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intelligent_financial_assistant_frontend/features/transaction/controllers/transaction_controller.dart';
@@ -33,11 +26,10 @@ import 'package:intelligent_financial_assistant_frontend/theme/dark_mode.dart';
 import 'package:intelligent_financial_assistant_frontend/theme/light_mode.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,7 +49,6 @@ Future<void> main() async {
     ChangeNotifierProvider(create: (context) => di.sl<ThemeController>()),
     ChangeNotifierProvider(create: (context) => di.sl<AuthenticationController>()),
     ChangeNotifierProvider(create: (context) => di.sl<HomeController>()),
-    ChangeNotifierProvider(create: (context) => di.sl<SplashController>()),
     ChangeNotifierProvider(create: (context) => di.sl<AccountController>()),
     ChangeNotifierProvider(create: (context) => di.sl<AssistantController>()),
     ChangeNotifierProvider(create: (context) => di.sl<NotificationsController>()),
@@ -75,7 +66,7 @@ Future<void> main() async {
       notificationBody = NotificationHelper.convertNotification(initialMessage.data);
     }
     await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
-    FirebaseMessaging.onBackgroundMessage(NotificationHelper.backgroundMessageHandler as BackgroundMessageHandler);
+    FirebaseMessaging.onBackgroundMessage(NotificationHelper.backgroundMessageHandler);
   } catch (e) {
     debugPrint('Error during initialize notifications : $e');
   }

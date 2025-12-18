@@ -163,5 +163,6 @@
   "transaction": "Transacción",
   "account": "Cuenta",
   "assistant": "Asistente",
-  "transaction_details": "Detalles de la transacción"
+  "transaction_details": "Detalles de la transacción",
+  "add_recipient_subtitle": "Añade un nuevo beneficiario para realizar transferencias de forma más rápida y sencilla"
 }

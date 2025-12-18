@@ -8,7 +8,13 @@ import 'package:provider/provider.dart';
 
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 
+/// Account management screen with settings and permissions.
+///
+/// Displays account information, card details, recent transactions,
+/// and allows managing card permissions (payments, withdrawals, online, contactless).
+/// Includes account activation toggle and bank card code resend functionality.
 class AccountScreen extends StatefulWidget {
+  /// Creates an [AccountScreen].
   const AccountScreen({super.key});
 
   @override
@@ -216,9 +222,9 @@ class _AccountScreenState extends State<AccountScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))
+          BoxShadow(color: Colors.grey.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 5))
         ],
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -282,7 +288,7 @@ class _AccountScreenState extends State<AccountScreen> {
       subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 12)) : null,
       value: value,
       onChanged: onChanged,
-      activeColor: activeColor ?? Theme.of(context).primaryColor,
+      activeTrackColor: activeColor ?? Theme.of(context).primaryColor,
       inactiveTrackColor: Colors.grey[300],
       contentPadding: EdgeInsets.zero,
     );

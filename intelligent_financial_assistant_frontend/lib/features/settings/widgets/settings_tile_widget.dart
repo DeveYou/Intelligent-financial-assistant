@@ -26,7 +26,7 @@ class SettingsTileWidget extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: (isDestructive ? Colors.red : (iconColor ?? Theme.of(context).primaryColor)).withOpacity(0.1),
+          color: (isDestructive ? Colors.red : (iconColor ?? Theme.of(context).primaryColor)).withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(

@@ -1,3 +1,4 @@
+version: '3'
 
 networks:
   ifa_net:
@@ -8,6 +9,7 @@ volumes:
   transactions_db_data:
   accounts_db_data:
   recipient_db_data:
+  notification_db_data:
 
 services:
   discovery-service:
@@ -230,5 +232,54 @@ services:
       JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
     ports:
       - "8084:8084"
+    networks:
+      - ifa_net
+
+  notification-db:
+    image: postgres:14
+    container_name: notification-db
+    ports:
+      - "5437:5432"
+    environment:
+      POSTGRES_DB: notification_db
+      POSTGRES_USER: notification_user
+      POSTGRES_PASSWORD: notification_pass
+      TZ: Africa/Casablanca
+      PGTZ: Africa/Casablanca
+    volumes:
+      - notification_db_data:/var/lib/postgresql/data
+    networks:
+      - ifa_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification_user -d notification_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    image: ifa/notification-service:latest
+    container_name: notification-service
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://notification-db:5432/notification_db
+      DB_USERNAME: notification_user
+      DB_PASSWORD: notification_pass
+      EUREKA_SERVER: http://discovery-service:8761/eureka
+      SERVER_PORT: 8085
+      TZ: Africa/Casablanca
+      JWT_SECRET: 2F423F4528482B4B6250655368566D5971337436763979244226452948404D6351
+      GOOGLE_APPLICATION_CREDENTIALS: /app/config/firebase-service-account.json
+      FIREBASE_CONFIG_PATH: /app/config/firebase-service-account.json
+    volumes:
+      - ./notification-service/secrets/firebase-service-account.json:/app/config/firebase-service-account.json:ro
+    ports:
+      - "8085:8085"
     networks:
       - ifa_net

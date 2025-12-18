@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/login_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/register_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 
+/// Authentication screen with login and registration functionality.
+///
+/// Displays a tabbed interface allowing users to switch between login and signup forms.
+/// Includes a custom animated tab selector and smooth transitions between the two states.
 class AuthenticationScreen extends StatefulWidget {
+  /// Creates an [AuthenticationScreen].
   const AuthenticationScreen({super.key});
 
   @override
@@ -33,7 +37,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   height: 80,
                   width: 80,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -86,7 +90,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               color: _pageState == 0 ? Theme.of(context).primaryColor : Colors.transparent,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: _pageState == 0
-                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
+                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))]
                                   : [],
                             ),
                             alignment: Alignment.center,
@@ -113,7 +117,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               color: _pageState == 1 ? Theme.of(context).primaryColor : Colors.transparent,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: _pageState == 1
-                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))]
+                                  ? [BoxShadow(color: Theme.of(context).primaryColor.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))]
                                   : [],
                             ),
                             alignment: Alignment.center,

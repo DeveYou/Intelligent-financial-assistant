@@ -95,7 +95,7 @@ Future<void> init() async {
   // Providers / Controllers
   sl.registerFactory(() => LocalizationController(sharedPreferences: sl(), dioClient: sl()));
   sl.registerFactory(() => ThemeController(sharedPreferences: sl()));
-  sl.registerFactory(() => AuthenticationController(authenticationService: sl()));
+  sl.registerFactory(() => AuthenticationController(authenticationService: sl(), notificationRepository: sl()));
   sl.registerFactory(() => HomeController(homeService: sl()));
   sl.registerFactory(() => AccountController(accountService: sl()));
   sl.registerFactory(() => AssistantController(assistantService: sl(), accountRepository: sl(), transactionRepository: sl(), recipientRepository: sl()));

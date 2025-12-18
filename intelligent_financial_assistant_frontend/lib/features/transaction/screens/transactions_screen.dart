@@ -9,7 +9,12 @@ import 'package:intelligent_financial_assistant_frontend/features/transaction/wi
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
+/// Transactions screen displaying transaction history.
+///
+/// Shows a list of user transactions with loading states, empty states,
+/// and allows tapping on transactions to view detailed information in a modal.
 class TransactionsScreen extends StatefulWidget {
+  /// Creates a [TransactionsScreen].
   const TransactionsScreen({super.key});
 
   @override
@@ -17,7 +22,7 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
-  TransactionModel? _selectedTransaction;
+
 
   @override
   void initState() {
@@ -30,7 +35,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   void _showTransactionDetails(TransactionModel transaction) {
     setState(() {
-      _selectedTransaction = transaction;
     });
 
     showModalBottomSheet(

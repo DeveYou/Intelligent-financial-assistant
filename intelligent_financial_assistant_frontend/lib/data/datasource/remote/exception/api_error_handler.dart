@@ -55,7 +55,7 @@ class ApiErrorHandler {
                   Provider.of<AuthenticationController>(Get.context!,listen: false).clearSharedData();
                   break;
                 case 404:
-                case 403:
+
                   log("404/403 Error Response: ${error.response!.data}");
                 case 500:
                   log("500 Error Response: ${error.response!.data}");

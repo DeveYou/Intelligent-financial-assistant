@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:intelligent_financial_assistant_frontend/features/recipient/controllers/recipient_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/services/recipient_service_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/data/response/api_response.dart';
-import 'package:intelligent_financial_assistant_frontend/features/recipient/domains/models/recipient_model.dart';
+
 
 class MockRecipientService extends Mock implements RecipientServiceInterface {}
 class MockResponse extends Mock implements Response {}

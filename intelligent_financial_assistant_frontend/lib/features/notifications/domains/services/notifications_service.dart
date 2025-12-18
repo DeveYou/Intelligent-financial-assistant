@@ -10,8 +10,8 @@ class NotificationsService implements NotificationsServiceInterface {
   NotificationsService({required this.notificationsRepository});
 
   @override
-  Future<ApiResponse> fetchNotifications() async {
-    return await notificationsRepository.fetchNotifications();
+  Future<ApiResponse> fetchNotifications(int userId) async {
+    return await notificationsRepository.fetchNotifications(userId);
   }
 
   @override

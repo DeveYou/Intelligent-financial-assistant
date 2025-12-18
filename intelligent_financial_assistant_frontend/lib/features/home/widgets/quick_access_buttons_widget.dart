@@ -67,12 +67,12 @@ class QuickAccessButtonsWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 2,
                   blurRadius: 5,
                 )
               ],
-              border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.1)),
+              border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1)),
             ),
             child: Icon(
               feature['icon'],

@@ -1,10 +1,23 @@
+/// Represents a push notification in the application.
+///
+/// Notifications contain a title, message, timestamp, and read status.
 class NotificationModel {
+  /// Unique identifier for the notification.
   int? id;
+  
+  /// Title of the notification.
   String? title;
+  
+  /// Message/body content of the notification.
   String? message;
+  
+  /// When the notification was created/sent.
   DateTime? timestamp;
+  
+  /// Whether the notification has been read by the user.
   bool? isRead;
 
+  /// Creates a new [NotificationModel] instance.
   NotificationModel({
     this.id,
     this.title,
@@ -13,6 +26,7 @@ class NotificationModel {
     this.isRead = false,
   });
 
+  /// Creates a [NotificationModel] from JSON data.
   NotificationModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
@@ -23,6 +37,7 @@ class NotificationModel {
     isRead = json['is_read'] ?? false;
   }
 
+  /// Converts this [NotificationModel] to a JSON map.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;

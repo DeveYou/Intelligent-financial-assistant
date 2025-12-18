@@ -4,8 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/controllers/account_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/account/domains/services/account_service_interface.dart';
 import 'package:intelligent_financial_assistant_frontend/data/response/api_response.dart';
-import 'package:intelligent_financial_assistant_frontend/features/account/domains/models/account_model.dart';
-import 'package:intelligent_financial_assistant_frontend/features/transaction/domains/models/transaction_model.dart';
 
 // Mocks
 class MockAccountService extends Mock implements AccountServiceInterface {}

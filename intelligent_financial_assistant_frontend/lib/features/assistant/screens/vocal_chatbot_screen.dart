@@ -100,7 +100,7 @@ class _VocalChatbotScreenState extends State<VocalChatbotScreen> with SingleTick
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                            color: (controller.state == AssistantState.listening ? Colors.redAccent : Theme.of(context).primaryColor).withOpacity(0.4),
+                            color: (controller.state == AssistantState.listening ? Colors.redAccent : Theme.of(context).primaryColor).withValues(alpha: 0.4),
                             blurRadius: 20,
                             spreadRadius: 5
                         )
@@ -131,7 +131,7 @@ class RipplePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.redAccent.withOpacity(1.0 - animation.value)
+      ..color = Colors.redAccent.withValues(alpha: 1.0 - animation.value)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 
@@ -141,7 +141,7 @@ class RipplePainter extends CustomPainter {
     // Second ripple
     double secondValue = (animation.value + 0.5) % 1.0;
     final Paint paint2 = Paint()
-      ..color = Colors.redAccent.withOpacity(1.0 - secondValue)
+      ..color = Colors.redAccent.withValues(alpha: 1.0 - secondValue)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
       

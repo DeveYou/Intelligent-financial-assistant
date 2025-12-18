@@ -8,7 +8,12 @@ import 'package:intelligent_financial_assistant_frontend/localization/language_c
 import 'package:provider/provider.dart';
 import 'package:intelligent_financial_assistant_frontend/common/basewidgets/shimmer_skeleton.dart';
 
+/// Home screen displaying account summary and quick actions.
+///
+/// Shows the user's bank card with balance, account holder name, and IBAN.
+/// Includes quick access buttons for common actions and displays loading/error states.
 class HomeScreen extends StatefulWidget {
+  /// Creates a [HomeScreen].
   const HomeScreen({super.key});
 
   @override

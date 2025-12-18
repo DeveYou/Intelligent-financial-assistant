@@ -4,19 +4,45 @@ import 'package:intelligent_financial_assistant_frontend/utils/custom_themes.dar
 import 'package:intelligent_financial_assistant_frontend/utils/dimensions.dart';
 import 'package:provider/provider.dart';
 
+/// A customizable button widget with various styling options.
+///
+/// Supports different styles including bordered, colored backgrounds,
+/// custom text colors, and optional left icons.
 class CustomButton extends StatelessWidget {
+  /// Callback function triggered when the button is tapped.
   final Function()? onTap;
+  
+  /// Text displayed on the button.
   final String? buttonText;
+  
+  /// Whether this is a "buy" button (uses special color).
   final bool isBuy;
+  
+  /// Whether to show a border around the button.
   final bool isBorder;
+  
+  /// Custom background color for the button.
   final Color? backgroundColor;
+  
+  /// Custom text color.
   final Color? textColor;
+  
+  /// Custom border color (when [isBorder] is true).
   final Color? borderColor;
+  
+  /// Border radius for rounded corners.
   final double? radius;
+  
+  /// Font size for button text.
   final double? fontSize;
+  
+  /// Path to an optional icon image displayed on the left.
   final String? leftIcon;
+  
+  /// Width of the border (when [isBorder] is true).
   final double? borderWidth;
 
+  /// Creates a [CustomButton] with the specified properties.
   const CustomButton({super.key, this.onTap, required this.buttonText, this.isBuy= false, this.isBorder = false, this.backgroundColor, this.radius, this.textColor, this.fontSize, this.leftIcon, this.borderColor, this.borderWidth});
 
   @override

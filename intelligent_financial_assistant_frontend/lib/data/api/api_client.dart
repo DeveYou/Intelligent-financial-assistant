@@ -8,21 +8,41 @@ import 'package:intelligent_financial_assistant_frontend/data/response/error_res
 import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A service class responsible for making HTTP requests to the backend API.
+///
+/// This class handles GET, POST, PUT, and DELETE requests, manages headers
+/// (including authentication tokens and localization), and processes responses.
 class ApiClient extends GetxService {
+  /// The base URL of the API.
   final String appBaseUrl;
+
+  /// Shared preferences instance for retrieving cached data like tokens and language settings.
   final SharedPreferences sharedPreferences;
-  static const noInternetMessage = "Connection to API server failed due to internet connection";
+
+  /// Error message displayed when there is no internet connection.
+  static const String noInternetMessage = "Connection to API server failed due to internet connection";
+
+  /// The timeout duration for API requests in seconds.
   final int timeoutInSeconds = 30;
 
+  /// The current authentication token (JWT).
   String? token;
   late Map<String, String>? _mainHeaders;
 
+  /// Creates an instance of [ApiClient].
+  ///
+  /// [appBaseUrl] is the root URL for the API.
+  /// [sharedPreferences] is used to access local storage.
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
     token = sharedPreferences.getString(AppConstants.token);
     debugPrint('Token: $token');
     updateHeader(token, sharedPreferences.getString(AppConstants.languageCode));
   }
 
+  /// Updates the HTTP headers for subsequent requests.
+  ///
+  /// [token] is the new authentication token.
+  /// [languageCode] is the language code for localization (e.g., 'en', 'fr').
   void updateHeader(String? token, String? languageCode) {
     _mainHeaders = {
       'Content-Type' : 'application/json; charset=UTF-8',
@@ -32,6 +52,12 @@ class ApiClient extends GetxService {
   }
 
 
+  /// Performs a GET request to the specified [uri].
+  ///
+  /// [query] is an optional map of query parameters.
+  /// [headers] is an optional map of custom headers.
+  ///
+  /// Returns a [Response] object containing the server's response or an error.
   Future<Response> getData(String uri, {Map<String, dynamic>? query, Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
@@ -45,6 +71,12 @@ class ApiClient extends GetxService {
     }
   }
 
+  /// Performs a POST request to the specified [uri].
+  ///
+  /// [body] is the payload to send in the request body.
+  /// [headers] is an optional map of custom headers.
+  ///
+  /// Returns a [Response] object containing the server's response or an error.
   Future<Response> postData(String uri, dynamic body, {Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
@@ -60,6 +92,12 @@ class ApiClient extends GetxService {
     }
   }
 
+  /// Performs a PUT request to the specified [uri].
+  ///
+  /// [body] is the payload to send in the request body (typically for updating resources).
+  /// [headers] is an optional map of custom headers.
+  ///
+  /// Returns a [Response] object containing the server's response or an error.
   Future<Response> putData(String uri, dynamic body, {Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
@@ -75,6 +113,11 @@ class ApiClient extends GetxService {
     }
   }
 
+  /// Performs a DELETE request to the specified [uri].
+  ///
+  /// [headers] is an optional map of custom headers.
+  ///
+  /// Returns a [Response] object containing the server's response or an error.
   Future<Response> deleteData(String uri, {Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
@@ -88,6 +131,11 @@ class ApiClient extends GetxService {
     }
   }
 
+  /// Processes the raw HTTP [response] and converts it into a standardized [Response] object.
+  ///
+  /// [uri] is the request URI, used for logging.
+  ///
+  /// Handles JSON decoding, error parsing, and status code verification.
   Response handleResponse(http.Response response, String uri) {
 
     dynamic _body;

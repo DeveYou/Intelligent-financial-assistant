@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +7,15 @@ import 'package:intelligent_financial_assistant_frontend/features/notifications/
 import 'package:intelligent_financial_assistant_frontend/push_notification/models/notification_body.dart';
 import '../../main.dart';
 
-
+/// Helper class for managing local push notifications.
+///
+/// Handles initializing the notification system, displaying notifications,
+/// and processing notification payloads.
 class NotificationHelper {
 
+  /// Initializes the local notifications plugin with platform-specific settings.
+  ///
+  /// Sets up notification channels and click handlers for both Android and iOS.
   static Future<void> initialize(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var androidInitialize = const AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -33,19 +38,41 @@ class NotificationHelper {
         }
       },
     );
+
+    // Create High Priority Channel
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'bank_notifications', // id
+      'VoxBank Notifications', // title
+      description: 'High priority notifications for VoxBank.',
+      importance: Importance.max, // Importance.max for Heads-up
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
+  /// Displays a notification to the user.
+  ///
+  /// [message] contains the notification data including title and body.
+  /// [fln] is the notification plugin instance to use for showing the notification.
+  /// Displays a notification to the user.
+  ///
+  /// [message] contains the notification data including title and body.
+  /// [fln] is the notification plugin instance to use for showing the notification.
   static Future<void> showNotification(Map<String, dynamic> message, FlutterLocalNotificationsPlugin fln) async {
-    if (message['title'] == null || message['body'] == null) return;
+    // Check for 'message' (from data payload/model) or fallback to 'body'
+    String? body = message['message'] ?? message['body'];
+    String? title = message['title'];
 
-    String title = message['title'];
-    String body = message['body'];
+    if (title == null || body == null) return;
+
     String? payload = jsonEncode(message);
 
     // Android Channel Configuration
     const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'voxbank_channel_id', // channel id
-      'VoxBank Transaction Alerts', // channel name
+      'bank_notifications', // channel id matches the one created
+      'VoxBank Notifications', // channel name matches
       channelDescription: 'Notifications for transactions and account updates',
       importance: Importance.max,
       priority: Priority.high,
@@ -63,19 +90,28 @@ class NotificationHelper {
     await fln.show(0, title, body, platformChannelSpecifics, payload: payload);
   }
 
-  static Future<dynamic> backgroundMessageHandler(Map<String, dynamic> message) async {
+  /// Handles background messages when the app is not in the foreground.
+  ///
+  /// Initializes a new notification plugin instance and displays the notification.
+  static Future<void> backgroundMessageHandler(RemoteMessage message) async {
     if (kDebugMode) {
-      print("onBackground: ${message['title']}/${message['body']}");
+      print("onBackground: ${message.data}");
     }
 
-    var androidInitialize = AndroidInitializationSettings('notification_icon');
-    var iOSInitialize = DarwinInitializationSettings();
+    var androidInitialize = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSInitialize = const DarwinInitializationSettings();
     var initializationsSettings = InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
-    NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin);
+    
+    // Pass the data payload which contains 'message'
+    NotificationHelper.showNotification(message.data, flutterLocalNotificationsPlugin);
   }
 
+  /// Converts notification data into a [NotificationBody] object.
+  ///
+  /// Maps notification types (transaction, reminder, alert, news) to NotificationBody objects.
+  /// Returns null if the notification type is not recognized.
   static NotificationBody? convertNotification(Map<String, dynamic> data) {
     if (data['title'] == 'transaction') {
       return NotificationBody(title: 'transaction');

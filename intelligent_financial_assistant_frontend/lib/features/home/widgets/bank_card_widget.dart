@@ -20,7 +20,7 @@ class BankCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.4),
+            color: primaryColor.withValues(alpha: 0.4),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -71,7 +71,7 @@ class BankCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     getTranslated("card_holder", context)!,
-                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 10),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 10),
                   ),
                   Text(
                     homeModel.accountHolder.toUpperCase(),
@@ -84,7 +84,7 @@ class BankCardWidget extends StatelessWidget {
                 children: [
                   Text(
                     getTranslated("total_balance", context)!,
-                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 10),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 10),
                   ),
                   Text(
                     "${homeModel.currency} ${homeModel.balance.toStringAsFixed(2)}",

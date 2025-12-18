@@ -6,7 +6,12 @@ import 'package:provider/provider.dart';
 import 'text_chatbot_screen.dart';
 import 'vocal_chatbot_screen.dart';
 
+/// AI Assistant screen with voice and text interfaces.
+///
+/// Provides a toggle between voice assistant mode and text chat mode.
+/// Initializes the assistant controller on screen load.
 class AssistantScreen extends StatefulWidget {
+  /// Creates an [AssistantScreen].
   const AssistantScreen({super.key});
 
   @override

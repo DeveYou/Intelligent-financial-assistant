@@ -28,7 +28,7 @@ class RecipientWidgetCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.08),
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.08),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -40,7 +40,7 @@ class RecipientWidgetCard extends StatelessWidget {
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Center(

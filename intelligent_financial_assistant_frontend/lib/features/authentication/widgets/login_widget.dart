@@ -6,7 +6,6 @@ import 'package:intelligent_financial_assistant_frontend/features/authentication
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_password_input_field_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/widgets/auth_submit_btn_widget.dart';
 import 'package:intelligent_financial_assistant_frontend/features/root.dart';
-import 'package:intelligent_financial_assistant_frontend/features/splash/controllers/splash_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/localization/language_constraints.dart';
 import 'package:provider/provider.dart';
 
@@ -65,13 +64,15 @@ class _LoginWidgetState extends State<LoginWidget> {
   }
 
   // The route callback handles the response from the API
-  route(bool isRoute, String? token, String? temporaryToken, String? errorMessage) async {
+  Future<void> route(bool isRoute, String? token, String? temporaryToken, String? errorMessage) async {
     if (isRoute) {
-      if (token == null || token.isEmpty) {
-        final splashController = Provider.of<SplashController>(context, listen: false);
+      final effectiveToken = token?.isNotEmpty == true
+          ? token
+          : (temporaryToken?.isNotEmpty == true ? temporaryToken : null);
 
-      }
-      else {
+      if (effectiveToken == null) {
+        showCustomSnackBarWidget(errorMessage ?? 'No valid token found.', context);
+      } else {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => Root()),
@@ -80,7 +81,7 @@ class _LoginWidgetState extends State<LoginWidget> {
       }
     } else {
       // Login failed
-      showCustomSnackBarWidget(errorMessage, context);
+      showCustomSnackBarWidget(errorMessage ?? 'Login failed', context);
     }
   }
 

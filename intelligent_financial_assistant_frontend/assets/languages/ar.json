@@ -163,5 +163,6 @@
   "transaction": "معاملة",
   "account": "الحساب",
   "assistant": "المساعد",
-  "transaction_details": "تفاصيل المعاملة"
+  "transaction_details": "تفاصيل المعاملة",
+  "add_recipient_subtitle": "أضف مستفيدًا جديدًا لإجراء التحويلات بشكل أسرع وأسهل"
 }
