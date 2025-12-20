@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intelligent_financial_assistant_frontend/features/authentication/controllers/authentication_controller.dart';
+import 'package:intelligent_financial_assistant_frontend/features/authentication/screens/authentication_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/controllers/settings_controller.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/screens/documentation_screen.dart';
 import 'package:intelligent_financial_assistant_frontend/features/settings/widgets/settings_tile_widget.dart';
@@ -198,20 +199,28 @@ class SettingsScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context, AuthenticationController authController) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(getTranslated("logout", context)!),
         content: Text(getTranslated("confirm_logout", context)!),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(getTranslated("cancel", context)!, style: TextStyle(color: Theme.of(context).hintColor)),
           ),
           TextButton(
-            onPressed: () {
-              // authController.logout(); // Call your auth logout method
-              Navigator.pop(context);
-              // Navigate to Login Screen
-              // Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+            onPressed: () async {
+              // Close the dialog using dialog context
+              Navigator.pop(dialogContext);
+              // Perform logout
+              await authController.signOut();
+              // Navigate to Login Screen using parent context (still valid)
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AuthenticationScreen()),
+                    (route) => false
+                );
+              }
             },
             child: Text(getTranslated("logout", context)!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ),
