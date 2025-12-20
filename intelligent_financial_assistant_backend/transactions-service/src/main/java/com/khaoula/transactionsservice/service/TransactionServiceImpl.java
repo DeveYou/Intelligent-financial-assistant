@@ -266,7 +266,7 @@ public class TransactionServiceImpl implements TransactionService {
                 String message = String.format("You have received %.2f from %s", request.getAmount(), senderName);
 
                 NotificationRequestDTO notificationRequest = NotificationRequestDTO.builder()
-                        .userId(recipient.getId())
+                        .userId(accountResponse.getUserId())
                         .title(title)
                         .message(message)
                         .build();
@@ -274,7 +274,7 @@ public class TransactionServiceImpl implements TransactionService {
                 // Sending notification asynchronously or synchronously based on Feign client
                 // configuration
                 notificationClient.sendNotification(notificationRequest);
-                log.info("Notification sent successfully to user: {}", recipient.getId());
+                log.info("Notification sent successfully to user: {}", accountResponse.getUserId());
 
             } catch (Exception e) {
                 log.error("Failed to send notification: {}", e.getMessage());
