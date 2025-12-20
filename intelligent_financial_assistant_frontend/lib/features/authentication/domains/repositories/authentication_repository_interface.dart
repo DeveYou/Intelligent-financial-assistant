@@ -29,8 +29,7 @@ abstract class AuthenticationRepositoryInterface{
   /// Clears the stored user email and password.
   Future<bool> clearUserEmailAndPassword();
 
-  /// Refreshes the authentication token.
-  Future<ApiResponse> updateToken();
+
 
   /// Saves the new authentication [token] locally.
   Future<void> saveUserToken(String token);

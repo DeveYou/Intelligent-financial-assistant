@@ -14,7 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import com.lachguer.accountservice.client.AuthRestClient;
+import com.lachguer.accountservice.client.TransactionRestClient;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +35,13 @@ class AccountServiceImplTest {
 
     @Mock
     private AccountMapper accountMapper;
+
+    @Mock
+    private AuthRestClient authRestClient;
+
+    @Mock
+    private TransactionRestClient transactionRestClient;
+
 
     @Test
     void addAccount_shouldSaveCurrentAccount() {

@@ -39,6 +39,7 @@ class AppExitCard extends StatelessWidget {
               SizedBox(width: Dimensions.paddingSizeDefault,),
               Expanded(child: SizedBox(width: 120,
                   child: CustomButton(buttonText: '${getTranslated('exit', context)}',
+                      textColor: Colors.white,
                       onTap: ()=> SystemNavigator.pop())))]))
       ],),
     );

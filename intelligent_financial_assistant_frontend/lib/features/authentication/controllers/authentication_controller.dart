@@ -56,14 +56,6 @@ class AuthenticationController with ChangeNotifier{
     return authenticationService.clearSharedData();
   }
 
-  /// Updates the authentication token with the backend.
-  Future<void> updateToken(BuildContext context) async {
-    ApiResponse apiResponse = await authenticationService.updateToken();
-    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
-    } else {
-      ApiChecker.checkApi(apiResponse);
-    }
-  }
 
   /// Retrieves the stored user authentication token.
   String getUserToken() {
@@ -108,7 +100,7 @@ class AuthenticationController with ChangeNotifier{
       }
       if(token != null && token.isNotEmpty){
         authenticationService.saveUserToken(token);
-        await authenticationService.updateToken();
+
         String? fcmToken = await FirebaseMessaging.instance.getToken();
         if(fcmToken != null) {
            if(map['id'] != null){
@@ -153,7 +145,7 @@ class AuthenticationController with ChangeNotifier{
       }
       if(token != null && token.isNotEmpty){
         authenticationService.saveUserToken(token);
-        await authenticationService.updateToken();
+
         String? fcmToken = await FirebaseMessaging.instance.getToken();
         if(fcmToken != null) {
            if(map['id'] != null){

@@ -20,6 +20,11 @@ public class AccountMapper {
         } else if (bankAccount instanceof SavingAccount) {
             responseDTO.setInterestRate(((SavingAccount) bankAccount).getInterestRate());
         }
+
+        if (bankAccount.getUser() != null) {
+            responseDTO.setFullName(bankAccount.getUser().getFirstName() + " " + bankAccount.getUser().getLastName());
+        }
+
         return responseDTO;
     }
 }

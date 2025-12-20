@@ -19,6 +19,6 @@ public interface AuthRestClient {
     @GetMapping("/api/auth/validate")
     Boolean validateToken(@RequestHeader("Authorization") String authorizationHeader);
 
-    @GetMapping("/admin/users/{id}")
+    @GetMapping("/user/users/{id}")
     UserDTO getUserById(@PathVariable("id") Long id);
 }

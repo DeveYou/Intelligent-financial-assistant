@@ -52,7 +52,6 @@ void main() {
       // Mock specific service calls inside signIn
       when(() => mockAuthService.signIn(any())).thenAnswer((_) async => ApiResponse.withSuccess(mockResponse));
       when(() => mockAuthService.saveUserToken(any())).thenAnswer((_) async => {});
-      when(() => mockAuthService.updateToken()).thenAnswer((_) async => ApiResponse.withSuccess(MockResponse()..statusCode=200));
       when(() => mockAuthService.saveUserId(any())).thenAnswer((_) async => {});
 
       bool callbackCalled = false;
@@ -124,7 +123,6 @@ void main() {
 
       when(() => mockAuthService.registerUser(any())).thenAnswer((_) async => ApiResponse.withSuccess(mockResponse));
       when(() => mockAuthService.saveUserToken(any())).thenAnswer((_) async => {});
-      when(() => mockAuthService.updateToken()).thenAnswer((_) async => ApiResponse.withSuccess(MockResponse()));
       when(() => mockAuthService.saveUserId(any())).thenAnswer((_) async => {});
 
       bool callbackCalled = false;

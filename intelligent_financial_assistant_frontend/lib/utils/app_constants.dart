@@ -112,9 +112,6 @@ class AppConstants {
   /// Authentication service endpoint for resetting password.
   static const String resetPasswordUri = "/auth-service/auth/reset-password"; 
   
-  /// Authentication service endpoint for updating the authentication token.
-  static const String updateTokenUri = "/auth-service/auth/update-token"; 
-  
   /// Account service endpoint for retrieving user account data.
   static const String getAccountDataUri = "/account-service/api/accounts/user";
 

@@ -51,10 +51,7 @@ class AuthenticationService implements AuthenticationServiceInterface{
     return authenticationRepository.signOut();
   }
 
-  @override
-  Future<dynamic> updateToken() {
-    return authenticationRepository.updateToken();
-  }
+
 
   @override
   Future<void> saveUserToken(String token) {

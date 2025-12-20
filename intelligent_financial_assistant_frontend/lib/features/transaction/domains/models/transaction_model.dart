@@ -115,6 +115,8 @@ class TransactionModel {
       if (beneficiary!.iban != null) {
          data['recipientIban'] = beneficiary!.iban;
       }
+
+      data['recipientName'] = beneficiary!.fullName ?? '';
     } else {
        data['recipientId'] = recipientId;
        data['recipientIban'] = recipientIban;

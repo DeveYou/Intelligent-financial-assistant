@@ -75,7 +75,7 @@ class BankCardWidget extends StatelessWidget {
                   ),
                   Text(
                     homeModel.accountHolder.toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                 ],
               ),

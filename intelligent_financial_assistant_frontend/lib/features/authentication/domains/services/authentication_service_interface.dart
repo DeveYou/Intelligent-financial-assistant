@@ -40,8 +40,7 @@ abstract class AuthenticationServiceInterface {
   /// Clears saved email and password from local storage.
   Future<bool> clearUserEmailAndPassword();
   
-  /// Updates the authentication token with the backend.
-  Future<dynamic> updateToken();
+
   
   /// Saves the authentication token to local storage.
   ///

@@ -25,6 +25,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Page<Transaction> findByBankAccountId(Long bankAccountId, Pageable pageable);
 
+    List<Transaction> findByUserIdOrderByDateDesc(Long userId);
+
+    List<Transaction> findByBankAccountIdOrderByDateDesc(Long bankAccountId);
+
     @Query("SELECT t FROM Transaction t WHERE " +
             "(:userId IS NULL OR t.userId = :userId) AND " +
             "(:bankAccountId IS NULL OR t.bankAccountId = :bankAccountId) AND " +

@@ -20,4 +20,6 @@ public class TransferRequestDTO {
     private String recipientIban;
     @Size(max = 500, message = "Reason cannot exceed 500 characters")
     private String reason;
+    private Long recipientId;
+    private String recipientName;
 }

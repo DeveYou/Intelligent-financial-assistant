@@ -50,4 +50,11 @@ public class UserControllerUser {
         log.debug("User {} retrieving their profile", currentUser.getEmail());
         return ResponseEntity.ok(UserMapper.userToUserDetails(currentUser));
     }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
+    public ResponseEntity<UserDetails> getUserById(@PathVariable Long userId) {
+        log.debug("Retrieving user ID: {}", userId);
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
 }

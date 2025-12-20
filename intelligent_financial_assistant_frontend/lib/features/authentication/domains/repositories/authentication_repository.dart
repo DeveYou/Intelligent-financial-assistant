@@ -61,18 +61,7 @@ class AuthenticationRepository implements AuthenticationRepositoryInterface{
     }
   }
 
-  @override
-  Future<ApiResponse> updateToken() async {
-    try {
-      String? deviceToken = await _getToken();
-      FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
-      FirebaseMessaging.instance.subscribeToTopic(AppConstants.demoTopic);
-      Response response = await dioClient!.post(AppConstants.updateTokenUri, data: {"_method": "put", "cm_firebase_token": deviceToken});
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
+
 
   @override
   Future<ApiResponse> signIn(Map<String, dynamic> data) async{

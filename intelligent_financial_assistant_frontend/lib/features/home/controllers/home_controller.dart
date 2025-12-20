@@ -55,7 +55,7 @@ class HomeController with ChangeNotifier {
           if (data.isNotEmpty) {
             var acc = data[0];
             _accountDetails = HomeModel(
-              accountHolder: 'User ${acc['userId']}',
+              accountHolder: acc['fullName'] ?? 'Unknown User',
               accountNumber: acc['iban'] ?? '****',
               bankName: 'VoxBank',
               balance: double.tryParse(acc['balance'].toString()) ?? 0.0,

@@ -212,11 +212,24 @@ public class TransactionServiceImpl implements TransactionService {
         // Stocker l'ID du bénéficiaire si disponible, sinon stocker l'IBAN
         if (recipient != null) {
             transaction.setRecipientId(recipient.getId());
-            transaction.setRecipientName(recipient.getFullName());
+
+            String nameToUse;
+            if (recipient.getFullName() != null && !recipient.getFullName().isEmpty()) {
+                nameToUse = recipient.getFullName();
+            } else if (request.getRecipientName() != null && !request.getRecipientName().isEmpty()) {
+                nameToUse = request.getRecipientName();
+            } else {
+                nameToUse = "Unknown Recipient";
+                log.warn("Recipient name could not be resolved for IBAN: {}", recipient.getIban());
+            }
+
+            transaction.setRecipientName(nameToUse);
             transaction.setRecipientIban(recipient.getIban());
         } else {
             transaction.setRecipientId(null);
-            transaction.setRecipientId(null);
+            transaction.setRecipientName(request.getRecipientName() != null && !request.getRecipientName().isEmpty()
+                    ? request.getRecipientName()
+                    : "Unknown Recipient");
             transaction.setRecipientIban(request.getRecipientIban());
         }
 
@@ -299,7 +312,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionResponseDTO> getUserTransactions(Long userId) {
-        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        List<Transaction> transactions = transactionRepository.findByUserIdOrderByDateDesc(userId);
         return transactions.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
@@ -307,7 +320,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
-        List<Transaction> transactions = transactionRepository.findByBankAccountId(bankAccountId);
+        List<Transaction> transactions = transactionRepository.findByBankAccountIdOrderByDateDesc(bankAccountId);
         return transactions.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());

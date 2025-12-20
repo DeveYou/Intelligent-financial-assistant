@@ -22,5 +22,6 @@ public class BankAccountResponseDTO {
     private Double overDraft;
     private Double interestRate;
     private Long userId;
+    private String fullName;
 }
 
