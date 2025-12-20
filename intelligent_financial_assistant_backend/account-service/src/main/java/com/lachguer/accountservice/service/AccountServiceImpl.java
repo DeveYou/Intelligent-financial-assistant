@@ -9,7 +9,6 @@ import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.model.CurrentAccount;
 import com.lachguer.accountservice.model.SavingAccount;
 import com.lachguer.accountservice.repository.BankAccountRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +22,19 @@ import org.springframework.beans.BeanUtils;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private BankAccountRepository bankAccountRepository;
-    private AccountMapper accountMapper;
-    private TransactionRestClient transactionRestClient;
-    private AuthRestClient authRestClient;
+    private final BankAccountRepository bankAccountRepository;
+    private final AccountMapper accountMapper;
+    private final TransactionRestClient transactionRestClient;
+    private final AuthRestClient authRestClient;
+
+    public AccountServiceImpl(BankAccountRepository bankAccountRepository, AccountMapper accountMapper, TransactionRestClient transactionRestClient, AuthRestClient authRestClient) {
+        this.bankAccountRepository = bankAccountRepository;
+        this.accountMapper = accountMapper;
+        this.transactionRestClient = transactionRestClient;
+        this.authRestClient = authRestClient;
+    }
 
     @Override
     public BankAccountResponseDTO addAccount(BankAccountRequestDTO bankAccountDTO) {

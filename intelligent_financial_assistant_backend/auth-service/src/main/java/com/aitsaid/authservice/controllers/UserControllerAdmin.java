@@ -9,8 +9,8 @@ import com.aitsaid.authservice.mappers.UserMapper;
 import com.aitsaid.authservice.service.AuthService;
 import com.aitsaid.authservice.service.UserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,17 +18,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * @author radouane
- **/
 @RestController
 @RequestMapping("/admin/users")
-@RequiredArgsConstructor
-@Slf4j
 public class UserControllerAdmin {
 
+    private static final Logger log = LoggerFactory.getLogger(UserControllerAdmin.class);
     private final UserService userService;
     private final AuthService authService;
+
+    public UserControllerAdmin(UserService userService, AuthService authService) {
+        this.userService = userService;
+        this.authService = authService;
+    }
 
     /**
      * Créer un nouvel utilisateur (ADMIN uniquement)

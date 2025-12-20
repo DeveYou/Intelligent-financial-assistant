@@ -9,7 +9,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,16 +26,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
-/**
- * Filtre de sécurité partagé pour tous les microservices
- * Supporte deux modes d'authentification :
- * 1. Via API Gateway (headers X-Auth-*)
- * 2. Direct via Token Bearer (appels inter-services)
- */
 @Component
-@Slf4j
 public class GatewayAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(GatewayAuthenticationFilter.class);
     private static final String HEADER_USER = "X-Auth-User";
     private static final String HEADER_ROLES = "X-Auth-Roles";
     private static final String HEADER_TOKEN_VALIDATED = "X-Auth-Token-Validated";
