@@ -1,7 +1,6 @@
 package com.khaoula.transactionsservice.client;
 
 import com.khaoula.transactionsservice.dto.RecipientRequest;
-import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,11 +56,42 @@ public interface RecipientClient {
         }
     }
 
-    @Data
     class RecipientResponse {
         private Long id;
         private String bank;
         private String iban;
         private String fullName;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getBank() {
+            return bank;
+        }
+
+        public void setBank(String bank) {
+            this.bank = bank;
+        }
+
+        public String getIban() {
+            return iban;
+        }
+
+        public void setIban(String iban) {
+            this.iban = iban;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
     }
 }

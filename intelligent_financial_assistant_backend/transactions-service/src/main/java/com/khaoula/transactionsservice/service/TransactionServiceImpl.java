@@ -2,6 +2,7 @@ package com.khaoula.transactionsservice.service;
 
 import com.khaoula.transactionsservice.client.AccountClient;
 import com.khaoula.transactionsservice.client.RecipientClient;
+import com.khaoula.transactionsservice.client.UserClient;
 import com.khaoula.transactionsservice.domain.Transaction;
 import com.khaoula.transactionsservice.domain.TransactionStatus;
 import com.khaoula.transactionsservice.domain.TransactionType;
@@ -10,8 +11,8 @@ import com.khaoula.transactionsservice.exception.InsufficientBalanceException;
 import com.khaoula.transactionsservice.exception.InvalidTransactionException;
 import com.khaoula.transactionsservice.exception.ResourceNotFoundException;
 import com.khaoula.transactionsservice.repository.TransactionRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +26,20 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
+    private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
     private final TransactionRepository transactionRepository;
     private final AccountClient accountClient;
     private final RecipientClient recipientClient;
     private final UserClient userClient;
+
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountClient accountClient, RecipientClient recipientClient, UserClient userClient) {
+        this.transactionRepository = transactionRepository;
+        this.accountClient = accountClient;
+        this.recipientClient = recipientClient;
+        this.userClient = userClient;
+    }
 
     @Override
     @Transactional
@@ -211,7 +218,7 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setRecipientIban(recipient.getIban());
         } else {
             transaction.setRecipientId(null);
-            transaction.setRecipientId(null);
+            transaction.setRecipientName(null);
             transaction.setRecipientIban(request.getRecipientIban());
         }
 

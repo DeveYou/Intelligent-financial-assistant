@@ -1,14 +1,14 @@
 package com.khaoula.transactionsservice.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class DailyTransactionStats {
     private Date date;
     private Long count;

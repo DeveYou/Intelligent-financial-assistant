@@ -8,6 +8,6 @@ class AccountServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+        // Verify that the application context loads successfully
 	}
-
 }
