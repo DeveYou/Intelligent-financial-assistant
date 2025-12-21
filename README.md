@@ -70,10 +70,6 @@ A cross-platform mobile application for on-the-go access.
 
 https://github.com/user-attachments/assets/9c7e7c3d-c6e0-4827-98a1-33e36d1deced
 
-
-### Project Walkthrough
-*Placeholder for Video Demo Link*
-
 ---
 
 ## 🚀 Getting Started
