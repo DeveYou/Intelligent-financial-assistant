@@ -2,17 +2,25 @@ package com.lachguer.accountservice.model;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("SAVING_ACCOUNT")
-@EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class SavingAccount extends BankAccount {
     private Double interestRate;
+
+    public SavingAccount() {
+        super();
+    }
+
+    public SavingAccount(Double interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public Double getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(Double interestRate) {
+        this.interestRate = interestRate;
+    }
 }

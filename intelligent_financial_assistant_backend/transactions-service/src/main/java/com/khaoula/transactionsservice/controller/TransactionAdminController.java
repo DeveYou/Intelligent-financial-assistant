@@ -8,8 +8,8 @@ import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.service.TransactionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +23,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/transactions")
-@RequiredArgsConstructor
-@Slf4j
 public class TransactionAdminController {
 
+    private static final Logger log = LoggerFactory.getLogger(TransactionAdminController.class);
     private final TransactionService transactionService;
+
+    public TransactionAdminController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     /**
      * Récupérer toutes les transactions avec filtres et pagination

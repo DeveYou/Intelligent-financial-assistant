@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,8 +41,8 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCqxbxRg3rc6FWGekhz6QiF88c6-_lHxtw',
+  static FirebaseOptions get web => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_WEB_API_KEY']!,
     appId: '1:154831190584:web:a065efe39bb587e7c2c4cd',
     messagingSenderId: '154831190584',
     projectId: 'financial-assistant-7481a',
@@ -50,16 +51,16 @@ class DefaultFirebaseOptions {
     measurementId: 'G-X5DSNKZDB5',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBz5K5l0OUocYQsZNwkxEwsBP1tl59JdxQ',
+  static FirebaseOptions get android => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY']!,
     appId: '1:154831190584:android:243ff4f32151c1a5c2c4cd',
     messagingSenderId: '154831190584',
     projectId: 'financial-assistant-7481a',
     storageBucket: 'financial-assistant-7481a.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBglgc_ZjqxYJRoutpYAzh1UPtQ1M4N_jI',
+  static FirebaseOptions get ios => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
     appId: '1:154831190584:ios:4453f858e00e5bd0c2c4cd',
     messagingSenderId: '154831190584',
     projectId: 'financial-assistant-7481a',
@@ -67,8 +68,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.intelligentFinancialAssistantFrontend',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBglgc_ZjqxYJRoutpYAzh1UPtQ1M4N_jI',
+  static FirebaseOptions get macos => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
     appId: '1:154831190584:ios:4453f858e00e5bd0c2c4cd',
     messagingSenderId: '154831190584',
     projectId: 'financial-assistant-7481a',
@@ -76,8 +77,8 @@ class DefaultFirebaseOptions {
     iosBundleId: 'com.example.intelligentFinancialAssistantFrontend',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCqxbxRg3rc6FWGekhz6QiF88c6-_lHxtw',
+  static FirebaseOptions get windows => FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_WINDOWS_API_KEY']!,
     appId: '1:154831190584:web:43fab15139a1ae97c2c4cd',
     messagingSenderId: '154831190584',
     projectId: 'financial-assistant-7481a',

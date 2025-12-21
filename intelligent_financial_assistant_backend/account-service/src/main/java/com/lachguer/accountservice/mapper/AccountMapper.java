@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class AccountMapper {
 
     public BankAccountResponseDTO fromBankAccount(BankAccount bankAccount) {
+        if (bankAccount == null) return null;
         BankAccountResponseDTO responseDTO = new BankAccountResponseDTO();
         BeanUtils.copyProperties(bankAccount, responseDTO);
         responseDTO.setIban(bankAccount.getRib()); // Map RIB to IBAN

@@ -4,9 +4,8 @@ import com.lachguer.accountservice.dto.*;
 import com.lachguer.accountservice.model.BankAccount;
 import com.lachguer.accountservice.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,11 +18,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
-@AllArgsConstructor
-@Slf4j
 public class AccountController {
 
-    private AccountService accountService;
+    private static final Logger log = LoggerFactory.getLogger(AccountController.class);
+    private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -118,9 +120,24 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @Data
     public static class BalanceUpdateRequest {
         private Double amount;
         private String operation; // "ADD" ou "SUBTRACT"
+
+        public Double getAmount() {
+            return amount;
+        }
+
+        public void setAmount(Double amount) {
+            this.amount = amount;
+        }
+
+        public String getOperation() {
+            return operation;
+        }
+
+        public void setOperation(String operation) {
+            this.operation = operation;
+        }
     }
 }

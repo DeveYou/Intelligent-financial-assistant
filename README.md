@@ -13,6 +13,7 @@ The core logic is distributed across several scalable microservices:
 *   **Account Service:** Handles bank accounts and balances.
 *   **Transaction Service:** Manages deposits, withdrawals, transfers, and history.
 *   **Recipient Service:** Manages beneficiary lists for transfers.
+*   **Notification Service:** Handle push notifications using Firebase cloud push notifications.
 *   **Discovery Service (Eureka):** Service registration and discovery.
 *   **Config Service:** Centralized configuration management.
 
@@ -62,34 +63,13 @@ A cross-platform mobile application for on-the-go access.
 </div>
 
 ### Mobile App (Flutter)
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.10_d30c82be.jpg" width="30%" alt="Mobile 1" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_1f4d9ca2.jpg" width="30%" alt="Mobile 2" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_29b950f9.jpg" width="30%" alt="Mobile 3" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.11_d9d017ac.jpg" width="30%" alt="Mobile 4" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.12_687b9db1.jpg" width="30%" alt="Mobile 5" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.12_ff06cbc3.jpg" width="30%" alt="Mobile 6" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_2fa28424.jpg" width="30%" alt="Mobile 7" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_76c3e4db.jpg" width="30%" alt="Mobile 8" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_8360d48f.jpg" width="30%" alt="Mobile 9" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.13_a4eaa7e4.jpg" width="30%" alt="Mobile 10" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.14_32c429b7.jpg" width="30%" alt="Mobile 11" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.53.14_c53a8fa1.jpg" width="30%" alt="Mobile 12" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.00_7d982c05.jpg" width="30%" alt="Mobile 13" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_ae2dbbbc.jpg" width="30%" alt="Mobile 14" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_b31b1196.jpg" width="30%" alt="Mobile 15" />
-  <img src="Screans/Flutter/WhatsApp Image 2025-12-16 at 15.57.01_d31ed893.jpg" width="30%" alt="Mobile 16" />
-</div>
-
----
-
 ## 🎥 Video Demo
 
 <!-- Add a link to a video demo or embed it here -->
 <!-- Example: [Watch the Demo](link_to_video) -->
 
-### Project Walkthrough
-*Placeholder for Video Demo Link*
+
+https://github.com/user-attachments/assets/9c7e7c3d-c6e0-4827-98a1-33e36d1deced
 
 ---
 
