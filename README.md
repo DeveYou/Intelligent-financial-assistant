@@ -13,6 +13,7 @@ The core logic is distributed across several scalable microservices:
 *   **Account Service:** Handles bank accounts and balances.
 *   **Transaction Service:** Manages deposits, withdrawals, transfers, and history.
 *   **Recipient Service:** Manages beneficiary lists for transfers.
+*   **Notification Service:** Handle push notifications using Firebase cloud push notifications.
 *   **Discovery Service (Eureka):** Service registration and discovery.
 *   **Config Service:** Centralized configuration management.
 
