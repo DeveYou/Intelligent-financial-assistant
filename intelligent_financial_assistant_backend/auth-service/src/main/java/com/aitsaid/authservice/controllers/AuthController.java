@@ -6,23 +6,22 @@ import com.aitsaid.authservice.dtos.RegisterRequest;
 import com.aitsaid.authservice.dtos.RegisterResponse;
 import com.aitsaid.authservice.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-
-/**
- * @author radouane
- **/
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
-@Slf4j
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     /**
      * Endpoint public - Inscription
@@ -48,7 +47,11 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String token, Authentication authentication) {
-        log.info("Logout request from user: {}", authentication.getName());
+        if (authentication != null) {
+            log.info("Logout request from user: {}", authentication.getName());
+        } else {
+            log.info("Logout request with null authentication");
+        }
         authService.logout(token);
         return ResponseEntity.ok("Logged out successfully");
     }
@@ -58,7 +61,11 @@ public class AuthController {
      */
     @GetMapping("/validate-token")
     public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String token, Authentication authentication) {
-        log.debug("Token validation request from user: {}", authentication.getName());
+        if (authentication != null) {
+            log.debug("Token validation request from user: {}", authentication.getName());
+        } else {
+            log.debug("Token validation request with null authentication");
+        }
         boolean isValid = authService.validateToken(token);
         return ResponseEntity.ok(isValid);
     }

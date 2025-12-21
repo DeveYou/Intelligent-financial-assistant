@@ -1,12 +1,11 @@
 package com.khaoula.transactionsservice.controller;
 
-import com.khaoula.transactionsservice.dto.TransactionRequestDTO;
 import com.khaoula.transactionsservice.dto.TransferRequestDTO;
 import com.khaoula.transactionsservice.dto.TransactionResponseDTO;
 import com.khaoula.transactionsservice.service.TransactionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,21 +14,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * @author radouane
- **/
-
-/**
- * Controller pour les utilisateurs Flutter (ROLE_USER)
- * L'authentification est gérée par le Gateway et GatewayAuthenticationFilter
- */
 @RestController
 @RequestMapping("/user/transactions")
-@RequiredArgsConstructor
-@Slf4j
 public class TransactionUserController {
 
+    private static final Logger log = LoggerFactory.getLogger(TransactionUserController.class);
     private final TransactionService transactionService;
+
+    public TransactionUserController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     /**
      * Effectuer un transfert

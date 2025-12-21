@@ -1,14 +1,8 @@
 package com.khaoula.transactionsservice.dto;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
-
 import java.math.BigDecimal;
 
-/**
- * @author radouane
- **/
-@Data
 public class TransferRequestDTO {
     @NotNull(message = "Bank account ID is required")
     private Long bankAccountId;
@@ -20,4 +14,36 @@ public class TransferRequestDTO {
     private String recipientIban;
     @Size(max = 500, message = "Reason cannot exceed 500 characters")
     private String reason;
+
+    public Long getBankAccountId() {
+        return bankAccountId;
+    }
+
+    public void setBankAccountId(Long bankAccountId) {
+        this.bankAccountId = bankAccountId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getRecipientIban() {
+        return recipientIban;
+    }
+
+    public void setRecipientIban(String recipientIban) {
+        this.recipientIban = recipientIban;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }

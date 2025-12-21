@@ -33,12 +33,18 @@ import 'package:intelligent_financial_assistant_frontend/theme/dark_mode.dart';
 import 'package:intelligent_financial_assistant_frontend/theme/light_mode.dart';
 import 'package:intelligent_financial_assistant_frontend/utils/app_constants.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Warning: .env file not found. API keys may be missing.");
+  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
