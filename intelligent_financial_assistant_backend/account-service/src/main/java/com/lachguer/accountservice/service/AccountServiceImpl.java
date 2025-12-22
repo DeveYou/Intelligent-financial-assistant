@@ -74,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
         }
         bankAccount.setRib(ribBuilder.toString());
 
-        bankAccount.setBalance(0.0);
+        bankAccount.setBalance(10000.0);
 
         Date now = new Date();
         bankAccount.setCreatedAt(now);

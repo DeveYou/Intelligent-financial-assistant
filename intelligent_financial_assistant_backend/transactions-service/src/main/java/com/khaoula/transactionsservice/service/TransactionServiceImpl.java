@@ -34,7 +34,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final RecipientClient recipientClient;
     private final UserClient userClient;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountClient accountClient, RecipientClient recipientClient, UserClient userClient) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, AccountClient accountClient,
+            RecipientClient recipientClient, UserClient userClient) {
         this.transactionRepository = transactionRepository;
         this.accountClient = accountClient;
         this.recipientClient = recipientClient;
@@ -192,10 +193,10 @@ public class TransactionServiceImpl implements TransactionService {
                     recipient = createResponse.getData();
 
                 } catch (Exception ex) {
-                    log.error("Failed to auto-create recipient: {}", ex.getMessage());
-                    // Throw original exception or new one indicating failure
-                    throw new ResourceNotFoundException("Recipient not found with IBAN: " + recipientIban
-                            + " and could not be auto-created. Reason: " + ex.toString());
+                    log.warn(
+                            "Failed to auto-create recipient: {}. Proceeding with transaction without linking to a recipient profile.",
+                            ex.getMessage());
+                    recipient = null;
                 }
             }
         } else {
@@ -261,8 +262,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getPage(),
                 filter.getSize(),
                 Sort.Direction.fromString(filter.getSortDirection()),
-                filter.getSortBy()
-        );
+                filter.getSortBy());
 
         Page<Transaction> transactions = transactionRepository.findByFilters(
                 filter.getUserId(),
@@ -271,8 +271,7 @@ public class TransactionServiceImpl implements TransactionService {
                 filter.getStatus(),
                 filter.getStartDate(),
                 filter.getEndDate(),
-                pageable
-        );
+                pageable);
 
         return transactions.map(this::mapToResponseDTO);
     }
@@ -284,7 +283,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public List<TransactionResponseDTO> getAccountTransactions(Long bankAccountId) {
