@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Automated Test Suite">
+    <test name="All Tests">
+        <classes>
+            <class name="com.ifa.tests.LoginTest"/>
+            <class name="com.ifa.tests.TransactionTest"/>
+            <class name="com.ifa.tests.DepositTest"/>
+            <class name="com.ifa.tests.WithdrawalTest"/>
+            <class name="com.ifa.tests.NavigationFilterTest"/>
+            <class name="com.ifa.tests.UserDetailsTest"/>
+            <class name="com.ifa.tests.LogoutTest"/>
+        </classes>
+    </test>
+</suite>

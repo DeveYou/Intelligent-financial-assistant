@@ -1,6 +1,5 @@
 package com.khaoula.recipientservice.model;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +23,7 @@ public class Recipient {
 
     @NotBlank(message = "IBAN is required")
     @Size(min = 15, max = 34, message = "IBAN must be between 15 and 34 characters")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String iban;
 
     @Column(name = "bank")
